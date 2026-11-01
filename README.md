@@ -70,13 +70,13 @@ The system supports three primary user roles:
 ![Login Page](Labsync/wwwroot/Screenshots/Login.png)
 
 ### 2. Admin Dashboard
-![Admin Dashboard](wwwroot/Screenshots/admin-dashboard.png)
+![Admin Dashboard](Labsync/wwwroot/Screenshots/admin-dashboard.png)
 
 ### 3. Receptionist Dashboard
 ![Receptionist Dashboard](Labsync/wwwroot/Screenshots/receptionist-dashboard.png)
 
 ### 4. Lab Technician Dashboard
-![Lab Technician Dashboard](wwwroot/Screenshots/lab-technician-dashboard.png)
+![Lab Technician Dashboard](Labsync/wwwroot/Screenshots/lab-technician-dashboard.png)
 
 ## Patient Management Workflow
 
