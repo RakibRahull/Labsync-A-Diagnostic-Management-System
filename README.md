@@ -68,19 +68,19 @@ The system supports three primary user roles:
 
 ### 1. Login Page
 
-![Login Page](Screenshots/login.png)
+![Login Page](wwwroot/Screenshots/login.png)
 
 ### 2. Admin Dashboard
 
-![Admin Dashboard](Screenshots/admin-dashboard.png)
+![Admin Dashboard](wwwroot/Screenshots/admin-dashboard.png)
 
 ### 3. Receptionist Dashboard
 
-![Receptionist Dashboard](Screenshots/receptionist-dashboard.png)
+![Receptionist Dashboard](wwwroot/Screenshots/receptionist-dashboard.png)
 
 ### 4. Lab Technician Dashboard
 
-![Lab Technician Dashboard](Screenshots/lab-technician-dashboard.png)
+![Lab Technician Dashboard](wwwroot/Screenshots/lab-technician-dashboard.png)
 
 ## Patient Management Workflow
 
