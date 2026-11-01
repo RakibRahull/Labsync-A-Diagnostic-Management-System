@@ -73,7 +73,7 @@ The system supports three primary user roles:
 ![Admin Dashboard](wwwroot/Screenshots/admin-dashboard.png)
 
 ### 3. Receptionist Dashboard
-![Receptionist Dashboard](wwwroot/Screenshots/receptionist-dashboard.png)
+![Receptionist Dashboard](Labsync/wwwroot/Screenshots/receptionist-dashboard.png)
 
 ### 4. Lab Technician Dashboard
 ![Lab Technician Dashboard](wwwroot/Screenshots/lab-technician-dashboard.png)
