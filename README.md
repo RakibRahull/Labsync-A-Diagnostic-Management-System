@@ -68,7 +68,7 @@ The system supports three primary user roles:
 
 ### 1. Login Page
 
-![Login Page](wwwroot/Screenshots/login.png)
+![Login Page](wwwroot/Screenshots/Login.png)
 
 ### 2. Admin Dashboard
 
