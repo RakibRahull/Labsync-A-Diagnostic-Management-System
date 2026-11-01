@@ -67,7 +67,7 @@ The system supports three primary user roles:
 ## Project Screenshots
 
 ### 1. Login Page
-![Login Page](wwwroot/Screenshots/login.png)
+![Login Page](Labsync/wwwroot/Screenshots/Login.png)
 
 ### 2. Admin Dashboard
 ![Admin Dashboard](wwwroot/Screenshots/admin-dashboard.png)
