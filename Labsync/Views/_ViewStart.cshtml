@@ -1,0 +1,5 @@
+﻿@{
+    Layout = User.IsInRole("Receptionist")
+        ? "~/Views/Shared/_ReceptionistLayout.cshtml"
+        : "~/Views/Shared/_Layout.cshtml";
+}

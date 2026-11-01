@@ -1,0 +1,2068 @@
+﻿@model LabSync.Models.Payment
+
+@{
+    ViewData["Title"] = "Create Payment";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="breadcrumb-text">
+            Operations / Payments
+        </div>
+
+        <h1>Create Payment</h1>
+
+        <p>
+            Search an invoice and record payment information.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="payment-card">
+
+    <!-- =========================================================
+         FIND INVOICE
+    ========================================================== -->
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>Find Invoice</h2>
+
+        </div>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <div class="search-container">
+
+        <div class="field">
+
+            <label class="form-label-custom">
+                Invoice Number
+            </label>
+
+            <div class="search-row">
+
+                <input type="text"
+                       id="invoiceNumberSearch"
+                       class="form-control-custom"
+                       placeholder="Enter invoice number" />
+
+                <button type="button"
+                        id="searchInvoiceBtn"
+                        class="btn-purple">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    Search
+
+                </button>
+
+            </div>
+
+            <div id="searchMessage"
+                 class="search-message">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         INVOICE DETAILS
+    ========================================================== -->
+
+    <div id="invoiceDetails"
+         style="display:none;">
+
+
+        <!-- =====================================================
+             INVOICE INFORMATION
+        ====================================================== -->
+
+        <div class="section-header section-space">
+
+            <div>
+
+                <h2>Invoice Information</h2>
+
+            </div>
+
+        </div>
+
+        <div class="section-line"></div>
+
+
+        <div class="details-grid">
+
+            <div class="detail-box">
+
+                <span>
+                    Invoice Number
+                </span>
+
+                <strong id="displayInvoiceNumber">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Invoice Date
+                </span>
+
+                <strong id="displayInvoiceDate">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Appointment ID
+                </span>
+
+                <strong id="displayAppointmentId">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Appointment Date
+                </span>
+
+                <strong id="displayAppointmentDate">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Appointment Time
+                </span>
+
+                <strong id="displayAppointmentTime">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             PATIENT INFORMATION
+        ====================================================== -->
+
+        <div class="section-header section-space">
+
+            <div>
+
+                <h2>Patient Information</h2>
+
+            </div>
+
+        </div>
+
+        <div class="section-line"></div>
+
+
+        <div class="details-grid">
+
+            <!--
+                IMPORTANT:
+                Patient ID is displayed as PAT1, PAT2, PAT3...
+                using the PatientCode value.
+            -->
+
+            <div class="detail-box">
+
+                <span>
+                    Patient ID
+                </span>
+
+                <strong id="displayPatientId">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Patient Name
+                </span>
+
+                <strong id="displayPatientName">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Phone
+                </span>
+
+                <strong id="displayPatientPhone">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Email
+                </span>
+
+                <strong id="displayPatientEmail">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span>
+                    Payment Status
+                </span>
+
+                <strong id="displayPaymentStatus"
+                        class="status-text">
+
+                    Unpaid
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             BILLING SUMMARY
+        ====================================================== -->
+
+        <div class="section-header section-space">
+
+            <div>
+
+                <h2>Billing Summary</h2>
+
+            </div>
+
+        </div>
+
+        <div class="section-line"></div>
+
+
+        <div class="billing-summary">
+
+            <div class="summary-row">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <strong id="displaySubtotal">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Discount
+                </span>
+
+                <strong id="displayDiscount">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Tax
+                </span>
+
+                <strong id="displayTax">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row total-row">
+
+                <span>
+                    Net Amount
+                </span>
+
+                <strong id="displayNetAmount">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row paid-row">
+
+                <span>
+                    Paid Amount
+                </span>
+
+                <strong id="displayPaidAmount">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row due-row">
+
+                <span>
+                    Due Amount
+                </span>
+
+                <strong id="displayDueAmount">
+                    BDT 0.00
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             PAYMENT INFORMATION
+        ====================================================== -->
+
+        <div class="section-header section-space">
+
+            <div>
+
+                <h2>Payment Information</h2>
+
+            </div>
+
+        </div>
+
+        <div class="section-line"></div>
+
+
+        <form asp-action="Create"
+              asp-area="Receptionist"
+              asp-controller="Payments"
+              method="post"
+              id="paymentForm">
+
+            @Html.AntiForgeryToken()
+
+
+            <input type="hidden"
+                   asp-for="InvoiceId"
+                   id="invoiceId" />
+
+
+            <div class="payment-grid">
+
+
+                <!-- =================================================
+                     PAYMENT DATE
+                ================================================== -->
+
+                <div class="field">
+
+                    <label asp-for="PaymentDate"
+                           class="form-label-custom">
+
+                        Payment Date
+
+                    </label>
+
+                    <input asp-for="PaymentDate"
+                           type="datetime-local"
+                           class="form-control-custom"
+                           value="@(
+                           Model.PaymentDate.HasValue
+                               ? Model.PaymentDate.Value.ToString("yyyy-MM-ddTHH:mm")
+                                                                                   : DateTime.Now.ToString("yyyy-MM-ddTHH:mm")
+                                                                           )" />
+
+<span asp-validation-for="PaymentDate"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     PAYMENT METHOD
+                ================================================== -->
+
+                <div class="field">
+
+                    <label asp-for="PaymentMethodId"
+                           class="form-label-custom">
+
+                        Payment Method
+
+                    </label>
+
+
+                    <select asp-for="PaymentMethodId"
+                            class="form-control-custom"
+                            id="paymentMethodId"
+                            required>
+
+                        <option value="">
+                            Select Payment Method
+                        </option>
+
+
+                        @if (ViewBag.PaymentMethods != null)
+                        {
+                            foreach (var method in ViewBag.PaymentMethods)
+                            {
+                                if (ViewBag.SelectedPaymentMethodId != null &&
+                                    ViewBag.SelectedPaymentMethodId == method.Id)
+                                {
+                                    <option value="@method.Id"
+                                            selected>
+
+                                        @method.MethodName
+
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@method.Id">
+
+                                        @method.MethodName
+
+                                    </option>
+                                }
+                            }
+                        }
+
+                    </select>
+
+
+                    <span asp-validation-for="PaymentMethodId"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     PAYMENT AMOUNT
+                ================================================== -->
+
+                <div class="field">
+
+                    <label asp-for="Amount"
+                           class="form-label-custom">
+
+                        Payment Amount
+
+                    </label>
+
+
+                    <div class="amount-input-wrapper">
+
+                        <span class="currency-label">
+                            BDT
+                        </span>
+
+                        <input asp-for="Amount"
+                               type="number"
+                               step="0.01"
+                               min="0.01"
+                               id="paymentAmount"
+                               class="form-control-custom amount-input"
+                               placeholder="0.00"
+                               required />
+
+                    </div>
+
+
+                    <div class="input-help">
+
+                        Maximum payable:
+
+                        <strong id="maxPaymentAmount">
+                            BDT 0.00
+                        </strong>
+
+                    </div>
+
+
+                    <span asp-validation-for="Amount"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     TRANSACTION NUMBER
+                ================================================== -->
+
+                <div class="field"
+                     id="transactionNumberField"
+                     style="display:none;">
+
+                    <label asp-for="TransactionNumber"
+                           class="form-label-custom">
+
+                        Transaction Number
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input asp-for="TransactionNumber"
+                           type="text"
+                           id="transactionNumber"
+                           class="form-control-custom"
+                           placeholder="Enter transaction / reference number" />
+
+
+
+
+                    <span asp-validation-for="TransactionNumber"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     BANK NAME
+                ================================================== -->
+
+                <div class="field"
+                     id="bankNameField"
+                     style="display:none;">
+
+                    <label asp-for="BankName"
+                           class="form-label-custom">
+
+                        Bank Name
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <select asp-for="BankName"
+                            id="bankName"
+                            class="form-control-custom">
+
+                        <option value="">
+                            Select Bank
+                        </option>
+
+                        <option value="UCB Bank">
+                            UCB Bank
+                        </option>
+
+                        <option value="Dutch-Bangla Bank">
+                            Dutch-Bangla Bank
+                        </option>
+
+                        <option value="Sonali Bank">
+                            Sonali Bank
+                        </option>
+
+                        
+                    </select>
+
+
+                    <span asp-validation-for="BankName"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     MOBILE BANKING
+                ================================================== -->
+
+                <div class="field"
+                     id="mobileBankingField"
+                     style="display:none;">
+
+                    <label asp-for="MobileBanking"
+                           class="form-label-custom">
+
+                        Mobile Banking
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <select asp-for="MobileBanking"
+                            id="mobileBanking"
+                            class="form-control-custom">
+
+                        <option value="">
+                            Select Mobile Banking
+                        </option>
+
+                        <option value="bKash">
+                            bKash
+                        </option>
+
+                        <option value="Nagad">
+                            Nagad
+                        </option>
+
+                        <option value="Rocket">
+                            Rocket
+                        </option>
+
+                    </select>
+
+
+                    <div class="input-help">
+
+                        Select the mobile banking service used.
+
+                    </div>
+
+
+                    <span asp-validation-for="MobileBanking"
+                          class="validation-message">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 CASH MESSAGE
+            ====================================================== -->
+
+            <div id="cashMessage"
+                 class="cash-message"
+                 style="display:none;">
+
+                <strong>
+                    Cash Payment
+                </strong>
+
+                <span>
+                    Transaction number is not required for cash payment.
+                </span>
+
+            </div>
+
+
+            <!-- =====================================================
+                 STATUS
+            ====================================================== -->
+
+            <div class="status-section">
+
+                <div class="status-content">
+
+                    <span class="status-label">
+                        Current Payment Status
+                    </span>
+
+                    <strong id="paymentStatusBox">
+                        Unpaid
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 ACTION BUTTONS
+            ====================================================== -->
+
+            <div class="form-actions">
+
+                <a asp-action="Index"
+                   asp-area="Receptionist"
+                   asp-controller="Payments"
+                   class="btn-cancel">
+
+                    Cancel
+
+                </a>
+
+
+                <button type="submit"
+                        id="savePaymentBtn"
+                        class="btn-purple"
+                        disabled>
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Save Payment
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // =========================================================
+        // URL
+        // =========================================================
+
+        const findInvoiceUrl =
+            '@Url.Action("FindInvoice", "Payments", new { area = "Receptionist" })';
+
+
+        // =========================================================
+        // ELEMENTS
+        // =========================================================
+
+        const searchBtn =
+            document.getElementById("searchInvoiceBtn");
+
+        const invoiceSearch =
+            document.getElementById("invoiceNumberSearch");
+
+        const searchMessage =
+            document.getElementById("searchMessage");
+
+        const invoiceDetails =
+            document.getElementById("invoiceDetails");
+
+        const invoiceId =
+            document.getElementById("invoiceId");
+
+        const paymentAmount =
+            document.getElementById("paymentAmount");
+
+        const paymentMethodId =
+            document.getElementById("paymentMethodId");
+
+        const savePaymentBtn =
+            document.getElementById("savePaymentBtn");
+
+        const transactionNumberField =
+            document.getElementById("transactionNumberField");
+
+        const transactionNumber =
+            document.getElementById("transactionNumber");
+
+        const cashMessage =
+            document.getElementById("cashMessage");
+
+        const bankNameField =
+            document.getElementById("bankNameField");
+
+        const bankName =
+            document.getElementById("bankName");
+
+        const mobileBankingField =
+            document.getElementById("mobileBankingField");
+
+        const mobileBanking =
+            document.getElementById("mobileBanking");
+
+
+        // =========================================================
+        // BDT FORMAT
+        // =========================================================
+
+        function formatBDT(value) {
+
+            const number =
+                Number(value || 0);
+
+            return "BDT " +
+                number.toLocaleString(
+                    "en-BD",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+        }
+
+
+        // =========================================================
+        // SEARCH MESSAGE
+        // =========================================================
+
+        function showMessage(
+            message,
+            type = "error") {
+
+            searchMessage.textContent =
+                message;
+
+            searchMessage.className =
+                "search-message " + type;
+        }
+
+
+        // =========================================================
+        // PAYMENT METHOD UI
+        // =========================================================
+
+        function updatePaymentMethodUI() {
+
+            const selectedOption =
+                paymentMethodId.options[
+                paymentMethodId.selectedIndex
+                ];
+
+
+            // Hide everything initially
+            transactionNumberField.style.display =
+                "none";
+
+            bankNameField.style.display =
+                "none";
+
+            mobileBankingField.style.display =
+                "none";
+
+            cashMessage.style.display =
+                "none";
+
+
+            transactionNumber.required =
+                false;
+
+            bankName.required =
+                false;
+
+            mobileBanking.required =
+                false;
+
+
+            // Clear dependent values
+            bankName.value =
+                "";
+
+            mobileBanking.value =
+                "";
+
+
+            if (!selectedOption ||
+                !selectedOption.value) {
+
+                transactionNumber.value =
+                    "";
+
+                return;
+            }
+
+
+            const methodName =
+                selectedOption.textContent
+                    .replace(/\s+/g, " ")
+                    .trim()
+                    .toLowerCase();
+
+
+            // =====================================================
+            // CASH
+            // =====================================================
+
+            if (methodName === "cash") {
+
+                transactionNumberField.style.display =
+                    "none";
+
+                cashMessage.style.display =
+                    "flex";
+
+                transactionNumber.required =
+                    false;
+
+                transactionNumber.value =
+                    "";
+
+                return;
+            }
+
+
+            // =====================================================
+            // MOBILE BANKING
+            // IMPORTANT: check this before BANK because
+            // "mobile banking" contains the word "bank".
+            // =====================================================
+
+            if (
+                methodName === "mobile banking" ||
+                methodName.includes("mobile banking") ||
+                methodName.includes("mobile")
+            ) {
+
+                transactionNumberField.style.display =
+                    "block";
+
+                mobileBankingField.style.display =
+                    "block";
+
+                transactionNumber.required =
+                    true;
+
+                mobileBanking.required =
+                    true;
+
+                return;
+            }
+
+
+            // =====================================================
+            // BANK
+            // =====================================================
+
+            if (
+                methodName === "bank" ||
+                methodName === "bank payment" ||
+                methodName === "bank transfer"
+            ) {
+
+                transactionNumberField.style.display =
+                    "block";
+
+                bankNameField.style.display =
+                    "block";
+
+                transactionNumber.required =
+                    true;
+
+                bankName.required =
+                    true;
+
+                return;
+            }
+
+
+
+
+            // =====================================================
+            // OTHER NON-CASH PAYMENT METHODS
+            // =====================================================
+
+            transactionNumberField.style.display =
+                "block";
+
+            transactionNumber.required =
+                true;
+
+        }
+
+
+        // =========================================================
+        // PAYMENT METHOD CHANGE
+        // =========================================================
+
+        paymentMethodId.addEventListener(
+            "change",
+            updatePaymentMethodUI
+        );
+
+
+        // Initial state
+        updatePaymentMethodUI();
+
+
+        // =========================================================
+        // SEARCH INVOICE
+        // =========================================================
+
+        searchBtn.addEventListener(
+            "click",
+            async function() {
+
+                const invoiceNumber =
+                    invoiceSearch.value.trim();
+
+
+                if (!invoiceNumber) {
+
+                    showMessage(
+                        "Please enter invoice number.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                searchBtn.disabled =
+                    true;
+
+                searchBtn.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i> Searching...';
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            findInvoiceUrl +
+                            "?invoiceNumber=" +
+                            encodeURIComponent(
+                                invoiceNumber
+                            )
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    // =================================================
+                    // ERROR
+                    // =================================================
+
+                    if (!data.success) {
+
+                        invoiceDetails.style.display =
+                            "none";
+
+                        savePaymentBtn.disabled =
+                            true;
+
+
+                        if (data.alreadyPaid) {
+
+                            showMessage(
+                                "This invoice is already fully paid.",
+                                "error"
+                            );
+
+                        }
+                        else {
+
+                            showMessage(
+                                data.message ||
+                                "Invoice not found.",
+                                "error"
+                            );
+
+                        }
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // SUCCESS
+                    // =================================================
+
+                    showMessage(
+                        "Invoice loaded successfully.",
+                        "success"
+                    );
+
+
+                    invoiceId.value =
+                        data.invoiceId;
+
+
+                    // =================================================
+                    // INVOICE
+                    // =================================================
+
+                    document.getElementById(
+                        "displayInvoiceNumber"
+                    ).textContent =
+                        data.invoiceNumber || "-";
+
+
+                    document.getElementById(
+                        "displayInvoiceDate"
+                    ).textContent =
+                        data.invoiceDate || "-";
+
+
+                    // =================================================
+                    // APPOINTMENT
+                    // =================================================
+
+                    document.getElementById(
+                        "displayAppointmentId"
+                    ).textContent =
+                        data.appointmentCode || "-";
+
+
+                    document.getElementById(
+                        "displayAppointmentDate"
+                    ).textContent =
+                        data.appointmentDate || "-";
+
+
+                    document.getElementById(
+                        "displayAppointmentTime"
+                    ).textContent =
+                        data.appointmentTime || "-";
+
+
+                    // =================================================
+                    // PATIENT
+                    // =================================================
+
+                    /*
+                       IMPORTANT:
+                       Patient ID is displayed as PAT1/PAT2/PAT3...
+                       using patientCode.
+
+                       So numeric PatientId is NOT shown here.
+                    */
+
+                    document.getElementById(
+                        "displayPatientId"
+                    ).textContent =
+                        data.patientCode || "-";
+
+
+                    document.getElementById(
+                        "displayPatientName"
+                    ).textContent =
+                        data.patientName || "-";
+
+
+                    document.getElementById(
+                        "displayPatientPhone"
+                    ).textContent =
+                        data.patientPhone || "-";
+
+
+                    document.getElementById(
+                        "displayPatientEmail"
+                    ).textContent =
+                        data.patientEmail || "-";
+
+
+                    // =================================================
+                    // PAYMENT STATUS
+                    // =================================================
+
+                    const status =
+                        data.paymentStatusName ||
+                        "Unpaid";
+
+
+                    document.getElementById(
+                        "displayPaymentStatus"
+                    ).textContent =
+                        status;
+
+
+                    document.getElementById(
+                        "paymentStatusBox"
+                    ).textContent =
+                        status;
+
+
+                    // =================================================
+                    // BILLING
+                    // =================================================
+
+                    document.getElementById(
+                        "displaySubtotal"
+                    ).textContent =
+                        formatBDT(
+                            data.subtotal
+                        );
+
+
+                    document.getElementById(
+                        "displayDiscount"
+                    ).textContent =
+                        formatBDT(
+                            data.discount
+                        );
+
+
+                    document.getElementById(
+                        "displayTax"
+                    ).textContent =
+                        formatBDT(
+                            data.tax
+                        );
+
+
+                    document.getElementById(
+                        "displayNetAmount"
+                    ).textContent =
+                        formatBDT(
+                            data.totalAmount
+                        );
+
+
+                    document.getElementById(
+                        "displayPaidAmount"
+                    ).textContent =
+                        formatBDT(
+                            data.paidAmount
+                        );
+
+
+                    document.getElementById(
+                        "displayDueAmount"
+                    ).textContent =
+                        formatBDT(
+                            data.dueAmount
+                        );
+
+
+                    document.getElementById(
+                        "maxPaymentAmount"
+                    ).textContent =
+                        formatBDT(
+                            data.dueAmount
+                        );
+
+
+                    // =================================================
+                    // PAYMENT LIMIT
+                    // =================================================
+
+                    paymentAmount.max =
+                        Number(
+                            data.dueAmount || 0
+                        );
+
+                    paymentAmount.value =
+                        "";
+
+
+                    // =================================================
+                    // SHOW DETAILS
+                    // =================================================
+
+                    invoiceDetails.style.display =
+                        "block";
+
+                    savePaymentBtn.disabled =
+                        false;
+
+
+                    // Reset dependent payment fields
+                    transactionNumber.value =
+                        "";
+
+                    bankName.value =
+                        "";
+
+                    mobileBanking.value =
+                        "";
+
+                    updatePaymentMethodUI();
+
+                }
+                catch (error) {
+
+                    invoiceDetails.style.display =
+                        "none";
+
+                    savePaymentBtn.disabled =
+                        true;
+
+                    showMessage(
+                        "Something went wrong while searching invoice.",
+                        "error"
+                    );
+
+                    console.error(error);
+
+                }
+                finally {
+
+                    searchBtn.disabled =
+                        false;
+
+                    searchBtn.innerHTML =
+                        '<i class="fa-solid fa-magnifying-glass"></i> Search';
+
+                }
+
+            }
+        );
+
+
+        // =========================================================
+        // ENTER TO SEARCH
+        // =========================================================
+
+        invoiceSearch.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    searchBtn.click();
+
+                }
+
+            }
+        );
+
+
+        // =========================================================
+        // PAYMENT AMOUNT VALIDATION
+        // =========================================================
+
+        paymentAmount.addEventListener(
+            "input",
+            function() {
+
+                const amount =
+                    Number(
+                        paymentAmount.value || 0
+                    );
+
+
+                const max =
+                    Number(
+                        paymentAmount.max || 0
+                    );
+
+
+                if (amount > max) {
+
+                    paymentAmount.setCustomValidity(
+                        "Payment amount cannot exceed due amount."
+                    );
+
+                }
+                else if (amount <= 0) {
+
+                    paymentAmount.setCustomValidity(
+                        "Payment amount must be greater than 0."
+                    );
+
+                }
+                else {
+
+                    paymentAmount.setCustomValidity("");
+
+                }
+
+            }
+        );
+
+
+        // =========================================================
+        // FORM SUBMIT VALIDATION
+        // =========================================================
+
+        document.getElementById(
+            "paymentForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                const selectedOption =
+                    paymentMethodId.options[
+                    paymentMethodId.selectedIndex
+                    ];
+
+
+                if (!selectedOption ||
+                    !selectedOption.value) {
+
+                    event.preventDefault();
+
+                    paymentMethodId.focus();
+
+                    return;
+                }
+
+
+                const methodName =
+                    selectedOption.textContent
+                        .trim()
+                        .toLowerCase();
+
+
+                // =================================================
+                // CASH
+                // =================================================
+
+                if (methodName === "cash") {
+
+                    transactionNumber.value =
+                        "";
+
+                    bankName.value =
+                        "";
+
+                    mobileBanking.value =
+                        "";
+
+                    this.target = "_blank";
+                    return;
+                }
+
+
+                // =================================================
+                // TRANSACTION NUMBER
+                // =================================================
+
+                if (!transactionNumber.value.trim()) {
+
+                    event.preventDefault();
+
+                    transactionNumber.setCustomValidity(
+                        "Transaction number is required for this payment method."
+                    );
+
+                    transactionNumber.reportValidity();
+
+                    transactionNumber.focus();
+
+                    return;
+                }
+
+
+                transactionNumber.setCustomValidity("");
+
+
+                // =================================================
+                // MOBILE BANKING
+                // Check mobile banking before bank because
+                // "mobile banking" contains "bank".
+                // =================================================
+
+                if (
+                    methodName === "mobile banking" ||
+                    methodName.includes("mobile banking") ||
+                    methodName.includes("mobile")
+                ) {
+
+                    if (!mobileBanking.value) {
+
+                        event.preventDefault();
+
+                        mobileBanking.setCustomValidity(
+                            "Please select a mobile banking service."
+                        );
+
+                        mobileBanking.reportValidity();
+
+                        mobileBanking.focus();
+
+                        return;
+                    }
+
+                    mobileBanking.setCustomValidity("");
+                    bankName.value = "";
+
+                    // Open only after validation succeeds.
+                    this.target = "_blank";
+                    return;
+                }
+
+
+                // =================================================
+                // BANK
+                // =================================================
+
+                if (
+                    methodName === "bank" ||
+                    methodName === "bank payment" ||
+                    methodName === "bank transfer"
+                ) {
+
+                    if (!bankName.value) {
+
+                        event.preventDefault();
+
+                        bankName.setCustomValidity(
+                            "Please select a bank."
+                        );
+
+                        bankName.reportValidity();
+
+                        bankName.focus();
+
+                        return;
+                    }
+
+                    bankName.setCustomValidity("");
+
+                    mobileBanking.value =
+                        "";
+
+                }
+
+
+
+                // Open the POST/redirect/PDF response in a new tab.
+                // This runs only after all client-side validation above passes.
+                this.target = "_blank";
+
+            }
+        );
+
+    </script>
+}
+
+
+<style>
+
+    /* =========================================================
+                   GLOBAL
+                ========================================================== */
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f7f7fc;
+        color: #000;
+    }
+
+
+    /* =========================================================
+                   HEADER
+                ========================================================== */
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .breadcrumb-text {
+        color: #9296aa;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .page-header p {
+        margin: 6px 0 0;
+        color: #777080;
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+                   MAIN CARD
+                ========================================================== */
+
+    .payment-card {
+        background: #fff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 28px rgba(37, 29, 62, 0.05);
+    }
+
+
+    /* =========================================================
+                   SECTION HEADER
+                ========================================================== */
+
+    .section-header {
+        margin-bottom: 13px;
+    }
+
+        .section-header h2 {
+            margin: 0;
+            color: #18213a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #9296aa;
+            font-size: 13px;
+        }
+
+    .section-line {
+        width: 100%;
+        height: 1px;
+        background: #ece9f2;
+        margin-bottom: 20px;
+    }
+
+    .section-space {
+        margin-top: 32px;
+    }
+
+
+    /* =========================================================
+                   SEARCH
+                ========================================================== */
+
+    .search-container {
+        background: #faf9fc;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .search-row {
+        display: flex;
+        gap: 12px;
+    }
+
+
+    /* =========================================================
+                   FIELDS
+                ========================================================== */
+
+    .field {
+        min-width: 0;
+    }
+
+    .form-label-custom {
+        display: block;
+        color: #000;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .required-mark {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        min-height: 45px;
+        padding: 11px 13px;
+        border: 1px solid #ddd9e7;
+        border-radius: 9px;
+        background: #fff;
+        color: #000;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+        .form-control-custom:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
+        }
+
+
+    /* =========================================================
+                   BUTTON
+                ========================================================== */
+
+    .btn-purple {
+        min-height: 45px;
+        border: none;
+        border-radius: 9px;
+        padding: 11px 20px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        .btn-purple:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.18);
+        }
+
+        .btn-purple:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+
+    /* =========================================================
+                   MESSAGE
+                ========================================================== */
+
+    .search-message {
+        margin-top: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+        .search-message.error {
+            color: #dc2626;
+        }
+
+        .search-message.success {
+            color: #16a34a;
+        }
+
+
+    /* =========================================================
+                   DETAILS
+                ========================================================== */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .detail-box {
+        min-height: 76px;
+        padding: 14px;
+        background: #fff;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+    }
+
+        .detail-box span {
+            display: block;
+            color: #9296aa;
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        .detail-box strong {
+            display: block;
+            color: #000;
+            font-size: 14px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+    .status-text {
+        color: #8b5cf6 !important;
+    }
+
+
+    /* =========================================================
+                   BILLING SUMMARY
+                ========================================================== */
+
+    .billing-summary {
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        padding: 8px 18px;
+        background: #fff;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 0;
+        border-bottom: 1px solid #eeeaf3;
+        color: #000;
+        font-size: 14px;
+    }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row strong {
+            color: #000;
+            font-weight: 600;
+        }
+
+    .total-row span,
+    .total-row strong {
+        font-weight: 700;
+    }
+
+    .total-row strong {
+        color: #8b5cf6;
+        font-size: 15px;
+    }
+
+    .paid-row strong {
+        color: #159947;
+    }
+
+    .due-row strong {
+        color: #dc2626;
+        font-size: 15px;
+    }
+
+
+    /* =========================================================
+                   PAYMENT GRID
+                ========================================================== */
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+
+    /* =========================================================
+                   AMOUNT INPUT
+                ========================================================== */
+
+    .amount-input-wrapper {
+        position: relative;
+    }
+
+    .currency-label {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777080;
+        font-size: 12px;
+        font-weight: 700;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .amount-input {
+        padding-left: 48px;
+    }
+
+    .input-help {
+        margin-top: 6px;
+        color: #9296aa;
+        font-size: 11px;
+    }
+
+        .input-help strong {
+            color: #000;
+        }
+
+
+    /* =========================================================
+                   CASH MESSAGE
+                ========================================================== */
+
+    .cash-message {
+        margin-top: 18px;
+        padding: 13px 15px;
+        border: 1px solid #dce9df;
+        border-radius: 9px;
+        background: #f7fff8;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+    }
+
+        .cash-message strong {
+            color: #159947;
+        }
+
+        .cash-message span {
+            color: #777080;
+        }
+
+
+    /* =========================================================
+                   STATUS
+                ========================================================== */
+
+    .status-section {
+        margin-top: 25px;
+        padding: 16px 18px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #faf9fc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .status-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .status-label {
+        color: #9296aa;
+        font-size: 11px;
+    }
+
+    .status-content strong {
+        color: #8b5cf6;
+        font-size: 14px;
+    }
+
+    .status-help {
+        color: #9296aa;
+        font-size: 11px;
+        text-align: right;
+    }
+
+
+    /* =========================================================
+                   ACTIONS
+                ========================================================== */
+
+    .form-actions {
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #ece9f2;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-cancel {
+        min-height: 45px;
+        padding: 11px 20px;
+        border: 1px solid #ddd9e7;
+        border-radius: 9px;
+        background: #fff;
+        color: #000;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-cancel:hover {
+            color: #000;
+            background: #f8f6fb;
+        }
+
+
+    /* =========================================================
+                   VALIDATION
+                ========================================================== */
+
+    .validation-message {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+                   RESPONSIVE
+                ========================================================== */
+
+    @@media (max-width: 950px) {
+
+        .details-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .payment-card {
+            padding: 20px;
+        }
+
+        .page-header h1 {
+            font-size: 25px;
+        }
+
+        .search-row {
+            flex-direction: column;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .status-section {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .status-help {
+            text-align: left;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+            .form-actions a,
+            .form-actions button {
+                width: 100%;
+            }
+    }
+
+</style>

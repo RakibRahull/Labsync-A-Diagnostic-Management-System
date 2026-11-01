@@ -1,0 +1,1044 @@
+﻿@model LabSync.Areas.LabTechnician.Models.LabTechnicianAppointmentViewModel
+
+@{
+    ViewData["Title"] = "Appointments";
+
+    Layout =
+        "~/Areas/LabTechnician/Views/Shared/_LabTechnicianLayout.cshtml";
+
+    var searchValue =
+        Model.SearchAppointmentId ?? "";
+
+    var selectedDate =
+        Model.SelectedDate == default
+            ? DateTime.Today
+            : Model.SelectedDate;
+
+    var selectedDateValue =
+        selectedDate.ToString("yyyy-MM-dd");
+
+    var selectedDateDisplay =
+        selectedDate.ToString("dd/MM/yyyy");
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .appointments-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .appointments-title {
+        margin: 0;
+        color: #18213a;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.6px;
+    }
+
+    .appointments-subtitle {
+        margin: 7px 0 0;
+        color: #9296aa;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           FILTER CARD
+        ====================================================== */
+
+    .appointment-filter-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .appointment-filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+
+    /* =====================================================
+           DATE
+        ====================================================== */
+
+    .appointment-date-area {
+        width: 220px;
+        flex-shrink: 0;
+    }
+
+    .appointment-filter-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #514b61;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .appointment-date-box {
+        height: 48px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        padding: 0 13px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        transition: .2s ease;
+    }
+
+        .appointment-date-box:focus-within {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+        }
+
+        .appointment-date-box i {
+            color: #8b5cf6;
+            font-size: 17px;
+        }
+
+    .appointment-date-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #29243a;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .appointment-date-input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: .7;
+        }
+
+
+    /* =====================================================
+           SEARCH
+        ====================================================== */
+
+    .appointment-search-area {
+        flex: 1;
+    }
+
+    .appointment-search-box {
+        height: 48px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        background: #ffffff;
+        transition: .2s ease;
+    }
+
+        .appointment-search-box:focus-within {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+        }
+
+        .appointment-search-box i {
+            color: #9993a8;
+            font-size: 17px;
+        }
+
+        .appointment-search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #29243a;
+            font-size: 14px;
+        }
+
+            .appointment-search-box input::placeholder {
+                color: #aaa5b5;
+            }
+
+
+    /* =====================================================
+           BUTTONS
+        ====================================================== */
+
+    .appointment-search-button {
+        height: 48px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+        cursor: pointer;
+    }
+
+        .appointment-search-button:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    
+
+
+    /* =====================================================
+           SELECTED DATE
+        ====================================================== */
+
+    .selected-date-text {
+        margin-top: 10px;
+        color: #9993a8;
+        font-size: 12px;
+    }
+
+        .selected-date-text strong {
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           SUMMARY
+        ====================================================== */
+
+    .appointments-summary {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 20px 22px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .appointments-summary-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+    }
+
+    .appointments-summary-text span {
+        display: block;
+        color: #8b8798;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .appointments-summary-text h2 {
+        margin: 0;
+        color: #29243a;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           TABLE CARD
+        ====================================================== */
+
+    .appointments-table-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .appointments-card-header {
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeaf3;
+    }
+
+        .appointments-card-header h5 {
+            margin: 0 0 5px;
+            color: #29243a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .appointments-card-header span {
+            color: #9993a8;
+            font-size: 13px;
+        }
+
+
+    /* =====================================================
+           TABLE
+        ====================================================== */
+
+    .appointments-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .appointments-table {
+        width: 100%;
+        min-width: 1350px;
+        border-collapse: collapse;
+    }
+
+        .appointments-table thead {
+            background: #faf9fc;
+        }
+
+        .appointments-table th {
+            padding: 15px 18px;
+            text-align: left;
+            border-bottom: 1px solid #ebe8f0;
+            color: #6f6a7d;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .appointments-table td {
+            padding: 17px 18px;
+            border-bottom: 1px solid #f0edf4;
+            color: #514b61;
+            font-size: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .appointments-table tbody tr:hover {
+            background: #fcfbff;
+        }
+
+        .appointments-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+    /* =====================================================
+           APPOINTMENT ID
+        ====================================================== */
+
+    .appointment-id {
+        color: black;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           DATE / TIME
+        ====================================================== */
+
+    .appointment-date {
+        color: #29243a;
+        font-weight: 600;
+    }
+
+    .appointment-time {
+        color: #29243a;
+        font-weight: 1000;
+    }
+
+
+    /* =====================================================
+           PATIENT
+        ====================================================== */
+
+    .patient-name {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+    .patient-code {
+        display: block;
+        color: #9993a8;
+        font-size: 11px;
+        margin-top: 3px;
+    }
+
+
+    /* =====================================================
+           TEST
+        ====================================================== */
+
+    .test-name {
+        color: #514b61;
+        font-weight: 600;
+        max-width: 250px;
+        white-space: normal;
+        line-height: 1.45;
+    }
+
+
+    /* =====================================================
+           STATUS
+        ====================================================== */
+
+    .appointment-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+        .appointment-status.confirmed {
+            background: #eaf8ef;
+            color: #159447;
+        }
+
+        .appointment-status.pending {
+            background: #fff7df;
+            color: #b98100;
+        }
+
+        .appointment-status.completed {
+            background: #e9f2ff;
+            color: #4385dd;
+        }
+
+        .appointment-status.cancelled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .appointment-status.default {
+            background: #f1eaff;
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           VIEW TESTS BUTTON
+        ====================================================== */
+
+    .view-tests-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 13px;
+        border: 1px solid #d8c7f8;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .view-tests-button:hover {
+            background: #f5efff;
+            border-color: #bfa3f4;
+            color: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+
+    /* =====================================================
+           EMPTY
+        ====================================================== */
+
+    .appointments-empty {
+        padding: 70px 25px;
+        text-align: center;
+    }
+
+    .appointments-empty-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 29px;
+    }
+
+    .appointments-empty h5 {
+        color: #302b40;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .appointments-empty p {
+        color: #9993a8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+           MOBILE
+        ====================================================== */
+
+    @@media (max-width: 1000px) {
+
+        .appointment-filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .appointment-date-area {
+            width: 100%;
+        }
+
+        .appointment-search-button,
+        .appointment-today-button,
+        .appointment-clear-button {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 700px) {
+
+        .appointments-title {
+            font-size: 28px;
+        }
+
+        .appointments-subtitle {
+            font-size: 14px;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="appointments-header">
+
+    <div>
+
+        <h1 class="appointments-title">
+            Appointments
+        </h1>
+
+        <p class="appointments-subtitle">
+            View scheduled appointments and process laboratory tests.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     FILTER
+====================================================== -->
+
+<div class="appointment-filter-card">
+
+    <form asp-area="LabTechnician"
+          asp-controller="Dashboard"
+          asp-action="Index"
+          method="get">
+
+        <div class="appointment-filter-form">
+
+            <!-- DATE -->
+
+            <div class="appointment-date-area">
+
+                <label for="selectedDate"
+                       class="appointment-filter-label">
+                    Select Date
+                </label>
+
+                <div class="appointment-date-box">
+
+                    <i class="bi bi-calendar3"></i>
+
+                    <input type="date"
+                           id="selectedDate"
+                           name="selectedDate"
+                           value="@selectedDateValue"
+                           class="appointment-date-input" />
+
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="appointment-search-area">
+
+                <label class="appointment-filter-label">
+                    Search Appointment
+                </label>
+
+                <div class="appointment-search-box">
+
+                    <i class="bi bi-search"></i>
+
+                    <input type="text"
+                           name="appointmentId"
+                           value="@searchValue"
+                           placeholder="Search by Appointment ID or Appointment Code..." />
+
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH BUTTON -->
+
+            <button type="submit"
+                    class="appointment-search-button">
+
+                <i class="bi bi-search"></i>
+
+                Search
+
+            </button>
+
+
+           
+
+
+            <!-- CLEAR -->
+            @if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+
+                <a asp-area="LabTechnician"
+                   asp-controller="Dashboard"
+                   asp-action="Index"
+                   class="appointment-clear-button">
+
+                    <i class="bi bi-x-lg"></i>
+
+                    Clear
+
+                </a>
+
+            }
+
+        </div>
+
+
+        <!-- SELECTED DATE -->
+
+        <div class="selected-date-text">
+
+            Showing appointments from:
+
+            <strong>
+                @selectedDateDisplay
+            </strong>
+
+            @if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+
+                <span>
+
+                    &nbsp; | &nbsp;
+
+                    Search:
+
+                    <strong>
+                        @searchValue
+                    </strong>
+
+                </span>
+
+            }
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     SUMMARY
+====================================================== -->
+
+<div class="appointments-summary">
+
+    <div class="appointments-summary-icon">
+
+        <i class="bi bi-calendar-check-fill"></i>
+
+    </div>
+
+    <div class="appointments-summary-text">
+
+        <span>
+
+            @(
+                string.IsNullOrWhiteSpace(searchValue)
+                    ? "Appointments"
+                    : "Search Results"
+            )
+
+        </span>
+
+        <h2>
+            @Model.TotalAppointments
+        </h2>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TABLE
+====================================================== -->
+
+<div class="appointments-table-card">
+
+    <div class="appointments-card-header">
+
+        <div>
+
+            <h5>
+                Appointment List
+            </h5>
+
+        </div>
+
+    </div>
+
+
+    <div class="appointments-table-wrapper">
+
+        <table class="appointments-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Appointment ID</th>
+
+                    <th>Date</th>
+
+                    <th>Time</th>
+
+                    <th>Patient ID</th>
+
+                    <th>Patient Name</th>
+
+                    <th>Phone</th>
+
+                    <th>Test</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model.Appointments != null &&
+                     Model.Appointments.Any())
+                {
+
+                    int serial = 1;
+
+                    foreach (var appointment in Model.Appointments)
+                    {
+
+                        var status =
+                            appointment.StatusName?
+                                .Trim()
+                                .ToLowerInvariant()
+                            ?? "";
+
+                        var statusClass = "default";
+
+
+                        if (status.Contains("confirm"))
+                        {
+                            statusClass = "confirmed";
+                        }
+                        else if (status.Contains("pending"))
+                        {
+                            statusClass = "pending";
+                        }
+                        else if (status.Contains("complete"))
+                        {
+                            statusClass = "completed";
+                        }
+                        else if (status.Contains("cancel"))
+                        {
+                            statusClass = "cancelled";
+                        }
+
+
+                        /*
+                         * DATE FORMAT
+                         * Example:
+                         * 18/09/2026
+                         */
+
+                        var appointmentDateText =
+                            appointment.AppointmentDate
+                                .ToString("dd/MM/yyyy");
+
+
+                        /*
+                         * TIME FORMAT
+                         * Example:
+                         * 10:30 AM
+                         */
+
+                        var appointmentTimeText =
+                            DateTime.Today
+                                .Add(appointment.AppointmentTime)
+                                .ToString("hh:mm tt");
+
+
+                        <tr>
+
+                            <!-- SERIAL -->
+
+                            <td>
+                                @serial
+                            </td>
+
+
+                            <!-- APPOINTMENT ID -->
+
+                            <td>
+
+                                <span class="appointment-id">
+
+                                    @(appointment.AppointmentCode
+                                      ?? $"#{appointment.AppointmentId}")
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+
+                                <span class="appointment-date">
+                                    @appointmentDateText
+                                </span>
+
+                            </td>
+
+
+                            <!-- TIME -->
+
+                            <td>
+
+                                <span class="appointment-time">
+                                    @appointmentTimeText
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT ID -->
+
+                            <td>
+
+                                <span class="appointment-id">
+
+                                    @(appointment.PatientCode
+                                      ?? $"#{appointment.PatientId}")
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT NAME -->
+
+                            <td>
+
+                                <span class="patient-name">
+                                    @appointment.PatientName
+                                </span>
+
+                                
+
+                            </td>
+
+
+                            <!-- PHONE -->
+
+                            <td>
+                                @(appointment.Phone ?? "N/A")
+                            </td>
+
+
+                            <!-- TEST -->
+
+                            <td>
+
+                                <div class="test-name">
+                                    @appointment.TestName
+                                </div>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span class="appointment-status @statusClass">
+
+                                    @if (statusClass == "confirmed")
+                                    {
+                                        <i class="bi bi-check-circle"></i>
+                                    }
+                                    else if (statusClass == "completed")
+                                    {
+                                        <i class="bi bi-check2-all"></i>
+                                    }
+                                    else if (statusClass == "cancelled")
+                                    {
+                                        <i class="bi bi-x-circle"></i>
+                                    }
+                                    else if (statusClass == "pending")
+                                    {
+                                        <i class="bi bi-clock"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-info-circle"></i>
+                                    }
+
+                                    @(appointment.StatusName ?? "Pending")
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- VIEW TESTS -->
+
+                            <td>
+
+                                <a href="@Url.Action(
+                                                  "Index",
+                                                  "Tests",
+                                                  new
+                                                  {
+                                                      area = "LabTechnician",
+                                                      appointmentId = appointment.AppointmentCode
+                                                  })"
+                                   class="view-tests-button"
+                                   title="View Patient Tests">
+
+                                    <i class="bi bi-eyedropper"></i>
+
+                                    View Tests
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        serial++;
+
+                    }
+
+                }
+                else
+                {
+
+                    <tr>
+
+                        <td colspan="10">
+
+                            <div class="appointments-empty">
+
+                                <div class="appointments-empty-icon">
+
+                                    <i class="bi bi-calendar-x"></i>
+
+                                </div>
+
+                                <h5>
+
+                                    @if (!string.IsNullOrWhiteSpace(searchValue))
+                                    {
+                                        @:No appointment found
+                                    }
+                                    else
+                                    {
+                                        @:No appointments found
+                                    }
+
+                                </h5>
+
+                                <p>
+
+                                    @if (!string.IsNullOrWhiteSpace(searchValue))
+                                    {
+                                        @:No appointment matches the selected date and search criteria.
+                                    }
+                                    else
+                                    {
+                                        @:There are no appointments available for the selected date.
+                                    }
+
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

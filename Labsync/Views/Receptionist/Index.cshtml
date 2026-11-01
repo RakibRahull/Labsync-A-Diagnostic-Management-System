@@ -1,0 +1,914 @@
+﻿@{
+    ViewData["Title"] = "Receptionist Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Receptionist Dashboard - LabSync</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f7f7fc;
+                color: #25213d;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            .dashboard-wrapper {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            /* ================= SIDEBAR ================= */
+
+            .sidebar {
+                width: 280px;
+                min-height: 100vh;
+                background: #ffffff;
+                border-right: 1px solid #eeeeF5;
+                padding: 28px 22px;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 48px;
+                padding-left: 3px;
+            }
+
+            .brand-logo {
+                width: 50px;
+                height: 50px;
+                border-radius: 15px;
+                background: linear-gradient(135deg, #914cf5, #a45bf4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 25px;
+                box-shadow: 0 8px 20px rgba(145, 76, 245, .22);
+            }
+
+            .brand-text h2 {
+                font-size: 20px;
+                color: #28233f;
+                margin-bottom: 5px;
+            }
+
+            .brand-text p {
+                font-size: 11px;
+                color: #9995aa;
+            }
+
+            .menu-heading {
+                font-size: 11px;
+                font-weight: bold;
+                color: #aaa6b8;
+                letter-spacing: 1px;
+                margin: 0 0 18px 7px;
+            }
+
+            .sidebar-link {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                padding: 14px 12px;
+                margin-bottom: 7px;
+                border-radius: 10px;
+                color: #858196;
+                font-size: 15px;
+                transition: .2s;
+            }
+
+                .sidebar-link i {
+                    font-size: 19px;
+                    width: 20px;
+                }
+
+                .sidebar-link:hover {
+                    background: #f4efff;
+                    color: #8c4df2;
+                }
+
+                .sidebar-link.active {
+                    background: #f1eaff;
+                    color: #8848ed;
+                    font-weight: 600;
+                }
+
+                    .sidebar-link.active i {
+                        color: #8848ed;
+                    }
+
+            .sidebar-section {
+                margin-top: 35px;
+            }
+
+            /* ================= MAIN CONTENT ================= */
+
+            .main-content {
+                margin-left: 280px;
+                width: calc(100% - 280px);
+                min-height: 100vh;
+            }
+
+            /* ================= TOPBAR ================= */
+
+            .topbar {
+                height: 82px;
+                background: #ffffff;
+                border-bottom: 1px solid #eeeeF5;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 36px;
+            }
+
+            .search-box {
+                width: 430px;
+                height: 48px;
+                border: 1px solid #e8e6f0;
+                background: #fafafd;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 0 17px;
+            }
+
+                .search-box i {
+                    color: #aaa5ba;
+                    font-size: 20px;
+                }
+
+                .search-box input {
+                    border: none;
+                    outline: none;
+                    background: transparent;
+                    width: 100%;
+                    font-size: 14px;
+                    color: #55516b;
+                }
+
+                    .search-box input::placeholder {
+                        color: #aaa5ba;
+                    }
+
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .topbar-button {
+                width: 45px;
+                height: 45px;
+                border: 1px solid #eeeaf5;
+                background: #ffffff;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #8b849d;
+                font-size: 20px;
+            }
+
+            .notification {
+                position: relative;
+            }
+
+            .notification-dot {
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #a04df1;
+                top: 9px;
+                right: 10px;
+                border: 2px solid white;
+            }
+
+            .profile {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-left: 5px;
+            }
+
+            .profile-avatar {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #9550f5, #a45df3);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+                font-weight: bold;
+            }
+
+            .profile-info strong {
+                display: block;
+                font-size: 14px;
+                color: #29243e;
+                margin-bottom: 4px;
+            }
+
+            .profile-info span {
+                font-size: 11px;
+                color: #9994aa;
+            }
+
+            /* ================= PAGE ================= */
+
+            .page-content {
+                padding: 38px 36px;
+            }
+
+            .welcome-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 35px;
+            }
+
+            .welcome-text small {
+                display: block;
+                color: #9c97ae;
+                font-size: 15px;
+                margin-bottom: 8px;
+            }
+
+            .welcome-text h1 {
+                font-size: 32px;
+                font-weight: 700;
+                color: #29243f;
+                margin-bottom: 9px;
+            }
+
+                .welcome-text h1 span {
+                    color: #914df2;
+                }
+
+            .welcome-text p {
+                color: #9994aa;
+                font-size: 14px;
+            }
+
+            .date-card {
+                background: white;
+                border: 1px solid #eeeaf5;
+                border-radius: 13px;
+                padding: 16px 22px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                box-shadow: 0 5px 20px rgba(45, 33, 80, .03);
+            }
+
+                .date-card i {
+                    color: #9550f5;
+                    font-size: 23px;
+                }
+
+                .date-card small {
+                    display: block;
+                    color: #9994aa;
+                    font-size: 13px;
+                    margin-bottom: 5px;
+                }
+
+                .date-card strong {
+                    font-size: 13px;
+                    color: #29243f;
+                }
+
+            /* ================= STATISTICS ================= */
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 25px;
+                margin-bottom: 34px;
+            }
+
+            .stat-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 15px;
+                padding: 25px;
+                min-height: 145px;
+                box-shadow: 0 5px 20px rgba(45, 33, 80, .025);
+            }
+
+            .stat-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 18px;
+            }
+
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 13px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+            }
+
+            .purple-icon {
+                background: #f1e9ff;
+                color: #914df2;
+            }
+
+            .blue-icon {
+                background: #e5f8fb;
+                color: #149db5;
+            }
+
+            .pink-icon {
+                background: #fbe8fb;
+                color: #c02bc9;
+            }
+
+            .green-icon {
+                background: #e5f8f6;
+                color: #139f9b;
+            }
+
+            .stat-title {
+                font-size: 13px;
+                color: #9994aa;
+                text-align: right;
+            }
+
+            .stat-number {
+                font-size: 28px;
+                color: #29243f;
+                font-weight: 500;
+                margin-bottom: 9px;
+            }
+
+            .stat-footer {
+                font-size: 12px;
+                color: #10a99d;
+            }
+
+                .stat-footer.warning {
+                    color: #e99a32;
+                }
+
+                .stat-footer i {
+                    margin-right: 4px;
+                }
+
+            /* ================= LOWER SECTION ================= */
+
+            .lower-grid {
+                display: grid;
+                grid-template-columns: 1.65fr 1fr;
+                gap: 28px;
+            }
+
+            .content-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 15px;
+                padding: 24px;
+                min-height: 285px;
+                box-shadow: 0 5px 20px rgba(45, 33, 80, .025);
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 28px;
+            }
+
+                .card-header h3 {
+                    font-size: 17px;
+                    color: #29243f;
+                    margin-bottom: 8px;
+                }
+
+                .card-header p {
+                    font-size: 12px;
+                    color: #aaa5b8;
+                }
+
+            .view-all {
+                color: #8f4cf1;
+                font-size: 12px;
+                padding-top: 3px;
+            }
+
+            .empty-appointments {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                min-height: 130px;
+            }
+
+                .empty-appointments i {
+                    font-size: 24px;
+                    color: #29243f;
+                    margin-bottom: 13px;
+                }
+
+                .empty-appointments p {
+                    color: #29243f;
+                    font-size: 17px;
+                }
+
+            /* ================= QUICK ACTIONS ================= */
+
+            .quick-action {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 5px;
+                border-bottom: 1px solid #f0eef5;
+                color: #777187;
+                font-size: 14px;
+            }
+
+                .quick-action:last-child {
+                    border-bottom: none;
+                }
+
+            .quick-action-left {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .quick-action-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 11px;
+                background: #f1e9ff;
+                color: #914df2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+            }
+
+                .quick-action-icon.blue {
+                    background: #e5f8fb;
+                    color: #149db5;
+                }
+
+                .quick-action-icon.pink {
+                    background: #fbe8fb;
+                    color: #c02bc9;
+                }
+
+                .quick-action-icon.green {
+                    background: #e5f8f6;
+                    color: #139f9b;
+                }
+
+            .quick-action i.arrow {
+                font-size: 18px;
+                color: #777187;
+            }
+
+            /* ================= RESPONSIVE ================= */
+
+            @@media (max-width: 1200px) {
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .lower-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @@media (max-width: 768px) {
+                .sidebar {
+                    width: 75px;
+                    padding: 22px 12px;
+                }
+
+                .brand-text,
+                .menu-heading,
+                .sidebar-link span,
+                .profile-info {
+                    display: none;
+                }
+
+                .brand {
+                    justify-content: center;
+                    margin-bottom: 35px;
+                }
+
+                .sidebar-link {
+                    justify-content: center;
+                    padding: 15px 5px;
+                }
+
+                .main-content {
+                    margin-left: 75px;
+                    width: calc(100% - 75px);
+                }
+
+                .topbar {
+                    padding: 0 20px;
+                }
+
+                .search-box {
+                    width: 250px;
+                }
+
+                .page-content {
+                    padding: 25px 20px;
+                }
+
+                .welcome-row {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .welcome-text h1 {
+                    font-size: 26px;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+
+                <div class="brand-text">
+                    <h2>LabSync</h2>
+                    <p>Diagnostic Management</p>
+                </div>
+            </div>
+
+            <div class="menu-heading">MAIN MENU</div>
+
+            <a asp-controller="Receptionist"
+               asp-action="Index"
+               class="sidebar-link active">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a asp-controller="Patients"
+               asp-action="Index"
+               class="sidebar-link">
+                <i class="bi bi-person-vcard"></i>
+                <span>Patients</span>
+            </a>
+
+            <a asp-controller="Appointments"
+               asp-action="Index"
+               class="sidebar-link">
+                <i class="bi bi-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+
+            <a asp-controller="ReferralDoctors"
+               asp-action="Index"
+               class="sidebar-link">
+                <i class="bi bi-person-badge"></i>
+                <span>Referral Doctors</span>
+            </a>
+
+            <div class="sidebar-section">
+                <div class="menu-heading">OPERATIONS</div>
+
+                <a asp-controller="Reports"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Reports</span>
+                </a>
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <i class="bi bi-receipt"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="sidebar-link">
+                    <i class="bi bi-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+            </div>
+
+        </aside>
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+
+                    <input type="text"
+                           placeholder="Search patients, appointments, reports..." />
+                </div>
+
+                <div class="topbar-right">
+
+                    <a asp-controller="Patients"
+                       asp-action="Create"
+                       class="topbar-button">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+
+                    <div class="topbar-button notification">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-dot"></span>
+                    </div>
+
+                    <div class="profile">
+                        <div class="profile-avatar">R</div>
+
+                        <div class="profile-info">
+                            <strong>Receptionist</strong>
+                            <span>Receptionist</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- PAGE CONTENT -->
+
+            <div class="page-content">
+
+                <!-- WELCOME -->
+
+                <div class="welcome-row">
+
+                    <div class="welcome-text">
+                        <small>Good morning,</small>
+
+                        <h1>
+                            Welcome back, <span>Receptionist</span> 👋
+                        </h1>
+
+                        <p>
+                            Here's what's happening in your diagnostic center today.
+                        </p>
+                    </div>
+
+                    <div class="date-card">
+                        <i class="bi bi-calendar3"></i>
+
+                        <div>
+                            <small>Today</small>
+                            <strong>LabSync Dashboard</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- STATISTICS -->
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon purple-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+
+                            <div class="stat-title">
+                                Total Patients
+                            </div>
+                        </div>
+
+                        <div class="stat-number">0</div>
+
+                        <div class="stat-footer">
+                            <i class="bi bi-arrow-up"></i>
+                            Total registered patients
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon blue-icon">
+                                <i class="bi bi-calendar-check-fill"></i>
+                            </div>
+
+                            <div class="stat-title">
+                                Appointments
+                            </div>
+                        </div>
+
+                        <div class="stat-number">0</div>
+
+                        <div class="stat-footer">
+                            <i class="bi bi-calendar-check"></i>
+                            Today's appointments
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon pink-icon">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+
+                            <div class="stat-title">
+                                Pending Reports
+                            </div>
+                        </div>
+
+                        <div class="stat-number">0</div>
+
+                        <div class="stat-footer warning">
+                            <i class="bi bi-exclamation-circle"></i>
+                            Need attention
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon green-icon">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+
+                            <div class="stat-title">
+                                Completed Tests
+                            </div>
+                        </div>
+
+                        <div class="stat-number">0</div>
+
+                        <div class="stat-footer">
+                            <i class="bi bi-check-circle"></i>
+                            Completed tests
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- LOWER CONTENT -->
+
+                <div class="lower-grid">
+
+                    <!-- TODAY'S APPOINTMENTS -->
+
+                    <div class="content-card">
+
+                        <div class="card-header">
+                            <div>
+                                <h3>Today's Appointments</h3>
+                                <p>Patient appointment schedule</p>
+                            </div>
+
+                            <a asp-controller="Appointments"
+                               asp-action="Index"
+                               class="view-all">
+                                View All
+                            </a>
+                        </div>
+
+                        <div class="empty-appointments">
+                            <i class="bi bi-calendar-x"></i>
+                            <p>No appointments for today.</p>
+                        </div>
+
+                    </div>
+
+                    <!-- QUICK ACTIONS -->
+
+                    <div class="content-card">
+
+                        <div class="card-header">
+                            <div>
+                                <h3>Quick Actions</h3>
+                                <p>Frequently used features</p>
+                            </div>
+                        </div>
+
+                        <a asp-controller="Patients"
+                           asp-action="Index"
+                           class="quick-action">
+
+                            <div class="quick-action-left">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                </div>
+
+                                <span>Manage Patients</span>
+                            </div>
+
+                            <i class="bi bi-chevron-right arrow"></i>
+                        </a>
+
+                        <a asp-controller="Appointments"
+                           asp-action="Index"
+                           class="quick-action">
+
+                            <div class="quick-action-left">
+                                <div class="quick-action-icon blue">
+                                    <i class="bi bi-calendar-plus"></i>
+                                </div>
+
+                                <span>Manage Appointments</span>
+                            </div>
+
+                            <i class="bi bi-chevron-right arrow"></i>
+                        </a>
+
+                        <a asp-controller="Invoices"
+                           asp-action="Index"
+                           class="quick-action">
+
+                            <div class="quick-action-left">
+                                <div class="quick-action-icon pink">
+                                    <i class="bi bi-receipt"></i>
+                                </div>
+
+                                <span>Manage Invoices</span>
+                            </div>
+
+                            <i class="bi bi-chevron-right arrow"></i>
+                        </a>
+
+                        <a asp-controller="Payments"
+                           asp-action="Index"
+                           class="quick-action">
+
+                            <div class="quick-action-left">
+                                <div class="quick-action-icon green">
+                                    <i class="bi bi-credit-card"></i>
+                                </div>
+
+                                <span>Manage Payments</span>
+                            </div>
+
+                            <i class="bi bi-chevron-right arrow"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

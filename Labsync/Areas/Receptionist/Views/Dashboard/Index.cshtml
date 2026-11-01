@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <small>Receptionist Panel</small>
+
+        <h1>Dashboard</h1>
+
+        <p>
+            Welcome to the LabSync Receptionist Management System.
+        </p>
+    </div>
+
+    <a asp-area="Receptionist"
+       asp-controller="Patients"
+       asp-action="Create"
+       class="btn btn-primary">
+
+        <i class="bi bi-person-plus-fill"></i>
+        Add Patient
+    </a>
+</div>
+
+<div class="card">
+
+    <h2 style="margin-bottom: 12px;">
+        Welcome, Receptionist
+    </h2>
+
+    <p style="color: #777187;">
+        From here you can manage patients, appointments,
+        reports, invoices and payments.
+    </p>
+
+</div>

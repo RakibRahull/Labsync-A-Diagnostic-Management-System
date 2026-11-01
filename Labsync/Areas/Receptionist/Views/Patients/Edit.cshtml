@@ -1,0 +1,878 @@
+﻿@model LabSync.Models.Patient
+
+@{
+    ViewData["Title"] = "Edit Patient";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        text-decoration: none;
+    }
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           FORM CARD
+        ====================================================== */
+
+    .patient-form-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+    }
+
+
+    /* =====================================================
+           CARD HEADER
+        ====================================================== */
+
+    .form-card-header {
+        margin-bottom: 24px;
+    }
+
+        .form-card-header h2 {
+            margin: 0;
+            color: #29243a;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .form-card-header span {
+            display: block;
+            margin-top: 5px;
+            color: #9993a8;
+            font-size: 12px;
+        }
+
+
+    /* =====================================================
+           VALIDATION
+        ====================================================== */
+
+    .validation-box {
+        background: #fff1f2;
+        color: #dc2626;
+        border: 1px solid #ffd9de;
+        border-radius: 11px;
+        padding: 15px 18px;
+        margin-bottom: 22px;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+           FORM GRID
+        ====================================================== */
+
+    .patient-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field-full {
+        grid-column: 1 / -1;
+    }
+
+
+    /* =====================================================
+           LABEL
+        ====================================================== */
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 7px;
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .required-mark {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+
+    /* =====================================================
+           INPUTS
+        ====================================================== */
+
+    .patient-input,
+    .patient-select,
+    .patient-textarea {
+        width: 100%;
+        background: #ffffff;
+        color: #29243a;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    .patient-input,
+    .patient-select {
+        height: 42px;
+        padding: 0 12px;
+    }
+
+    .patient-textarea {
+        min-height: 95px;
+        padding: 11px 12px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+        .patient-input:focus,
+        .patient-select:focus,
+        .patient-textarea:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+            outline: none;
+        }
+
+        .patient-input::placeholder,
+        .patient-textarea::placeholder {
+            color: #aaa4b5;
+        }
+
+
+    /* =====================================================
+           PATIENT ID - READONLY
+        ====================================================== */
+
+    .patient-id-input {
+        background: #f8f7fb !important;
+        color: #29243a !important;
+        font-weight: 700;
+        cursor: not-allowed;
+    }
+
+
+    /* =====================================================
+           DATE
+        ====================================================== */
+
+    .patient-input[type="date"] {
+        cursor: pointer;
+    }
+
+        .patient-input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.75;
+        }
+
+
+    /* =====================================================
+           VALIDATION
+        ====================================================== */
+
+    .field-validation {
+        display: block;
+        margin-top: 5px;
+        font-size: 11px;
+        color: #dc2626;
+    }
+
+
+    /* =====================================================
+           FORM ACTIONS
+        ====================================================== */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+    .cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        text-decoration: none;
+    }
+
+        .cancel-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+    .update-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 5px 14px rgba(139, 92, 246, 0.18);
+        transition: 0.2s ease;
+    }
+
+        .update-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 800px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .patient-form-card {
+            padding: 20px;
+        }
+
+        .patient-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field-full {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            justify-content: stretch;
+        }
+
+        .cancel-btn,
+        .update-btn {
+            flex: 1;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Edit Patient
+        </h1>
+
+        <p>
+            Update patient information.
+        </p>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a asp-area="Receptionist"
+       asp-controller="Patients"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Patients
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     VALIDATION ERRORS
+====================================================== -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="validation-box">
+
+        <strong>
+            Please fix the following:
+        </strong>
+
+        <ul style="margin:8px 0 0 20px; padding:0;">
+
+            @foreach (var error in ViewData.ModelState.Values
+                .SelectMany(v => v.Errors))
+            {
+                <li>
+                    @error.ErrorMessage
+                </li>
+            }
+
+        </ul>
+
+    </div>
+}
+
+
+<!-- =====================================================
+     FORM CARD
+====================================================== -->
+
+<div class="patient-form-card">
+
+
+    <!-- CARD HEADER -->
+
+    <div class="form-card-header">
+
+        <h2>
+            Update Patient Information
+        </h2>
+
+        <span>
+            Modify the patient's personal and contact information.
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         FORM
+    ================================================== -->
+
+    <form asp-area="Receptionist"
+          asp-controller="Patients"
+          asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="Id" />
+
+
+        <div class="patient-form-grid">
+
+
+            <!-- =================================================
+                 PATIENT ID
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="PatientCode"
+                       class="form-label-custom">
+
+                    Patient ID
+
+                </label>
+
+                <input asp-for="PatientCode"
+                       class="patient-input patient-id-input"
+                       readonly />
+
+                <span asp-validation-for="PatientCode"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 FIRST NAME
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="FirstName"
+                       class="form-label-custom">
+
+                    First Name
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+                <input asp-for="FirstName"
+                       class="patient-input"
+                       placeholder="Enter first name" />
+
+                <span asp-validation-for="FirstName"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 LAST NAME
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="LastName"
+                       class="form-label-custom">
+
+                    Last Name
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+                <input asp-for="LastName"
+                       class="patient-input"
+                       placeholder="Enter last name" />
+
+                <span asp-validation-for="LastName"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 PHONE
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="Phone"
+                       class="form-label-custom">
+
+                    Phone Number
+
+                </label>
+
+                <input asp-for="Phone"
+                       class="patient-input"
+                       placeholder="01XXXXXXXXX" />
+
+                <span asp-validation-for="Phone"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 EMAIL
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="Email"
+                       class="form-label-custom">
+
+                    Email
+
+                </label>
+
+                <input asp-for="Email"
+                       type="email"
+                       class="patient-input"
+                       placeholder="patient@email.com" />
+
+                <span asp-validation-for="Email"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 DATE OF BIRTH
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="DateOfBirth"
+                       class="form-label-custom">
+
+                    Date of Birth
+
+                </label>
+
+                <input asp-for="DateOfBirth"
+                       type="date"
+                       class="patient-input" />
+
+                <span asp-validation-for="DateOfBirth"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 GENDER
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="Gender"
+                       class="form-label-custom">
+
+                    Gender
+
+                </label>
+
+                <select asp-for="Gender"
+                        class="patient-select">
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 BLOOD GROUP
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="BloodGroup"
+                       class="form-label-custom">
+
+                    Blood Group
+
+                </label>
+
+                <select asp-for="BloodGroup"
+                        class="patient-select">
+
+                    <option value="">
+                        Select Blood Group
+                    </option>
+
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 RELIGION
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="Religion"
+                       class="form-label-custom">
+
+                    Religion
+
+                </label>
+
+                <input asp-for="Religion"
+                       class="patient-input"
+                       placeholder="Enter religion" />
+
+            </div>
+
+
+            <!-- =================================================
+                 MARITAL STATUS
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="MaritalStatus"
+                       class="form-label-custom">
+
+                    Marital Status
+
+                </label>
+
+                <select asp-for="MaritalStatus"
+                        class="patient-select">
+
+                    <option value="">
+                        Select Status
+                    </option>
+
+                    <option value="Single">
+                        Single
+                    </option>
+
+                    <option value="Married">
+                        Married
+                    </option>
+
+                    <option value="Divorced">
+                        Divorced
+                    </option>
+
+                    <option value="Widowed">
+                        Widowed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 NID
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="NID"
+                       class="form-label-custom">
+
+                    NID Number
+
+                </label>
+
+                <input asp-for="NID"
+                       class="patient-input"
+                       placeholder="Enter NID number" />
+
+            </div>
+
+
+            <!-- =================================================
+                 FATHER
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="FatherName"
+                       class="form-label-custom">
+
+                    Father's Name
+
+                </label>
+
+                <input asp-for="FatherName"
+                       class="patient-input"
+                       placeholder="Enter father's name" />
+
+            </div>
+
+
+            <!-- =================================================
+                 MOTHER
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="MotherName"
+                       class="form-label-custom">
+
+                    Mother's Name
+
+                </label>
+
+                <input asp-for="MotherName"
+                       class="patient-input"
+                       placeholder="Enter mother's name" />
+
+            </div>
+
+
+            <!-- =================================================
+                 OCCUPATION
+            ================================================== -->
+
+            <div class="form-field">
+
+                <label asp-for="Occupation"
+                       class="form-label-custom">
+
+                    Occupation
+
+                </label>
+
+                <input asp-for="Occupation"
+                       class="patient-input"
+                       placeholder="Enter occupation" />
+
+            </div>
+
+
+            <!-- =================================================
+                 ADDRESS
+            ================================================== -->
+
+            <div class="form-field form-field-full">
+
+                <label asp-for="Address"
+                       class="form-label-custom">
+
+                    Address
+
+                </label>
+
+                <textarea asp-for="Address"
+                          class="patient-textarea"
+                          rows="3"
+                          placeholder="Enter patient address"></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <div class="form-actions">
+
+
+            <!-- CANCEL -->
+
+            <a asp-area="Receptionist"
+               asp-controller="Patients"
+               asp-action="Index"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+
+            <!-- UPDATE -->
+
+            <button type="submit"
+                    class="update-btn">
+
+                <i class="bi bi-check-lg"></i>
+
+                Update Patient
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

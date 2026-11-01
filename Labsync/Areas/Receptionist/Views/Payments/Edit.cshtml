@@ -1,0 +1,1402 @@
+﻿@model LabSync.Models.Payment
+
+@{
+    ViewData["Title"] = "Edit Payment";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+
+string currentPaymentDate = "";
+
+    if (Model.PaymentDate.HasValue)
+    {
+        currentPaymentDate =
+            Model.PaymentDate.Value.ToString("yyyy-MM-ddTHH:mm");
+    }
+
+    decimal amountValue = 0m;
+
+    try
+    {
+        amountValue = Convert.ToDecimal(Model.Amount);
+    }
+    catch
+    {
+        amountValue = 0m;
+    }
+
+    string currentMethodName = "";
+
+    if (ViewBag.PaymentMethods != null)
+    {
+        foreach (var method in ViewBag.PaymentMethods)
+        {
+            if (method.Id == Model.PaymentMethodId)
+            {
+                currentMethodName =
+                    method.MethodName?.ToString() ?? "";
+                break;
+            }
+        }
+    }
+
+    currentMethodName =
+        currentMethodName.Trim();
+
+    bool isCurrentCash =
+        currentMethodName.Equals(
+            "Cash",
+            StringComparison.OrdinalIgnoreCase);
+
+    bool isCurrentMobileBanking =
+        currentMethodName.Equals(
+            "Mobile Banking",
+            StringComparison.OrdinalIgnoreCase)
+        ||
+        currentMethodName.Contains(
+            "mobile banking",
+            StringComparison.OrdinalIgnoreCase)
+        ||
+        currentMethodName.Contains(
+            "mobile",
+            StringComparison.OrdinalIgnoreCase);
+
+    bool isCurrentBank =
+        !isCurrentMobileBanking &&
+        (
+            currentMethodName.Equals(
+                "Bank",
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            currentMethodName.Equals(
+                "Bank Payment",
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            currentMethodName.Equals(
+                "Bank Transfer",
+                StringComparison.OrdinalIgnoreCase)
+        );
+
+
+}
+
+<style>
+
+    /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f7f7fc;
+        color: #000000;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+        ========================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #000000;
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+           MAIN CARD
+        ========================================================== */
+
+    .payment-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+    }
+
+
+    /* =========================================================
+           SECTION HEADER
+        ========================================================== */
+
+    .section-header {
+        margin-bottom: 10px;
+    }
+
+        .section-header h2 {
+            margin: 0;
+            color: #18213a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #9296aa;
+            font-size: 13px;
+        }
+
+    .section-line {
+        width: 100%;
+        height: 1px;
+        background: #ece9f2;
+        margin-bottom: 22px;
+    }
+
+
+    /* =========================================================
+           VALIDATION SUMMARY
+        ========================================================== */
+
+    .validation-summary {
+        margin-bottom: 20px;
+        padding: 13px 15px;
+        border: 1px solid #ffd9de;
+        border-radius: 10px;
+        background: #fff1f2;
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+        .validation-summary:empty {
+            display: none;
+        }
+
+        .validation-summary ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+
+    /* =========================================================
+           FORM GRID
+        ========================================================== */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .field {
+        min-width: 0;
+    }
+
+
+    /* =========================================================
+           LABEL
+        ========================================================== */
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 8px;
+        color: #000000;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .required-mark {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+
+    /* =========================================================
+           INPUTS
+        ========================================================== */
+
+    .form-control-custom {
+        width: 100%;
+        min-height: 45px;
+        padding: 11px 13px;
+        border: 1px solid #ddd9e7;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #000000;
+        font-size: 14px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+        .form-control-custom:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .08);
+        }
+
+
+    /* =========================================================
+           AMOUNT
+        ========================================================== */
+
+    .amount-wrapper {
+        position: relative;
+    }
+
+    .currency-label {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777080;
+        font-size: 12px;
+        font-weight: 700;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .amount-input {
+        padding-left: 48px;
+    }
+
+
+    /* =========================================================
+           FIELD HELP
+        ========================================================== */
+
+    .field-help {
+        margin-top: 6px;
+        color: #9296aa;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           CASH MESSAGE
+        ========================================================== */
+
+    .cash-message {
+        margin-top: 18px;
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #dce9df;
+        border-radius: 9px;
+        background: #f7fff8;
+        font-size: 12px;
+    }
+
+        .cash-message strong {
+            color: #159947;
+        }
+
+        .cash-message span {
+            color: #777080;
+        }
+
+
+    /* =========================================================
+           STATUS
+        ========================================================== */
+
+    .status-section {
+        margin-top: 25px;
+        padding: 16px 18px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #faf9fc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .status-content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .status-label {
+        color: #9296aa;
+        font-size: 11px;
+    }
+
+    .status-content strong {
+        color: #8b5cf6;
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+           ACTION BUTTONS
+        ========================================================== */
+
+    .form-actions {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #ece9f2;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-purple {
+        min-height: 43px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+        .btn-purple:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-secondary {
+        min-height: 43px;
+        padding: 0 18px;
+        border: 1px solid #ddd9e7;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #000000;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+        .btn-secondary:hover {
+            background: #f8f6fb;
+            color: #000000;
+        }
+
+
+    /* =========================================================
+           VALIDATION
+        ========================================================== */
+
+    .validation-message {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+    @@media (max-width: 700px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .page-header-left h1 {
+            font-size: 26px;
+        }
+
+        .payment-card {
+            padding: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+            .form-actions a,
+            .form-actions button {
+                width: 100%;
+            }
+    }
+
+</style>
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Edit Payment
+        </h1>
+
+        <p>
+            Update payment information.
+        </p>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Payments"
+       asp-action="Index"
+       class="btn-secondary">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Payments
+
+    </a>
+    
+
+</div>
+
+<!-- =========================================================
+     MAIN CARD
+========================================================== -->
+
+<div class="payment-card">
+
+  
+    <!-- =====================================================
+     SECTION HEADER
+====================================================== -->
+
+    <div class="section-header">
+
+        <h2>
+            Payment Information
+        </h2>
+
+        <p>
+            Update the payment details below.
+        </p>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <!-- =====================================================
+     FORM
+====================================================== -->
+
+    <form asp-area="Receptionist"
+          asp-controller="Payments"
+          asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post"
+          id="editPaymentForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- Hidden ID -->
+
+        <input type="hidden"
+               asp-for="Id" />
+
+
+        <!-- Validation -->
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary">
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <!-- =================================================
+             PAYMENT ID
+        ================================================== -->
+
+            <div class="field">
+
+                <label class="form-label-custom">
+                    Payment ID
+                </label>
+
+                <input type="text"
+                       class="form-control-custom"
+                       value="PAT@(Model.Id)"
+                       readonly />
+
+                <div class="field-help">
+                    Payment ID cannot be changed.
+                </div>
+
+            </div>
+
+
+            
+
+
+            <!-- =================================================
+             PAYMENT DATE
+        ================================================== -->
+
+            <div class="field">
+
+                <label asp-for="PaymentDate"
+                       class="form-label-custom">
+
+                    Payment Date
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+                <input asp-for="PaymentDate"
+                       type="datetime-local"
+                       value="@currentPaymentDate"
+                       class="form-control-custom" />
+
+                <span asp-validation-for="PaymentDate"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             PAYMENT METHOD
+        ================================================== -->
+
+            <div class="field">
+
+                <label asp-for="PaymentMethodId"
+                       class="form-label-custom">
+
+                    Payment Method
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+
+                <select asp-for="PaymentMethodId"
+                        id="paymentMethodId"
+                        class="form-control-custom"
+                        required>
+
+                    <option value="">
+                        Select Payment Method
+                    </option>
+
+
+                    @if (ViewBag.PaymentMethods != null)
+                    {
+                        foreach (var method in ViewBag.PaymentMethods)
+                        {
+                            <option value="@method.Id">
+                                @method.MethodName
+                            </option>
+                        }
+                    }
+
+                </select>
+
+
+                <span asp-validation-for="PaymentMethodId"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             PAYMENT AMOUNT
+        ================================================== -->
+
+            <div class="field">
+
+                <label asp-for="Amount"
+                       class="form-label-custom">
+
+                    Payment Amount
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+
+                <div class="amount-wrapper">
+
+                    <span class="currency-label">
+                        BDT
+                    </span>
+
+                    <input asp-for="Amount"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           value="@amountValue.ToString("0.00")"
+                           class="form-control-custom amount-input"
+                           placeholder="0.00"
+                           required />
+
+                </div>
+
+
+                <div class="field-help">
+                    Enter the payment amount.
+                </div>
+
+
+                <span asp-validation-for="Amount"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             TRANSACTION NUMBER
+        ================================================== -->
+
+            <div class="field"
+                 id="transactionNumberField"
+                 style="@(isCurrentCash
+                                 ? "display:none;"
+                                 : "display:block;")">
+
+                <label asp-for="TransactionNumber"
+                       class="form-label-custom">
+
+                    Transaction Number
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+
+                <input asp-for="TransactionNumber"
+                       type="text"
+                       id="transactionNumber"
+                       class="form-control-custom"
+                       placeholder="Enter transaction / reference number" />
+
+
+                <div class="field-help">
+                    Required for non-cash payment methods.
+                </div>
+
+
+                <span asp-validation-for="TransactionNumber"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             BANK NAME
+        ================================================== -->
+
+            <div class="field"
+                 id="bankNameField"
+                 style="@(isCurrentBank
+                                 ? "display:block;"
+                                 : "display:none;")">
+
+                <label asp-for="BankName"
+                       class="form-label-custom">
+
+                    Bank Name
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+
+                <select asp-for="BankName"
+                        id="bankName"
+                        class="form-control-custom">
+
+                    <option value="">
+                        Select Bank
+                    </option>
+
+                    <option value="UCB Bank">
+                        UCB Bank
+                    </option>
+
+                    <option value="Dutch-Bangla Bank">
+                        Dutch-Bangla Bank
+                    </option>
+
+                    <option value="Sonali Bank">
+                        Sonali Bank
+                    </option>
+
+                </select>
+
+
+                <span asp-validation-for="BankName"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+             MOBILE BANKING
+        ================================================== -->
+
+            <div class="field"
+                 id="mobileBankingField"
+                 style="@(isCurrentMobileBanking
+                                 ? "display:block;"
+                                 : "display:none;")">
+
+                <label asp-for="MobileBanking"
+                       class="form-label-custom">
+
+                    Mobile Banking
+
+                    <span class="required-mark">
+                        *
+                    </span>
+
+                </label>
+
+
+                <select asp-for="MobileBanking"
+                        id="mobileBanking"
+                        class="form-control-custom">
+
+                    <option value="">
+                        Select Mobile Banking
+                    </option>
+
+                    <option value="bKash">
+                        bKash
+                    </option>
+
+                    <option value="Nagad">
+                        Nagad
+                    </option>
+
+                    <option value="Rocket">
+                        Rocket
+                    </option>
+
+                </select>
+
+
+                <div class="field-help">
+                    Select the mobile banking service used.
+                </div>
+
+
+                <span asp-validation-for="MobileBanking"
+                      class="validation-message">
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+         CASH MESSAGE
+    ====================================================== -->
+
+        <div id="cashMessage"
+             class="cash-message"
+             style="@(isCurrentCash
+                         ? "display:flex;"
+                         : "display:none;")">
+
+            <strong>
+                Cash Payment
+            </strong>
+
+            <span>
+                Transaction number is not required for cash payment.
+            </span>
+
+        </div>
+
+
+        <!-- =====================================================
+         STATUS
+    ====================================================== -->
+
+        <div class="status-section">
+
+            <div class="status-content">
+
+                <span class="status-label">
+                    Current Payment
+                </span>
+
+                <strong>
+                    Edit Existing Payment
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+         ACTION BUTTONS
+    ====================================================== -->
+
+        <div class="form-actions">
+
+            <a asp-area="Receptionist"
+               asp-controller="Payments"
+               asp-action="Index"
+               class="btn-secondary">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="btn-purple">
+
+                <i class="bi bi-save"></i>
+
+                Update Payment
+
+            </button>
+
+        </div>
+
+    </form>
+    
+
+</div>
+
+@section Scripts {
+
+    
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // =========================================================
+        // ELEMENTS
+        // =========================================================
+
+        const paymentMethod =
+            document.getElementById("paymentMethodId");
+
+        const transactionField =
+            document.getElementById(
+                "transactionNumberField"
+            );
+
+        const transactionNumber =
+            document.getElementById(
+                "transactionNumber"
+            );
+
+        const bankNameField =
+            document.getElementById(
+                "bankNameField"
+            );
+
+        const bankName =
+            document.getElementById(
+                "bankName"
+            );
+
+        const mobileBankingField =
+            document.getElementById(
+                "mobileBankingField"
+            );
+
+        const mobileBanking =
+            document.getElementById(
+                "mobileBanking"
+            );
+
+        const cashMessage =
+            document.getElementById(
+                "cashMessage"
+            );
+
+
+        // =========================================================
+        // PAYMENT METHOD UI
+        // =========================================================
+
+        function updatePaymentMethodUI() {
+
+            const selectedOption =
+                paymentMethod.options[
+                paymentMethod.selectedIndex
+                ];
+
+
+            // -----------------------------------------------------
+            // HIDE ALL CONDITIONAL FIELDS
+            // -----------------------------------------------------
+
+            transactionField.style.display =
+                "none";
+
+            bankNameField.style.display =
+                "none";
+
+            mobileBankingField.style.display =
+                "none";
+
+            cashMessage.style.display =
+                "none";
+
+
+            transactionNumber.required =
+                false;
+
+            bankName.required =
+                false;
+
+            mobileBanking.required =
+                false;
+
+
+            // -----------------------------------------------------
+            // NO METHOD SELECTED
+            // -----------------------------------------------------
+
+            if (
+                !selectedOption ||
+                !selectedOption.value
+            ) {
+
+                return;
+            }
+
+
+            const methodName =
+                selectedOption.textContent
+                    .replace(/\s+/g, " ")
+                    .trim()
+                    .toLowerCase();
+
+
+            // =====================================================
+            // CASH
+            // =====================================================
+
+            if (methodName === "cash") {
+
+                transactionField.style.display =
+                    "none";
+
+                bankNameField.style.display =
+                    "none";
+
+                mobileBankingField.style.display =
+                    "none";
+
+                cashMessage.style.display =
+                    "flex";
+
+                transactionNumber.required =
+                    false;
+
+                bankName.required =
+                    false;
+
+                mobileBanking.required =
+                    false;
+
+                transactionNumber.setCustomValidity("");
+                bankName.setCustomValidity("");
+                mobileBanking.setCustomValidity("");
+
+                return;
+            }
+
+
+            // =====================================================
+            // MOBILE BANKING
+            //
+            // IMPORTANT:
+            // This MUST come before BANK.
+            //
+            // "Mobile Banking" contains "bank".
+            // =====================================================
+
+            if (
+                methodName === "mobile banking" ||
+                methodName.includes("mobile banking") ||
+                methodName.includes("mobile")
+            ) {
+
+                transactionField.style.display =
+                    "block";
+
+                mobileBankingField.style.display =
+                    "block";
+
+                bankNameField.style.display =
+                    "none";
+
+                cashMessage.style.display =
+                    "none";
+
+                transactionNumber.required =
+                    true;
+
+                mobileBanking.required =
+                    true;
+
+                bankName.required =
+                    false;
+
+                bankName.value =
+                    "";
+
+                bankName.setCustomValidity("");
+
+                return;
+            }
+
+
+            // =====================================================
+            // BANK
+            // =====================================================
+
+            if (
+                methodName === "bank" ||
+                methodName === "bank payment" ||
+                methodName === "bank transfer"
+            ) {
+
+                transactionField.style.display =
+                    "block";
+
+                bankNameField.style.display =
+                    "block";
+
+                mobileBankingField.style.display =
+                    "none";
+
+                cashMessage.style.display =
+                    "none";
+
+                transactionNumber.required =
+                    true;
+
+                bankName.required =
+                    true;
+
+                mobileBanking.required =
+                    false;
+
+                mobileBanking.value =
+                    "";
+
+                mobileBanking.setCustomValidity("");
+
+                return;
+            }
+
+
+            // =====================================================
+            // OTHER NON-CASH PAYMENT
+            // =====================================================
+
+            transactionField.style.display =
+                "block";
+
+            cashMessage.style.display =
+                "none";
+
+            transactionNumber.required =
+                true;
+
+        }
+
+
+        // =========================================================
+        // PAYMENT METHOD CHANGE
+        // =========================================================
+
+        paymentMethod.addEventListener(
+            "change",
+            function() {
+
+                updatePaymentMethodUI();
+
+            }
+        );
+
+
+        // =========================================================
+        // INITIAL LOAD
+        // =========================================================
+
+        updatePaymentMethodUI();
+
+
+        // =========================================================
+        // FORM SUBMIT VALIDATION
+        // =========================================================
+
+        document.getElementById(
+            "editPaymentForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                const selectedOption =
+                    paymentMethod.options[
+                    paymentMethod.selectedIndex
+                    ];
+
+
+                // -------------------------------------------------
+                // PAYMENT METHOD REQUIRED
+                // -------------------------------------------------
+
+                if (
+                    !selectedOption ||
+                    !selectedOption.value
+                ) {
+
+                    event.preventDefault();
+
+                    paymentMethod.focus();
+
+                    return;
+                }
+
+
+                const methodName =
+                    selectedOption.textContent
+                        .replace(/\s+/g, " ")
+                        .trim()
+                        .toLowerCase();
+
+
+                // =================================================
+                // CASH
+                // =================================================
+
+                if (methodName === "cash") {
+
+                    transactionNumber.value =
+                        "";
+
+                    bankName.value =
+                        "";
+
+                    mobileBanking.value =
+                        "";
+
+                    transactionNumber.setCustomValidity("");
+                    bankName.setCustomValidity("");
+                    mobileBanking.setCustomValidity("");
+
+                    return;
+                }
+
+
+                // =================================================
+                // TRANSACTION NUMBER
+                // =================================================
+
+                if (
+                    !transactionNumber.value.trim()
+                ) {
+
+                    event.preventDefault();
+
+                    transactionNumber.setCustomValidity(
+                        "Transaction number is required for this payment method."
+                    );
+
+                    transactionNumber.reportValidity();
+
+                    transactionNumber.focus();
+
+                    return;
+                }
+
+
+                transactionNumber.setCustomValidity("");
+
+
+                // =================================================
+                // MOBILE BANKING
+                // =================================================
+
+                if (
+                    methodName === "mobile banking" ||
+                    methodName.includes("mobile banking") ||
+                    methodName.includes("mobile")
+                ) {
+
+                    if (!mobileBanking.value) {
+
+                        event.preventDefault();
+
+                        mobileBanking.setCustomValidity(
+                            "Please select a mobile banking service."
+                        );
+
+                        mobileBanking.reportValidity();
+
+                        mobileBanking.focus();
+
+                        return;
+                    }
+
+
+                    if (
+                        mobileBanking.value !== "bKash" &&
+                        mobileBanking.value !== "Nagad" &&
+                        mobileBanking.value !== "Rocket"
+                    ) {
+
+                        event.preventDefault();
+
+                        mobileBanking.setCustomValidity(
+                            "Invalid mobile banking service selected."
+                        );
+
+                        mobileBanking.reportValidity();
+
+                        mobileBanking.focus();
+
+                        return;
+                    }
+
+
+                    mobileBanking.setCustomValidity("");
+
+                    bankName.value =
+                        "";
+
+                    bankName.setCustomValidity("");
+
+                    return;
+                }
+
+
+                // =================================================
+                // BANK
+                // =================================================
+
+                if (
+                    methodName === "bank" ||
+                    methodName === "bank payment" ||
+                    methodName === "bank transfer"
+                ) {
+
+                    if (!bankName.value) {
+
+                        event.preventDefault();
+
+                        bankName.setCustomValidity(
+                            "Please select a bank."
+                        );
+
+                        bankName.reportValidity();
+
+                        bankName.focus();
+
+                        return;
+                    }
+
+
+                    if (
+                        bankName.value !== "UCB Bank" &&
+                        bankName.value !== "Dutch-Bangla Bank" &&
+                        bankName.value !== "Sonali Bank"
+                    ) {
+
+                        event.preventDefault();
+
+                        bankName.setCustomValidity(
+                            "Invalid bank selected."
+                        );
+
+                        bankName.reportValidity();
+
+                        bankName.focus();
+
+                        return;
+                    }
+
+
+                    bankName.setCustomValidity("");
+
+                    mobileBanking.value =
+                        "";
+
+                    mobileBanking.setCustomValidity("");
+
+                    return;
+                }
+
+            }
+        );
+
+    </script>
+  
+
+}

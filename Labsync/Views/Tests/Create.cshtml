@@ -1,0 +1,1263 @@
+﻿@model LabSync.Models.Test
+
+@{
+    ViewData["Title"] = "Add Test";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Add Test</title>
+
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       CONTENT
+                    ====================================================== */
+
+            .create-test-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       HEADER
+                    ====================================================== */
+
+            .create-test-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .create-test-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .create-test-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+
+            /* =====================================================
+                       BACK BUTTON
+                    ====================================================== */
+
+            .create-test-back {
+                min-height: 46px;
+                padding: 0 17px;
+                border: 1px solid #dedbe6;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+            }
+
+                .create-test-back:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                       CENTER FORM
+                    ====================================================== */
+
+            .create-test-form-wrapper {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .create-test-card {
+                width: 100%;
+                max-width: 980px;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, .04);
+            }
+
+
+            /* =====================================================
+                       CARD HEADER
+                    ====================================================== */
+
+            .create-test-card-header {
+                padding: 23px 30px;
+                border-bottom: 1px solid #eeeaf3;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .create-test-icon {
+                width: 52px;
+                height: 52px;
+                border-radius: 14px;
+                background: linear-gradient( 135deg, #f0e8ff, #f6efff );
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                flex-shrink: 0;
+            }
+
+            .create-test-card-header h4 {
+                margin: 0 0 4px;
+                color: #29243a;
+                font-size: 19px;
+                font-weight: 700;
+            }
+
+            .create-test-card-header p {
+                margin: 0;
+                color: #9993a8;
+                font-size: 13px;
+            }
+
+
+            /* =====================================================
+                       FORM BODY
+                    ====================================================== */
+
+            .create-test-form-body {
+                padding: 30px;
+            }
+
+            .create-test-form-inner {
+                max-width: 850px;
+                margin: 0 auto;
+            }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+            /* =====================================================
+                       LABEL
+                    ====================================================== */
+
+            .create-test-label {
+                display: block;
+                margin-bottom: 7px;
+                color: #514b61;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       INPUT
+                    ====================================================== */
+
+            .create-test-input,
+            .create-test-textarea {
+                width: 100%;
+                border: 1px solid #ddd9e5;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #29243a;
+                font-size: 14px;
+                outline: none;
+                transition: .2s ease;
+            }
+
+            .create-test-input {
+                height: 48px;
+                padding: 0 14px;
+            }
+
+            .create-test-textarea {
+                padding: 12px 14px;
+                resize: vertical;
+            }
+
+                .create-test-input:focus,
+                .create-test-textarea:focus {
+                    border-color: #9b5cff;
+                    box-shadow: 0 0 0 3px rgba(139, 92, 246, .08);
+                }
+
+                .create-test-input::placeholder,
+                .create-test-textarea::placeholder {
+                    color: #aaa3af;
+                }
+
+
+            /* =====================================================
+                       INPUT GROUP
+                    ====================================================== */
+
+            .create-test-input-group {
+                display: flex;
+                align-items: stretch;
+            }
+
+                .create-test-input-group .create-test-input {
+                    border-radius: 10px 0 0 10px;
+                }
+
+            .create-test-input-group-text {
+                min-width: 58px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 12px;
+                border: 1px solid #ddd9e5;
+                border-left: none;
+                border-radius: 0 10px 10px 0;
+                background: #faf9fc;
+                color: #6f6a7d;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+
+            /* =====================================================
+                       ACTIVE TEST
+                    ====================================================== */
+
+            .create-test-active-box {
+                min-height: 48px;
+                padding: 12px 14px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                background: #faf9fc;
+                display: flex;
+                align-items: center;
+            }
+
+                .create-test-active-box input {
+                    width: 18px;
+                    height: 18px;
+                    margin-top: 0;
+                    cursor: pointer;
+                }
+
+                    .create-test-active-box input:checked {
+                        background-color: #8b5cf6;
+                        border-color: #8b5cf6;
+                    }
+
+                .create-test-active-box label {
+                    margin-left: 8px;
+                    color: #514b61;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+
+
+            /* =====================================================
+                       VALIDATION
+                    ====================================================== */
+
+            .create-test-validation {
+                display: block;
+                margin-top: 6px;
+                font-size: 12px;
+            }
+
+
+            /* =====================================================
+                       ACTIONS
+                    ====================================================== */
+
+            .create-test-actions {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                padding-top: 22px;
+                margin-top: 10px;
+                border-top: 1px solid #eeeaf3;
+            }
+
+            .create-test-submit {
+                min-height: 46px;
+                padding: 0 19px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                cursor: pointer;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, .20);
+            }
+
+                .create-test-submit:hover {
+                    opacity: .94;
+                    transform: translateY(-1px);
+                }
+
+            .create-test-cancel {
+                min-height: 46px;
+                padding: 0 19px;
+                border: 1px solid #dedbe6;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .create-test-cancel:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .create-test-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+
+                .create-test-back {
+                    align-self: flex-start;
+                }
+
+                .create-test-card {
+                    max-width: 100%;
+                }
+            }
+
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .create-test-content {
+                    padding: 20px 15px;
+                }
+
+                .create-test-title {
+                    font-size: 28px;
+                }
+
+                .create-test-subtitle {
+                    font-size: 14px;
+                }
+
+                .create-test-form-body {
+                    padding: 20px;
+                }
+
+                .create-test-form-inner {
+                    max-width: 100%;
+                }
+
+                .create-test-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .create-test-submit,
+                .create-test-cancel {
+                    width: 100%;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a asp-controller="Reports"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-right">
+
+                    <div class="dropdown">
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+                        </button>
+
+
+                        <!-- PROFILE DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="create-test-content">
+
+
+                <!-- HEADER -->
+
+                <div class="create-test-header">
+
+                    <div>
+
+                        <h1 class="create-test-title">
+                            Add Test
+                        </h1>
+
+                        <p class="create-test-subtitle">
+                            Create a new laboratory test.
+                        </p>
+
+                    </div>
+
+
+                    <!-- BACK -->
+
+                    <a asp-controller="Tests"
+                       asp-action="Index"
+                       class="create-test-back">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Tests
+
+                    </a>
+
+                </div>
+
+
+                <!-- CENTER FORM -->
+
+                <div class="create-test-form-wrapper">
+
+
+                    <div class="create-test-card">
+
+
+                        <!-- CARD HEADER -->
+
+                        <div class="create-test-card-header">
+
+                            <div class="create-test-icon">
+
+                                <i class="bi bi-eyedropper"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h4>
+                                    Create Test
+                                </h4>
+
+                                <p>
+                                    Add a new laboratory test to LabSync.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FORM BODY -->
+
+                        <div class="create-test-form-body">
+
+
+                            <div class="create-test-form-inner">
+
+
+                                <form asp-controller="Tests"
+                                      asp-action="Create"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <div asp-validation-summary="ModelOnly"
+                                         class="text-danger mb-4">
+                                    </div>
+
+
+                                    <!-- TEST CODE -->
+
+                                    <div class="mb-4">
+
+                                        <label asp-for="TestCode"
+                                               class="create-test-label">
+
+                                            Test Code
+
+                                        </label>
+
+                                        <input asp-for="TestCode"
+                                               class="create-test-input"
+                                               placeholder="e.g. CBC001" />
+
+                                        <span asp-validation-for="TestCode"
+                                              class="text-danger create-test-validation">
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- TEST NAME -->
+
+                                    <div class="mb-4">
+
+                                        <label asp-for="TestName"
+                                               class="create-test-label">
+
+                                            Test Name
+
+                                        </label>
+
+                                        <input asp-for="TestName"
+                                               class="create-test-input"
+                                               placeholder="e.g. Complete Blood Count"
+                                               required />
+
+                                        <span asp-validation-for="TestName"
+                                              class="text-danger create-test-validation">
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- IDS -->
+
+                                    <div class="row g-3 mb-4">
+
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="CategoryId"
+                                                   class="create-test-label">
+
+                                                Category ID
+
+                                            </label>
+
+                                            <input asp-for="CategoryId"
+                                                   type="number"
+                                                   class="create-test-input"
+                                                   placeholder="Category ID"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="SampleTypeId"
+                                                   class="create-test-label">
+
+                                                Sample Type ID
+
+                                            </label>
+
+                                            <input asp-for="SampleTypeId"
+                                                   type="number"
+                                                   class="create-test-input"
+                                                   placeholder="Sample Type ID"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="ReferenceRangeId"
+                                                   class="create-test-label">
+
+                                                Reference Range ID
+
+                                            </label>
+
+                                            <input asp-for="ReferenceRangeId"
+                                                   type="number"
+                                                   class="create-test-input"
+                                                   placeholder="Reference Range ID"
+                                                   required />
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- PRICE / TURN / UNIT -->
+
+                                    <div class="row g-3 mb-4">
+
+
+                                        <!-- PRICE -->
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="Price"
+                                                   class="create-test-label">
+
+                                                Price
+
+                                            </label>
+
+
+                                            <div class="create-test-input-group">
+
+                                                <input asp-for="Price"
+                                                       type="number"
+                                                       step="0.01"
+                                                       class="create-test-input"
+                                                       placeholder="0.00"
+                                                       required />
+
+                                                <span class="create-test-input-group-text">
+
+                                                    ৳
+
+                                                </span>
+
+                                            </div>
+
+
+                                            <span asp-validation-for="Price"
+                                                  class="text-danger create-test-validation">
+                                            </span>
+
+                                        </div>
+
+
+                                        <!-- TURN AROUND -->
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="TurnAroundTime"
+                                                   class="create-test-label">
+
+                                                Turn Around Time
+
+                                            </label>
+
+
+                                            <div class="create-test-input-group">
+
+                                                <input asp-for="TurnAroundTime"
+                                                       type="number"
+                                                       class="create-test-input"
+                                                       placeholder="e.g. 24" />
+
+                                                <span class="create-test-input-group-text">
+
+                                                    Hours
+
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- UNIT -->
+
+                                        <div class="col-md-4">
+
+                                            <label asp-for="Unit"
+                                                   class="create-test-label">
+
+                                                Unit
+
+                                            </label>
+
+                                            <input asp-for="Unit"
+                                                   class="create-test-input"
+                                                   placeholder="e.g. mg/dL" />
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- DESCRIPTION -->
+
+                                    <div class="mb-4">
+
+                                        <label asp-for="Description"
+                                               class="create-test-label">
+
+                                            Description
+
+                                        </label>
+
+                                        <textarea asp-for="Description"
+                                                  class="create-test-textarea"
+                                                  rows="4"
+                                                  placeholder="Enter test description..."></textarea>
+
+                                    </div>
+
+
+                                    <!-- ACTIVE -->
+
+                                    <div class="mb-4">
+
+                                        <div class="create-test-active-box">
+
+
+                                            <input asp-for="IsActive"
+                                                   class="form-check-input"
+                                                   id="IsActive"
+                                                   checked />
+
+
+                                            <label asp-for="IsActive"
+                                                   class="form-check-label">
+
+                                                Active Test
+
+                                            </label>
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- ACTIONS -->
+
+                                    <div class="create-test-actions">
+
+
+                                        <button type="submit"
+                                                class="create-test-submit">
+
+                                            <i class="bi bi-check-lg"></i>
+
+                                            Create Test
+
+                                        </button>
+
+
+                                        <a asp-controller="Tests"
+                                           asp-action="Index"
+                                           class="create-test-cancel">
+
+                                            Cancel
+
+                                        </a>
+
+                                    </div>
+
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Validation -->
+
+    <partial name="_ValidationScriptsPartial" />
+
+</body>
+
+</html>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

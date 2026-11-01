@@ -1,0 +1,2140 @@
+﻿@model LabSync.Models.Invoice
+
+@{
+    ViewData["Title"] = "Create Invoice";
+
+    Layout =
+        "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+
+    var findAppointmentUrl =
+        Url.Action(
+            "FindAppointment",
+            "Invoices",
+            new
+            {
+                area = "Receptionist"
+            });
+
+
+    var initialAppointmentId =
+        ViewBag.InitialAppointmentId as string
+        ?? "";
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           BACK
+        ====================================================== */
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           CARD
+        ====================================================== */
+
+    .invoice-form-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30,20,50,.04);
+    }
+
+
+    /* =====================================================
+           SECTION
+        ====================================================== */
+
+    .invoice-section {
+        margin-bottom: 28px;
+    }
+
+
+        .invoice-section:last-child {
+            margin-bottom: 0;
+        }
+
+
+    .section-header {
+        margin-bottom: 18px;
+    }
+
+
+        .section-header h2 {
+            margin: 0;
+            color: #29243a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+
+        .section-header span {
+            display: block;
+            margin-top: 5px;
+            color: #9993a8;
+            font-size: 12px;
+        }
+
+
+    /* =====================================================
+           FORM
+        ====================================================== */
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 7px;
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .required-mark {
+        color: #dc2626;
+    }
+
+
+    .invoice-input {
+        width: 100%;
+        height: 43px;
+        padding: 0 12px;
+        background: #ffffff;
+        color: #29243a;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: .2s ease;
+        box-sizing: border-box;
+    }
+
+
+        .invoice-input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139,92,246,.10);
+        }
+
+
+        .invoice-input::placeholder {
+            color: #aaa4b5;
+        }
+
+
+    .search-group {
+        display: flex;
+        gap: 9px;
+    }
+
+
+        .search-group .invoice-input {
+            flex: 1;
+        }
+
+
+    .search-btn {
+        height: 43px;
+        min-width: 100px;
+        padding: 0 17px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+
+        .search-btn:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+        }
+
+
+        .search-btn:disabled {
+            opacity: .7;
+            cursor: not-allowed;
+        }
+
+
+    .field-help {
+        display: block;
+        margin-top: 6px;
+        color: #9993a8;
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+           MESSAGE
+        ====================================================== */
+
+    .search-message {
+        display: none;
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        font-size: 12px;
+    }
+
+
+        .search-message.success {
+            display: block;
+            background: #eaf8f0;
+            color: #198754;
+            border: 1px solid #ccefdc;
+        }
+
+
+        .search-message.danger {
+            display: block;
+            background: #fff1f2;
+            color: #dc2626;
+            border: 1px solid #ffd9de;
+        }
+
+
+        .search-message.warning {
+            display: block;
+            background: #fff7e6;
+            color: #b7791f;
+            border: 1px solid #f6dfad;
+        }
+
+
+    /* =====================================================
+           INFORMATION
+        ====================================================== */
+
+    .information-box {
+        display: none;
+        margin-top: 18px;
+        background: #faf9fd;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 14px;
+    }
+
+
+    .information-item {
+        min-width: 0;
+    }
+
+
+    .information-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #9993a8;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+
+    .information-value {
+        color: #29243a;
+        font-size: 13px;
+        font-weight: 700;
+        word-break: break-word;
+    }
+
+
+    /* =====================================================
+           TESTS
+        ====================================================== */
+
+    .tests-box {
+        display: none;
+        margin-top: 18px;
+    }
+
+
+    .tests-table-wrapper {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+
+    .tests-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+
+        .tests-table thead th {
+            background: #faf9fd;
+            color: #514b61;
+            border-bottom: 1px solid #e8e5ef;
+            padding: 14px 15px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+
+        .tests-table tbody td {
+            padding: 14px 15px;
+            color: #29243a;
+            border-bottom: 1px solid #eeeaf5;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+
+        .tests-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .tests-table tbody tr:hover {
+            background: #fcfbfe;
+        }
+
+
+    .test-code {
+        color: #7c3aed;
+        font-weight: 700;
+    }
+
+
+    .test-name {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           AMOUNTS
+        ====================================================== */
+
+    .amount-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 16px;
+    }
+
+
+    .amount-input-group {
+        position: relative;
+    }
+
+
+    .percent-symbol {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        color: #9993a8;
+        font-size: 13px;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+
+    .percent-input {
+        padding-right: 33px;
+    }
+
+
+    /* =====================================================
+           TOTAL
+        ====================================================== */
+
+    .total-box {
+        margin-top: 20px;
+        background: #faf9fd;
+        border: 1px solid #e8e5ef;
+        border-radius: 13px;
+        padding: 20px;
+    }
+
+
+    .total-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 8px 0;
+        color: #514b61;
+        font-size: 13px;
+    }
+
+
+    .total-value {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+
+    .discount-value {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+
+    .grand-total-row {
+        margin-top: 7px;
+        padding-top: 15px;
+        border-top: 1px solid #dfd9e8;
+    }
+
+
+    .grand-total-label {
+        color: #29243a;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+
+    .grand-total-value {
+        color: #7c3aed;
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+
+    /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 27px;
+        padding-top: 22px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+
+    .cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 43px;
+        padding: 0 18px;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+    .create-btn {
+        min-height: 43px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 5px 14px rgba(139,92,246,.18);
+        cursor: pointer;
+    }
+
+
+        .create-btn:hover:not(:disabled) {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+        }
+
+
+        .create-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width:800px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .back-btn {
+            width: 100%;
+        }
+
+
+        .information-grid,
+        .amount-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .search-group {
+            flex-direction: column;
+        }
+
+
+        .search-btn {
+            width: 100%;
+        }
+
+
+        .form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+
+        .cancel-btn,
+        .create-btn {
+            width: 100%;
+        }
+
+
+        .invoice-form-card {
+            padding: 20px;
+        }
+
+
+        .tests-table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        .tests-table {
+            min-width: 650px;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Create Invoice
+        </h1>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Invoices"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Invoices
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     FORM CARD
+====================================================== -->
+
+<div class="invoice-form-card">
+
+
+    <!-- =================================================
+         VALIDATION
+    ================================================== -->
+
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger"
+         role="alert"
+         style="@(ViewData.ModelState.ErrorCount > 0
+                            ? "display:block;"
+                            : "display:none;")">
+    </div>
+
+
+    <!-- =================================================
+         FORM
+    ================================================== -->
+
+    <form asp-area="Receptionist"
+          asp-controller="Invoices"
+          asp-action="Create"
+          method="post"
+          id="invoiceForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- =================================================
+             HIDDEN
+        ================================================== -->
+
+        <input type="hidden"
+               asp-for="PatientId"
+               id="PatientId" />
+
+
+        <input type="hidden"
+               asp-for="AppointmentId"
+               id="AppointmentId" />
+
+
+        <input type="hidden"
+               asp-for="NetAmount"
+               id="NetAmount" />
+
+
+        <input type="hidden"
+               asp-for="DueAmount"
+               id="DueAmount" />
+
+
+        <input type="hidden"
+               asp-for="PaidAmount"
+               id="PaidAmount" />
+
+
+        <input type="hidden"
+               asp-for="PaymentStatusId"
+               id="PaymentStatusId" />
+
+
+        <!-- =================================================
+             APPOINTMENT
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Appointment
+                </h2>
+
+            </div>
+
+
+            <label for="appointmentSearch"
+                   class="form-label-custom">
+
+                Appointment ID
+
+                <span class="required-mark">
+                    *
+                </span>
+
+            </label>
+
+
+            <div class="search-group">
+
+                <input type="text"
+                       id="appointmentSearch"
+                       class="invoice-input"
+                       value="@initialAppointmentId"
+                       autocomplete="off" />
+
+
+                <button type="button"
+                        id="searchAppointmentBtn"
+                        class="search-btn">
+
+                    <i class="bi bi-search"></i>
+
+                    Search
+
+                </button>
+
+            </div>
+
+
+            <div id="appointmentMessage"
+                 class="search-message">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PATIENT INFORMATION
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Patient Information
+                </h2>
+
+            </div>
+
+
+            <div id="patientInfo"
+                 class="information-box">
+
+                <div class="information-grid">
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Patient ID
+                        </span>
+
+                        <div id="displayPatientCode"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Patient Name
+                        </span>
+
+                        <div id="displayPatientName"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Phone
+                        </span>
+
+                        <div id="displayPatientPhone"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Email
+                        </span>
+
+                        <div id="displayPatientEmail"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Gender
+                        </span>
+
+                        <div id="displayPatientGender"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Date of Birth
+                        </span>
+
+                        <div id="displayPatientDOB"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             APPOINTMENT INFORMATION
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Appointment Information
+                </h2>
+
+            </div>
+
+
+            <div id="appointmentInfo"
+                 class="information-box">
+
+                <div class="information-grid">
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Appointment ID
+                        </span>
+
+                        <div id="displayAppointmentCode"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Appointment Date
+                        </span>
+
+                        <div id="displayAppointmentDate"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Appointment Time
+                        </span>
+
+                        <div id="displayAppointmentTime"
+                             class="information-value">
+                            -
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TESTS
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Tests
+                </h2>
+            </div>
+
+
+            <div id="testsBox"
+                 class="tests-box">
+
+                <div class="tests-table-wrapper">
+
+                    <table class="tests-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th style="width:60px;">
+                                    #
+                                </th>
+
+                                <th>
+                                    Test Code
+                                </th>
+
+                                <th>
+                                    Test Name
+                                </th>
+
+                                <th>
+                                    Unit
+                                </th>
+
+                                <th>
+                                    Price
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="testsTableBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DISCOUNT + TAX
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Discount & Tax
+                </h2>
+
+            </div>
+
+
+            <div class="amount-grid">
+
+
+                <!-- DISCOUNT -->
+
+                <div>
+
+                    <label for="discountPercent"
+                           class="form-label-custom">
+
+                        Discount (%)
+
+                    </label>
+
+
+                    <div class="amount-input-group">
+
+                        <input type="number"
+                               id="discountPercent"
+                               name="Discount"
+                               class="invoice-input percent-input"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               value="0"
+                               placeholder="0" />
+
+
+                        <span class="percent-symbol">
+                            %
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TAX -->
+
+                <div>
+
+                    <label for="taxPercent"
+                           class="form-label-custom">
+
+                        Tax (%)
+
+                    </label>
+
+
+                    <div class="amount-input-group">
+
+                        <input type="number"
+                               id="taxPercent"
+                               name="Tax"
+                               class="invoice-input percent-input"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               value="0"
+                               placeholder="0" />
+
+
+                        <span class="percent-symbol">
+                            %
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TOTAL
+            ================================================== -->
+
+            <div class="total-box">
+
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span class="total-value">
+
+                        ৳ <span id="summarySubtotal">
+                        0.00
+                    </span>
+
+                </span>
+
+            </div>
+
+
+            <div class="total-row">
+
+                <span>
+                    Discount
+                </span>
+
+                <span class="discount-value">
+
+                    - ৳ <span id="summaryDiscount">
+                    0.00
+                </span>
+
+            </span>
+
+        </div>
+
+
+        <div class="total-row">
+
+            <span>
+                Tax
+            </span>
+
+            <span class="total-value">
+
+                + ৳ <span id="summaryTax">
+                0.00
+            </span>
+
+        </span>
+
+    </div>
+
+
+    <div class="total-row grand-total-row">
+
+        <span class="grand-total-label">
+            Grand Total
+        </span>
+
+        <span class="grand-total-value">
+
+            ৳ <span id="grandTotal">
+            0.00
+        </span>
+
+    </span>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+<div class="form-actions">
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Invoices"
+       asp-action="Index"
+       class="cancel-btn">
+
+        <i class="bi bi-x-lg"></i>
+
+        Cancel
+
+    </a>
+
+
+    <button type="submit"
+            id="createInvoiceBtn"
+            class="create-btn"
+            disabled>
+
+        <i class="bi bi-receipt"></i>
+
+        Create Invoice & Generate PDF
+
+    </button>
+
+</div>
+
+
+</form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // =====================================================
+        // URL
+        // =====================================================
+
+        const findAppointmentUrl =
+            '@findAppointmentUrl';
+
+
+        // =====================================================
+        // ELEMENTS
+        // =====================================================
+
+        const appointmentSearch =
+            document.getElementById(
+                "appointmentSearch"
+            );
+
+
+        const searchAppointmentBtn =
+            document.getElementById(
+                "searchAppointmentBtn"
+            );
+
+
+        const appointmentMessage =
+            document.getElementById(
+                "appointmentMessage"
+            );
+
+
+        const patientInfo =
+            document.getElementById(
+                "patientInfo"
+            );
+
+
+        const appointmentInfo =
+            document.getElementById(
+                "appointmentInfo"
+            );
+
+
+        const testsBox =
+            document.getElementById(
+                "testsBox"
+            );
+
+
+        const testsTableBody =
+            document.getElementById(
+                "testsTableBody"
+            );
+
+
+        const patientIdInput =
+            document.getElementById(
+                "PatientId"
+            );
+
+
+        const appointmentIdInput =
+            document.getElementById(
+                "AppointmentId"
+            );
+
+
+        const netAmountInput =
+            document.getElementById(
+                "NetAmount"
+            );
+
+
+        const dueAmountInput =
+            document.getElementById(
+                "DueAmount"
+            );
+
+
+        const paidAmountInput =
+            document.getElementById(
+                "PaidAmount"
+            );
+
+
+        const createInvoiceBtn =
+            document.getElementById(
+                "createInvoiceBtn"
+            );
+
+
+        // =====================================================
+        // SHOW MESSAGE
+        // =====================================================
+
+        function showMessage(
+            message,
+            type
+        ) {
+            appointmentMessage.className =
+                "search-message " +
+                type;
+
+
+            appointmentMessage.textContent =
+                message;
+        }
+
+
+        // =====================================================
+        // CLEAR MESSAGE
+        // =====================================================
+
+        function clearMessage() {
+            appointmentMessage.className =
+                "search-message";
+
+
+            appointmentMessage.textContent =
+                "";
+        }
+
+
+        // =====================================================
+        // GET SUBTOTAL
+        // =====================================================
+
+        function getSubtotal() {
+
+            return parseFloat(
+                document.getElementById(
+                    "summarySubtotal"
+                ).dataset.value || "0"
+            ) || 0;
+
+        }
+
+
+        // =====================================================
+        // SET SUBTOTAL
+        // =====================================================
+
+        function setSubtotal(
+            value
+        ) {
+
+            document.getElementById(
+                "summarySubtotal"
+            ).textContent =
+                value.toFixed(2);
+
+
+            document.getElementById(
+                "summarySubtotal"
+            ).dataset.value =
+                value.toString();
+
+        }
+
+
+        // =====================================================
+        // UPDATE TOTAL
+        // =====================================================
+
+        function updateTotal() {
+
+            const subtotal =
+                getSubtotal();
+
+
+            const discountPercent =
+                parseFloat(
+                    document.getElementById(
+                        "discountPercent"
+                    ).value
+                ) || 0;
+
+
+            const taxPercent =
+                parseFloat(
+                    document.getElementById(
+                        "taxPercent"
+                    ).value
+                ) || 0;
+
+
+            const discountAmount =
+                subtotal *
+                discountPercent /
+                100;
+
+
+            const afterDiscount =
+                subtotal -
+                discountAmount;
+
+
+            const taxAmount =
+                afterDiscount *
+                taxPercent /
+                100;
+
+
+            const grandTotal =
+                afterDiscount +
+                taxAmount;
+
+
+            document.getElementById(
+                "summaryDiscount"
+            ).textContent =
+                discountAmount.toFixed(2);
+
+
+            document.getElementById(
+                "summaryTax"
+            ).textContent =
+                taxAmount.toFixed(2);
+
+
+            document.getElementById(
+                "grandTotal"
+            ).textContent =
+                grandTotal.toFixed(2);
+
+
+            netAmountInput.value =
+                grandTotal.toFixed(2);
+
+
+            dueAmountInput.value =
+                grandTotal.toFixed(2);
+
+
+            paidAmountInput.value =
+                "0";
+
+
+            updateCreateButton();
+
+        }
+
+
+        // =====================================================
+        // CREATE BUTTON
+        // =====================================================
+
+        function updateCreateButton() {
+
+            const hasAppointment =
+                appointmentIdInput.value !== "" &&
+                appointmentIdInput.value !== "0";
+
+
+            const hasPatient =
+                patientIdInput.value !== "" &&
+                patientIdInput.value !== "0";
+
+
+            const subtotal =
+                getSubtotal();
+
+
+            createInvoiceBtn.disabled =
+                !(
+                    hasAppointment &&
+                    hasPatient &&
+                    subtotal > 0
+                );
+
+        }
+
+
+        // =====================================================
+        // RESET APPOINTMENT DATA
+        // =====================================================
+
+        function resetAppointment() {
+
+            patientIdInput.value =
+                "";
+
+
+            appointmentIdInput.value =
+                "";
+
+
+            patientInfo.style.display =
+                "none";
+
+
+            appointmentInfo.style.display =
+                "none";
+
+
+            testsBox.style.display =
+                "none";
+
+
+            testsTableBody.innerHTML =
+                "";
+
+
+            setSubtotal(0);
+
+
+            document.getElementById(
+                "summaryDiscount"
+            ).textContent =
+                "0.00";
+
+
+            document.getElementById(
+                "summaryTax"
+            ).textContent =
+                "0.00";
+
+
+            document.getElementById(
+                "grandTotal"
+            ).textContent =
+                "0.00";
+
+
+            netAmountInput.value =
+                "0";
+
+
+            dueAmountInput.value =
+                "0";
+
+
+            paidAmountInput.value =
+                "0";
+
+
+            updateCreateButton();
+
+        }
+
+
+        // =====================================================
+        // ESCAPE HTML
+        // =====================================================
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        // =====================================================
+        // SEARCH APPOINTMENT
+        // =====================================================
+
+        async function searchAppointment() {
+
+            const value =
+                appointmentSearch.value.trim();
+
+
+            clearMessage();
+
+
+            if (!value) {
+
+                resetAppointment();
+
+
+                showMessage(
+                    "Please enter Appointment ID.",
+                    "danger"
+                );
+
+
+                return;
+            }
+
+
+            searchAppointmentBtn.disabled =
+                true;
+
+
+            searchAppointmentBtn.innerHTML =
+                '<span class="spinner-border spinner-border-sm"></span> Searching';
+
+
+            try {
+
+                const url =
+                    findAppointmentUrl +
+                    "?appointmentId=" +
+                    encodeURIComponent(
+                        value
+                    );
+
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                // =================================================
+                // ERROR
+                // =================================================
+
+                if (
+                    !response.ok ||
+                    data.success !== true
+                ) {
+
+                    resetAppointment();
+
+
+                    showMessage(
+                        data.message ||
+                        "Appointment not found.",
+                        data.duplicateInvoice
+                            ? "warning"
+                            : "danger"
+                    );
+
+
+                    return;
+                }
+
+
+                // =================================================
+                // PATIENT ID
+                // =================================================
+
+                patientIdInput.value =
+                    data.patientId || "";
+
+
+                // =================================================
+                // PATIENT INFORMATION
+                // =================================================
+
+                document.getElementById(
+                    "displayPatientCode"
+                ).textContent =
+                    data.patientCode ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayPatientName"
+                ).textContent =
+                    data.patientName ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayPatientPhone"
+                ).textContent =
+                    data.phone ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayPatientEmail"
+                ).textContent =
+                    data.email ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayPatientGender"
+                ).textContent =
+                    data.gender ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayPatientDOB"
+                ).textContent =
+                    data.dateOfBirth ||
+                    "N/A";
+
+
+                patientInfo.style.display =
+                    "block";
+
+
+                // =================================================
+                // APPOINTMENT ID
+                // =================================================
+
+                appointmentIdInput.value =
+                    data.appointmentId || "";
+
+
+                // =================================================
+                // APPOINTMENT INFORMATION
+                // =================================================
+
+                document.getElementById(
+                    "displayAppointmentCode"
+                ).textContent =
+                    data.appointmentCode ||
+                    data.appointmentId ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayAppointmentDate"
+                ).textContent =
+                    data.appointmentDate ||
+                    "N/A";
+
+
+                document.getElementById(
+                    "displayAppointmentTime"
+                ).textContent =
+                    data.appointmentTime ||
+                    "N/A";
+
+
+                appointmentInfo.style.display =
+                    "block";
+
+
+                // =================================================
+                // TESTS
+                // =================================================
+
+                testsTableBody.innerHTML =
+                    "";
+
+
+                let subtotal =
+                    0;
+
+
+                if (
+                    data.tests &&
+                    data.tests.length > 0
+                ) {
+
+                    data.tests.forEach(
+                        function(
+                            test,
+                            index
+                        ) {
+
+                            const row =
+                                document.createElement(
+                                    "tr"
+                                );
+
+
+                            const price =
+                                parseFloat(
+                                    test.price
+                                ) || 0;
+
+
+                            subtotal +=
+                                price;
+
+
+                            row.innerHTML = `
+                                        <td>
+                                            ${index + 1}
+                                        </td>
+
+                                        <td>
+                                            <span class="test-code">
+                                                ${escapeHtml(
+                                test.testCode ||
+                                "N/A"
+                            )}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="test-name">
+                                                ${escapeHtml(
+                                test.testName ||
+                                "N/A"
+                            )}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(
+                                test.unit ||
+                                "N/A"
+                            )}
+                                        </td>
+
+                                        <td>
+                                            ৳ ${price.toFixed(2)}
+                                        </td>
+                                    `;
+
+
+                            testsTableBody.appendChild(
+                                row
+                            );
+
+                        }
+                    );
+
+
+                    testsBox.style.display =
+                        "block";
+
+                }
+                else {
+
+                    testsBox.style.display =
+                        "none";
+
+
+                    showMessage(
+                        "No tests are assigned to this appointment.",
+                        "warning"
+                    );
+
+
+                    createInvoiceBtn.disabled =
+                        true;
+
+
+                    return;
+                }
+
+
+                // =================================================
+                // TOTAL
+                // =================================================
+
+                setSubtotal(
+                    subtotal
+                );
+
+
+                updateTotal();
+
+
+                // =================================================
+                // SUCCESS
+                // =================================================
+
+                showMessage(
+                    "Appointment found successfully.",
+                    "success"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                resetAppointment();
+
+
+                showMessage(
+                    "Unable to search appointment. Please try again.",
+                    "danger"
+                );
+
+            }
+            finally {
+
+                searchAppointmentBtn.disabled =
+                    false;
+
+
+                searchAppointmentBtn.innerHTML =
+                    '<i class="bi bi-search"></i> Search';
+
+            }
+
+        }
+
+
+        // =====================================================
+        // SEARCH BUTTON
+        // =====================================================
+
+        searchAppointmentBtn.addEventListener(
+            "click",
+            searchAppointment
+        );
+
+
+        // =====================================================
+        // ENTER KEY
+        // =====================================================
+
+        appointmentSearch.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    searchAppointment();
+
+                }
+
+            }
+        );
+
+
+        // =====================================================
+        // MANUAL INPUT CHANGE
+        // =====================================================
+
+        appointmentSearch.addEventListener(
+            "input",
+            function() {
+
+                resetAppointment();
+
+                clearMessage();
+
+            }
+        );
+
+
+        // =====================================================
+        // DISCOUNT
+        // =====================================================
+
+        document.getElementById(
+            "discountPercent"
+        ).addEventListener(
+            "input",
+            updateTotal
+        );
+
+
+        // =====================================================
+        // TAX
+        // =====================================================
+
+        document.getElementById(
+            "taxPercent"
+        ).addEventListener(
+            "input",
+            updateTotal
+        );
+
+
+        // =====================================================
+        // FORM SUBMIT
+        // =====================================================
+
+        document.getElementById(
+            "invoiceForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                const appointmentId =
+                    appointmentIdInput.value;
+
+
+                const patientId =
+                    patientIdInput.value;
+
+
+                const subtotal =
+                    getSubtotal();
+
+
+                if (
+                    !appointmentId ||
+                    !patientId ||
+                    subtotal <= 0
+                ) {
+
+                    event.preventDefault();
+
+
+                    showMessage(
+                        "Please search a valid appointment before creating the invoice.",
+                        "danger"
+                    );
+
+
+                    return;
+                }
+
+
+                const discountPercent =
+                    parseFloat(
+                        document.getElementById(
+                            "discountPercent"
+                        ).value
+                    ) || 0;
+
+
+                const taxPercent =
+                    parseFloat(
+                        document.getElementById(
+                            "taxPercent"
+                        ).value
+                    ) || 0;
+
+
+                if (
+                    discountPercent < 0 ||
+                    discountPercent > 100
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "Discount must be between 0% and 100%."
+                    );
+
+
+                    return;
+                }
+
+
+                if (
+                    taxPercent < 0 ||
+                    taxPercent > 100
+                ) {
+
+                    event.preventDefault();
+
+
+                    alert(
+                        "Tax must be between 0% and 100%."
+                    );
+
+
+                    return;
+                }
+
+
+                createInvoiceBtn.disabled =
+                    true;
+
+
+                createInvoiceBtn.innerHTML =
+                    '<span class="spinner-border spinner-border-sm"></span> Creating Invoice...';
+
+            }
+        );
+
+
+        // =====================================================
+        // AUTOMATIC SEARCH AFTER APPOINTMENT REDIRECT
+        //
+        // Save Appointment
+        //       ↓
+        // Create?appointmentId=APTxxxxx
+        //       ↓
+        // Automatically search
+        // =====================================================
+
+        const initialAppointmentId =
+            @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+            initialAppointmentId
+            )
+            );
+
+
+        if (
+            initialAppointmentId &&
+            initialAppointmentId.trim() !== ""
+        ) {
+
+            appointmentSearch.value =
+                initialAppointmentId.trim();
+
+
+            searchAppointment();
+
+        }
+        else {
+
+            resetAppointment();
+
+        }
+
+    </script>
+}

@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Settings";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Settings</h2>
+        <p class="text-muted mb-0">
+            Manage your LabSync system settings
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- General Settings -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-sliders fs-1 text-primary"></i>
+                    </div>
+
+                    <h5 class="fw-bold">General Settings</h5>
+
+                    <p class="text-muted">
+                        Manage general laboratory information and preferences.
+                    </p>
+
+                    <button class="btn btn-primary" disabled>
+                        Configure
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Settings -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-credit-card fs-1 text-success"></i>
+                    </div>
+
+                    <h5 class="fw-bold">Payment Settings</h5>
+
+                    <p class="text-muted">
+                        Manage payment methods and payment preferences.
+                    </p>
+
+                    <a asp-controller="Payments"
+                       asp-action="PaymentMethods"
+                       class="btn btn-success">
+                        Manage Payments
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Information -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-info-circle fs-1 text-info"></i>
+                    </div>
+
+                    <h5 class="fw-bold">System Information</h5>
+
+                    <p class="text-muted">
+                        View LabSync system information and application details.
+                    </p>
+
+                    <button class="btn btn-info text-white" disabled>
+                        View Information
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

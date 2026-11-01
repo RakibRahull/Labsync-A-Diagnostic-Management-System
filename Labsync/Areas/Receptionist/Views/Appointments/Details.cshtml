@@ -1,0 +1,1098 @@
+﻿@model LabSync.Models.Appointment
+
+@{
+    ViewData["Title"] = "Appointment Details";
+
+    Layout =
+        "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+
+    // =====================================================
+    // APPOINTMENT STATUS
+    // =====================================================
+
+    var appointmentStatus =
+        ViewBag.AppointmentStatus?.ToString()
+        ?? "N/A";
+
+
+    // =====================================================
+    // ASSIGNED TESTS
+    // =====================================================
+
+    var assignedTests =
+        ViewBag.AssignedTests as
+            IEnumerable<
+                LabSync.Areas.Receptionist.Controllers
+                    .AppointmentsController
+                    .AppointmentTestDetailsViewModel
+            >
+        ?? Enumerable.Empty<
+                LabSync.Areas.Receptionist.Controllers
+                    .AppointmentsController
+                    .AppointmentTestDetailsViewModel
+            >();
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           MAIN CARD
+        ====================================================== */
+
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30,20,50,.04);
+    }
+
+
+    /* =====================================================
+           CARD HEADER
+        ====================================================== */
+
+    .details-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 26px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid #eeeaf5;
+    }
+
+
+    .details-title {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+        .details-title h2 {
+            margin: 0;
+            color: #29243a;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+
+        .details-title span {
+            margin-top: 5px;
+            color: #29243a;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+
+    /* =====================================================
+           EDIT BUTTON
+        ====================================================== */
+
+    .edit-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        box-shadow: 0 5px 14px rgba(139,92,246,.18);
+        transition: .2s ease;
+    }
+
+
+        .edit-btn:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =====================================================
+           DETAILS GRID
+        ====================================================== */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 20px;
+    }
+
+
+    .detail-field {
+        min-width: 0;
+    }
+
+
+    .detail-field-full {
+        grid-column: 1 / -1;
+    }
+
+
+    /* =====================================================
+           LABEL
+        ====================================================== */
+
+    .detail-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           VALUE
+        ====================================================== */
+
+    .detail-value {
+        min-height: 42px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        background: #ffffff;
+        color: #29243a;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        box-sizing: border-box;
+    }
+
+
+        .detail-value.multiline {
+            min-height: 85px;
+            align-items: flex-start;
+            padding-top: 11px;
+            padding-bottom: 11px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+
+        .detail-value.strong-value {
+            font-weight: 700;
+        }
+
+
+    /* =====================================================
+           TEST SECTION
+        ====================================================== */
+
+    .tests-section {
+        margin-top: 28px;
+        padding-top: 25px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+
+    .tests-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 16px;
+    }
+
+
+    .tests-header-left h3 {
+        margin: 0;
+        color: #29243a;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+
+    .tests-header-left span {
+        display: block;
+        margin-top: 4px;
+        color: #9993a8;
+        font-size: 12px;
+    }
+
+
+    .test-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 0 12px;
+        background: #f5efff;
+        border: 1px solid #eadcff;
+        border-radius: 9px;
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           TEST TABLE WRAPPER
+        ====================================================== */
+
+    .tests-table-wrapper {
+        overflow-x: auto;
+    }
+
+
+    /* =====================================================
+           TEST TABLE
+        ====================================================== */
+
+    .tests-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 800px;
+    }
+
+
+        .tests-table thead th {
+            background: #faf9fd;
+            color: #29243a;
+            border-top: 1px solid #eeeaf5;
+            border-bottom: 1px solid #eeeaf5;
+            padding: 13px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+
+            .tests-table thead th:first-child {
+                border-left: 1px solid #eeeaf5;
+                border-top-left-radius: 10px;
+            }
+
+
+            .tests-table thead th:last-child {
+                border-right: 1px solid #eeeaf5;
+                border-top-right-radius: 10px;
+            }
+
+
+        .tests-table tbody td {
+            color: #29243a;
+            border-bottom: 1px solid #f0edf5;
+            padding: 15px 14px;
+            font-size: 13px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+
+        .tests-table tbody tr {
+            transition: background .2s ease;
+        }
+
+
+            .tests-table tbody tr:hover {
+                background: #fbfaff;
+            }
+
+
+            .tests-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+
+    /* =====================================================
+           TEST DATA
+        ====================================================== */
+
+    .test-number {
+        color: #29243a;
+        font-weight: 500;
+    }
+
+
+    .test-code {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+
+    .test-name {
+        color: #29243a;
+        font-weight: 600;
+    }
+
+
+    .test-data {
+        color: #29243a;
+        font-weight: 500;
+    }
+
+
+    /* =====================================================
+           EMPTY TEST
+        ====================================================== */
+
+    .no-tests {
+        text-align: center;
+        padding: 40px 20px;
+        background: #faf9fd;
+        border: 1px dashed #d9d3e3;
+        border-radius: 11px;
+    }
+
+
+    .no-tests-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 11px;
+        border-radius: 12px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+    }
+
+
+    .no-tests h5 {
+        margin: 0;
+        color: #29243a;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+
+    .no-tests p {
+        margin: 5px 0 0;
+        color: #9993a8;
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+           BOTTOM ACTIONS
+        ====================================================== */
+
+    .bottom-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+
+    .delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: #fff1f2;
+        border: 1px solid #ffe0e3;
+        color: #dc2626;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+        .delete-btn:hover {
+            background: #ffe4e6;
+            border-color: #fecdd3;
+            color: #b91c1c;
+        }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width:800px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .details-card {
+            padding: 20px;
+        }
+
+
+        .details-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .edit-btn {
+            width: 100%;
+        }
+
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .detail-field-full {
+            grid-column: auto;
+        }
+
+
+        .tests-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .bottom-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+
+        .delete-btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Appointment Details
+        </h1>
+
+        <p>
+            View appointment information and assigned tests.
+        </p>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Appointments"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Appointments
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN DETAILS CARD
+====================================================== -->
+
+<div class="details-card">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <div class="details-header">
+
+        <div class="details-title">
+
+            <h2>
+                Appointment Information
+            </h2>
+
+            <span>
+
+                Appointment ID:
+
+                @(string.IsNullOrWhiteSpace(
+                    Model.AppointmentCode)
+                    ? "N/A"
+                    : Model.AppointmentCode)
+
+            </span>
+
+        </div>
+
+
+        <a asp-area="Receptionist"
+           asp-controller="Appointments"
+           asp-action="Edit"
+           asp-route-id="@Model.Id"
+           class="edit-btn">
+
+            <i class="bi bi-pencil"></i>
+
+            Edit Appointment
+
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         DETAILS
+    ================================================== -->
+
+    <div class="details-grid">
+
+
+        <!-- APPOINTMENT ID -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Appointment ID
+            </label>
+
+
+            <div class="detail-value strong-value">
+
+                @(string.IsNullOrWhiteSpace(
+                    Model.AppointmentCode)
+                    ? "Not provided"
+                    : Model.AppointmentCode)
+
+            </div>
+
+        </div>
+
+
+        <!-- PATIENT ID -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Patient ID
+            </label>
+
+
+            <div class="detail-value strong-value">
+
+                @(
+                    Model.Patient != null &&
+                    !string.IsNullOrWhiteSpace(
+                        Model.Patient.PatientCode)
+                    ? Model.Patient.PatientCode
+                    : Model.PatientId.ToString()
+                )
+
+            </div>
+
+        </div>
+
+
+        <!-- PATIENT NAME -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Patient Name
+            </label>
+
+
+            <div class="detail-value">
+
+                @(
+                    Model.Patient == null
+                        ? "Not provided"
+                        : $"{Model.Patient.FirstName} {Model.Patient.LastName}"
+                )
+
+            </div>
+
+        </div>
+
+
+        <!-- PHONE -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Patient Phone
+            </label>
+
+
+            <div class="detail-value">
+
+                @(string.IsNullOrWhiteSpace(
+                    Model.Patient?.Phone)
+                    ? "Not provided"
+                    : Model.Patient.Phone)
+
+            </div>
+
+        </div>
+
+
+        <!-- BRANCH -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Branch ID
+            </label>
+
+
+            <div class="detail-value">
+
+                @Model.BranchId
+
+            </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Appointment Status
+            </label>
+
+
+            <div class="detail-value strong-value">
+
+                @appointmentStatus
+
+            </div>
+
+        </div>
+
+
+        <!-- REFERRAL DOCTOR -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Referral Doctor ID
+            </label>
+
+
+            <div class="detail-value">
+
+                @(
+                    Model.ReferralDoctorId.HasValue
+                        ? Model.ReferralDoctorId.Value.ToString()
+                        : "Not provided"
+                )
+
+            </div>
+
+        </div>
+
+
+        <!-- DATE -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Date of Appointment
+            </label>
+
+
+            <div class="detail-value">
+
+                @Model.AppointmentDate.ToString(
+                    "dd MMM yyyy"
+                )
+
+            </div>
+
+        </div>
+
+
+        <!-- TIME -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Appointment Time
+            </label>
+
+
+            <div class="detail-value">
+
+                @(
+                    DateTime.Today
+                        .Add(Model.AppointmentTime)
+                        .ToString("hh:mm tt")
+                )
+
+            </div>
+
+        </div>
+
+
+        <!-- CREATED -->
+
+        <div class="detail-field">
+
+            <label class="detail-label">
+                Created At
+            </label>
+
+
+            <div class="detail-value">
+
+                @if (Model.CreatedAt.HasValue)
+                {
+                    @Model.CreatedAt.Value.ToString(
+                        "dd MMM yyyy hh:mm tt"
+                    )
+                }
+                else
+                {
+                    @:Not provided
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- REMARKS -->
+
+        <div class="detail-field detail-field-full">
+
+            <label class="detail-label">
+                Remarks
+            </label>
+
+
+            <div class="detail-value multiline">
+
+                @(string.IsNullOrWhiteSpace(
+                    Model.Remarks)
+                    ? "Not provided"
+                    : Model.Remarks)
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ASSIGNED TESTS
+    ====================================================== -->
+
+    <div class="tests-section">
+
+
+        <div class="tests-header">
+
+
+            <div class="tests-header-left">
+
+                <h3>
+                    Assigned Tests
+                </h3>
+
+                <span>
+                    Laboratory tests selected for this appointment.
+                </span>
+
+            </div>
+
+
+            <div class="test-count">
+
+                @assignedTests.Count()
+
+                @(assignedTests.Count() == 1
+                    ? "Test"
+                    : "Tests")
+
+            </div>
+
+        </div>
+
+
+        @if (assignedTests.Any())
+        {
+
+            <div class="tests-table-wrapper">
+
+                <table class="tests-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Test Code
+                            </th>
+
+                            <th>
+                                Test Name
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th>
+                                Turn Around
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @{
+                            var testNumber = 1;
+                        }
+
+
+                        @foreach (
+                            var test in assignedTests)
+                        {
+
+                            <tr>
+
+
+                                <td>
+
+                                    <span class="test-number">
+                                        @testNumber
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="test-code">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            test.TestCode)
+                                            ? "N/A"
+                                            : test.TestCode)
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="test-name">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            test.TestName)
+                                            ? "N/A"
+                                            : test.TestName)
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="test-data">
+
+                                        ৳ @test.Price.ToString(
+                                                                                    "0.00"
+                                                                                )
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="test-data">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            test.Unit)
+                                            ? "N/A"
+                                            : test.Unit)
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="test-data">
+
+                                        @(test.TurnAroundTime.HasValue
+                                            ? test.TurnAroundTime.Value.ToString()
+                                            : "N/A")
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+
+                            testNumber++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="no-tests">
+
+                <div class="no-tests-icon">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                </div>
+
+
+                <h5>
+                    No tests assigned
+                </h5>
+
+
+                <p>
+                    No tests were found for this appointment.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         BOTTOM ACTIONS
+    ====================================================== -->
+
+    <div class="bottom-actions">
+
+
+       
+
+    </div>
+
+
+</div>

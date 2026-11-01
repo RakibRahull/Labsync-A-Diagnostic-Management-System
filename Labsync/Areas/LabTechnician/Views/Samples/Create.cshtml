@@ -1,0 +1,1307 @@
+﻿@model LabSync.Areas.LabTechnician.Models.SampleCollectionViewModel
+
+@{
+    ViewData["Title"] = "Collect Sample";
+
+    Layout =
+        "~/Areas/LabTechnician/Views/Shared/_LabTechnicianLayout.cshtml";
+
+
+    // =====================================================
+    // CURRENT STATUS
+    // =====================================================
+
+    var currentStatus =
+        string.IsNullOrWhiteSpace(Model.SampleStatusName)
+            ? "Pending"
+            : Model.SampleStatusName.Trim();
+
+
+    var isCollected =
+        currentStatus.Equals(
+            "Collected",
+            StringComparison.OrdinalIgnoreCase
+        );
+
+
+    // =====================================================
+    // DATE
+    // =====================================================
+
+    var appointmentDate =
+        Model.AppointmentDate.ToString("dd/MM/yyyy");
+
+
+    // =====================================================
+    // TIME
+    // =====================================================
+
+    var appointmentTime =
+        DateTime.Today
+            .Add(Model.AppointmentTime)
+            .ToString("hh:mm tt");
+}
+
+
+<style>
+
+    /* =====================================================
+           HEADER
+        ====================================================== */
+
+    .sample-create-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .sample-create-title {
+        margin: 0;
+        color: #18213a;
+        font-size: 34px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+    }
+
+    .sample-create-subtitle {
+        margin: 7px 0 0;
+        color: #9296aa;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           ALERT
+        ====================================================== */
+
+    .sample-create-alert {
+        background: #fff1f1;
+        border: 1px solid #f5c7c7;
+        color: #dc2626;
+        border-radius: 12px;
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+        .sample-create-alert ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .sample-back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 42px;
+        padding: 0 15px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .sample-back-button:hover {
+            background: #f5efff;
+            border-color: #d8c7f8;
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           MAIN GRID
+        ====================================================== */
+
+    .sample-create-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(320px, .7fr);
+        gap: 22px;
+    }
+
+
+    /* =====================================================
+           CARD
+        ====================================================== */
+
+    .sample-create-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .sample-card-header {
+        padding: 21px 23px;
+        border-bottom: 1px solid #eeeaf3;
+    }
+
+        .sample-card-header h5 {
+            margin: 0 0 5px;
+            color: #29243a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .sample-card-header span {
+            color: #9993a8;
+            font-size: 13px;
+        }
+
+    .sample-card-body {
+        padding: 22px 23px;
+    }
+
+
+    /* =====================================================
+           INFO GRID
+        ====================================================== */
+
+    .sample-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .sample-info-box {
+        border: 1px solid #eeeaf3;
+        border-radius: 12px;
+        padding: 14px 15px;
+        background: #fcfbff;
+    }
+
+    .sample-info-label {
+        display: block;
+        color: #9993a8;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+        margin-bottom: 6px;
+    }
+
+    .sample-info-value {
+        color: #29243a;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+        .sample-info-value.purple {
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           TEST HIGHLIGHT
+        ====================================================== */
+
+    .sample-test-highlight {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 17px;
+        border: 1px solid #ddd1f7;
+        border-radius: 13px;
+        background: linear-gradient( 135deg, #fbf9ff, #f7f1ff );
+        margin-bottom: 18px;
+    }
+
+    .sample-test-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+
+    .sample-test-code-label {
+        color: #8b5cf6;
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .sample-test-name-large {
+        color: #29243a;
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .sample-test-code-value {
+        margin-top: 5px;
+        color: #9993a8;
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+           SAMPLE TYPE
+        ====================================================== */
+
+    .sample-type-panel {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        background: #ffffff;
+    }
+
+    .sample-type-title {
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .sample-type-name {
+        color: #29243a;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+        .sample-type-name i {
+            color: #8b5cf6;
+            margin-right: 6px;
+        }
+
+    .sample-type-description {
+        margin-top: 5px;
+        color: #9993a8;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           STATUS
+        ====================================================== */
+
+    .sample-status-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 18px;
+        padding: 17px;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        background: #ffffff;
+    }
+
+    .sample-status-title {
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .sample-status-description {
+        color: #9993a8;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .sample-current-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #fff7df;
+        color: #b98100;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .sample-current-status.collected {
+            background: #eaf8ef;
+            color: #159447;
+        }
+
+
+    /* =====================================================
+           ACTION AREA
+        ====================================================== */
+
+    .sample-action-area {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 23px;
+        padding-top: 20px;
+        border-top: 1px solid #eeeaf3;
+    }
+
+    .sample-cancel-button {
+        height: 46px;
+        padding: 0 17px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .sample-cancel-button:hover {
+            background: #f8f7fa;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           CONFIRM FORM
+        ====================================================== */
+
+    .sample-confirm-form {
+        margin: 0;
+    }
+
+    .sample-confirm-button {
+        height: 46px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .sample-confirm-button:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .sample-confirm-button:active {
+            transform: translateY(0);
+        }
+
+
+    /* =====================================================
+           ALREADY COLLECTED
+        ====================================================== */
+
+    .sample-already-collected {
+        min-height: 46px;
+        padding: 0 15px;
+        border-radius: 11px;
+        background: #eaf8ef;
+        border: 1px solid #c5ebd1;
+        color: #159447;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+
+    /* =====================================================
+           SIDE GUIDE
+        ====================================================== */
+
+    .sample-side-note {
+        background: #fcfbff;
+        border: 1px solid #eeeaf3;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+        .sample-side-note:last-child {
+            margin-bottom: 0;
+        }
+
+    .sample-side-note-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-bottom: 11px;
+    }
+
+    .sample-side-note h6 {
+        margin: 0 0 5px;
+        color: #29243a;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .sample-side-note p {
+        margin: 0;
+        color: #9993a8;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 1000px) {
+
+        .sample-create-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .sample-create-title {
+            font-size: 28px;
+        }
+
+        .sample-create-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sample-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sample-status-panel {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sample-action-area {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .sample-cancel-button,
+        .sample-confirm-form,
+        .sample-confirm-button,
+        .sample-already-collected {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="sample-create-header">
+
+    <div>
+
+        <h1 class="sample-create-title">
+
+            @(isCollected
+                ? "Sample Details"
+                : "Collect Sample")
+
+        </h1>
+
+        <p class="sample-create-subtitle">
+
+            @(isCollected
+                ? "View the collected sample information."
+                : "Review the test information and confirm sample collection.")
+
+        </p>
+
+    </div>
+
+
+    <a href="@Url.Action(
+                       "Index",
+                       "Samples",
+                       new
+                       {
+                           area = "LabTechnician"
+                       })"
+       class="sample-back-button">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Samples
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     VALIDATION
+====================================================== -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="sample-create-alert">
+
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+        @Html.ValidationSummary(false, "")
+
+    </div>
+}
+
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
+<div class="sample-create-grid">
+
+
+    <!-- =================================================
+         LEFT COLUMN
+    ================================================== -->
+
+    <div>
+
+
+        <!-- =============================================
+             PATIENT & APPOINTMENT
+        ============================================== -->
+
+        <div class="sample-create-card">
+
+            <div class="sample-card-header">
+
+                <h5>
+                    Patient & Appointment Information
+                </h5>
+            </div>
+
+
+            <div class="sample-card-body">
+
+                <div class="sample-info-grid">
+
+
+                    <!-- APPOINTMENT ID -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Appointment ID
+                        </span>
+
+                        <div class="sample-info-value purple">
+
+                            @(Model.AppointmentCode ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PATIENT ID -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Patient ID
+                        </span>
+
+                        <div class="sample-info-value purple">
+
+                            @(Model.PatientCode ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PATIENT NAME -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Patient Name
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @Model.PatientName
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Phone
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(Model.Phone ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Email
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(Model.Email ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Appointment Date
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @appointmentDate
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TIME -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Appointment Time
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @appointmentTime
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             LABORATORY TEST
+        ============================================== -->
+
+        <div class="sample-create-card"
+             style="margin-top:22px;">
+
+            <div class="sample-card-header">
+
+                <h5>
+                    Laboratory Test
+                </h5>
+
+                <span>
+                    Test assigned to this appointment.
+                </span>
+
+            </div>
+
+
+            <div class="sample-card-body">
+
+
+                <!-- TEST HEADER -->
+
+                <div class="sample-test-highlight">
+
+                    <div class="sample-test-icon">
+
+                        <i class="bi bi-eyedropper"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="sample-test-code-label">
+                            TEST
+                        </div>
+
+
+                        <div class="sample-test-name-large">
+
+                            @Model.TestName
+
+                        </div>
+
+
+                        <div class="sample-test-code-value">
+
+                            Test Code:
+                            @(Model.TestCode ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TEST DETAILS -->
+
+                <div class="sample-info-grid">
+
+
+                    <!-- PRICE -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Test Price
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            BDT @Model.Price.ToString("N2")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UNIT -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Unit
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(Model.Unit ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TURN AROUND -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Turn Around Time
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(
+                                string.IsNullOrWhiteSpace(
+                                    Model.TurnAroundTime
+                                )
+                                ? "N/A"
+                                : Model.TurnAroundTime
+                            )
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TEST STATUS -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Test Status
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(Model.IsActive
+                                ? "Active"
+                                : "Inactive")
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
+                     SAMPLE TYPE
+                ====================================== -->
+
+                <div class="sample-type-panel">
+
+                    <div class="sample-type-title">
+
+                        SAMPLE TYPE
+
+                    </div>
+
+
+                    <div class="sample-type-name">
+
+                        <i class="bi bi-droplet-half"></i>
+
+                        @(
+                            string.IsNullOrWhiteSpace(
+                                Model.SampleTypeName
+                            )
+                            ? "Not specified"
+                            : Model.SampleTypeName
+                        )
+
+                    </div>
+
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.SampleTypeDescription))
+                    {
+
+                        <div class="sample-type-description">
+
+                            @Model.SampleTypeDescription
+
+                        </div>
+
+                    }
+
+                </div>
+
+
+                <!-- =====================================
+                     CURRENT STATUS
+                ====================================== -->
+
+                <div class="sample-status-panel">
+
+                    <div>
+
+                        <div class="sample-status-title">
+
+                            CURRENT SAMPLE STATUS
+
+                        </div>
+
+
+                        <div class="sample-status-description">
+
+                            Current status stored for this appointment test.
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="sample-current-status
+                        @(isCollected ? "collected" : "")">
+
+                        <i class="bi
+                        @(isCollected
+                            ? "bi-check-circle-fill"
+                            : "bi-clock")"></i>
+
+                        @currentStatus
+
+                    </span>
+
+                </div>
+
+
+                <!-- =====================================
+                     ACTION
+                ====================================== -->
+
+                <div class="sample-action-area">
+
+
+                    <!-- BACK -->
+
+                    <a href="@Url.Action(
+                                                       "Index",
+                                                       "Samples",
+                                                       new
+                                                       {
+                                                           area = "LabTechnician"
+                                                       })"
+                       class="sample-cancel-button">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back
+
+                    </a>
+
+
+                    @if (isCollected)
+                    {
+
+                        <!-- ALREADY COLLECTED -->
+
+                        <div class="sample-already-collected">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            Sample has already been collected.
+
+                        </div>
+
+                    }
+                    else
+                    {
+
+                        <!-- =================================
+                             CONFIRM FORM
+                        ================================== -->
+
+                        <form method="post"
+                              action="@Url.Action(
+                                      "ConfirmCollection",
+                                      "Samples",
+                                      new { area = "LabTechnician" })"
+                              class="sample-confirm-form">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="AppointmentTestId"
+                                   value="@Model.AppointmentTestId" />
+
+                            <button type="submit"
+                                    class="sample-confirm-button">
+
+                                <i class="bi bi-check2-circle"></i>
+
+                                Confirm Sample Collected
+
+                            </button>
+
+                        </form>
+
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RIGHT COLUMN
+    ================================================== -->
+
+    <div>
+
+
+        <!-- =============================================
+             COLLECTION GUIDE
+        ============================================== -->
+
+        <div class="sample-create-card">
+
+            <div class="sample-card-header">
+
+                <h5>
+                    Sample Collection Guide
+                </h5>
+
+                <span>
+                    Processing steps for the technician.
+                </span>
+
+            </div>
+
+
+            <div class="sample-card-body">
+
+
+                <!-- STEP 1 -->
+
+                <div class="sample-side-note">
+
+                    <div class="sample-side-note-icon">
+
+                        <i class="bi bi-clipboard-check"></i>
+
+                    </div>
+
+
+                    <h6>
+                        Verify Appointment
+                    </h6>
+
+
+                    <p>
+
+                        Confirm the appointment ID,
+                        patient information, and assigned
+                        laboratory test before collecting
+                        the sample.
+
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="sample-side-note">
+
+                    <div class="sample-side-note-icon">
+
+                        <i class="bi bi-droplet-half"></i>
+
+                    </div>
+
+
+                    <h6>
+                        Collect Required Sample
+                    </h6>
+
+
+                    <p>
+
+                        Collect the required sample
+                        according to the sample type
+                        specified for the laboratory test.
+
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="sample-side-note">
+
+                    <div class="sample-side-note-icon">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+
+                    <h6>
+                        Confirm Collection
+                    </h6>
+
+
+                    <p>
+
+                        After successful collection,
+                        click the confirmation button
+                        to update the sample status.
+
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+
+                <div class="sample-side-note">
+
+                    <div class="sample-side-note-icon">
+
+                        <i class="bi bi-arrow-repeat"></i>
+
+                    </div>
+
+
+                    <h6>
+                        Continue Processing
+                    </h6>
+
+
+                    <p>
+
+                        Once the sample is collected,
+                        it can continue to the next
+                        laboratory workflow step.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             SAMPLE SUMMARY
+        ============================================== -->
+
+        <div class="sample-create-card"
+             style="margin-top:22px;">
+
+            <div class="sample-card-header">
+
+                <h5>
+                    Sample Summary
+                </h5>
+
+                <span>
+                    Current sample information.
+                </span>
+
+            </div>
+
+
+            <div class="sample-card-body">
+
+                <div class="sample-info-grid"
+                     style="grid-template-columns:1fr;">
+
+
+                    <!-- SAMPLE TYPE -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Sample Type
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @(
+                                string.IsNullOrWhiteSpace(
+                                    Model.SampleTypeName
+                                )
+                                ? "Not specified"
+                                : Model.SampleTypeName
+                            )
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SAMPLE STATUS -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Sample Status
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @currentStatus
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- APPOINTMENT -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Appointment
+                        </span>
+
+                        <div class="sample-info-value purple">
+
+                            @(Model.AppointmentCode ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TEST -->
+
+                    <div class="sample-info-box">
+
+                        <span class="sample-info-label">
+                            Test
+                        </span>
+
+                        <div class="sample-info-value">
+
+                            @Model.TestName
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

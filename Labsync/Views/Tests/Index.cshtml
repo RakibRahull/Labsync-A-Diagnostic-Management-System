@@ -1,0 +1,1352 @@
+﻿@model List<LabSync.Models.Test>
+
+@{
+    ViewData["Title"] = "Manage Tests";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Manage Tests</title>
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       TEST CONTENT
+                    ====================================================== */
+
+            .tests-content {
+                padding: 30px;
+            }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+            /* =====================================================
+                       PAGE HEADER
+                    ====================================================== */
+
+            .tests-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .tests-page-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .tests-page-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+
+            /* =====================================================
+                       ADD TEST BUTTON
+                    ====================================================== */
+
+            .add-test-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                min-height: 46px;
+                padding: 0 18px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff !important;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.22);
+                transition: .2s ease;
+            }
+
+                .add-test-button:hover {
+                    color: #ffffff !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 9px 22px rgba(139, 92, 246, 0.28);
+                }
+
+
+            /* =====================================================
+                       ALERT
+                    ====================================================== */
+
+            .tests-alert {
+                border-radius: 11px;
+                border: none;
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+
+            /* =====================================================
+                       SEARCH CARD
+                    ====================================================== */
+
+            .tests-search-card {
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                padding: 19px;
+                margin-bottom: 22px;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .tests-search-form {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .tests-search-input-wrapper {
+                position: relative;
+                flex: 1;
+            }
+
+            .tests-search-icon {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #81798d;
+                font-size: 18px;
+                pointer-events: none;
+            }
+
+            .tests-search-input {
+                width: 100%;
+                height: 48px;
+                border: 1px solid #ddd9e5;
+                border-radius: 10px;
+                background: #ffffff;
+                padding: 0 16px 0 44px;
+                color: #29243a;
+                font-size: 14px;
+                outline: none;
+            }
+
+                .tests-search-input::placeholder {
+                    color: #a39cab;
+                }
+
+                .tests-search-input:focus {
+                    border-color: #9b5cff;
+                    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
+                }
+
+            .tests-search-button {
+                height: 48px;
+                min-width: 130px;
+                padding: 0 20px;
+                border: none;
+                border-radius: 10px;
+                background: #212529;
+                color: #ffffff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+
+            /* =====================================================
+                       TABLE CARD
+                    ====================================================== */
+
+            .tests-table-card {
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .tests-table-wrapper {
+                overflow-x: auto;
+            }
+
+            .tests-table {
+                width: 100%;
+                min-width: 1100px;
+                border-collapse: collapse;
+            }
+
+                .tests-table thead {
+                    background: #faf9fc;
+                }
+
+                .tests-table th {
+                    padding: 15px 18px;
+                    text-align: left;
+                    border-bottom: 1px solid #ebe8f0;
+                    color: #6f6a7d;
+                    font-size: 12px;
+                    font-weight: 700;
+                    white-space: nowrap;
+                }
+
+                .tests-table td {
+                    padding: 17px 18px;
+                    border-bottom: 1px solid #f0edf4;
+                    color: #514b61;
+                    font-size: 14px;
+                    vertical-align: middle;
+                    white-space: nowrap;
+                }
+
+                .tests-table tbody tr:hover {
+                    background: #fcfbff;
+                }
+
+                .tests-table tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+
+            /* =====================================================
+                       TEST NAME
+                    ====================================================== */
+
+            .test-cell {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .test-avatar {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: #f0e8ff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                font-size: 17px;
+            }
+
+            .test-name {
+                color: #302b40;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .test-code {
+                color: #7c3aed;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       PRICE
+                    ====================================================== */
+
+            .test-price {
+                color: #302b40;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       STATUS
+                    ====================================================== */
+
+            .status-active {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 7px 11px;
+                background: #dcfce7;
+                color: #159447;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .status-inactive {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 7px 11px;
+                background: #fee2e2;
+                color: #dc2626;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       ACTIONS
+                    ====================================================== */
+
+            .test-actions {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 7px;
+            }
+
+            .test-action-button {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border-radius: 9px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #ffffff;
+                font-size: 15px;
+                transition: .2s ease;
+            }
+
+                .test-action-button:hover {
+                    transform: translateY(-1px);
+                }
+
+
+            /* =====================================================
+                       EMPTY
+                    ====================================================== */
+
+            .tests-empty {
+                padding: 70px 25px;
+                text-align: center;
+            }
+
+            .tests-empty-icon {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                font-size: 29px;
+            }
+
+            .tests-empty h5 {
+                color: #302b40;
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 7px;
+            }
+
+            .tests-empty p {
+                color: #9993a8;
+                font-size: 13px;
+                margin: 0 0 18px;
+            }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .tests-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+
+                .add-test-button {
+                    align-self: flex-start;
+                }
+
+                .tests-search-form {
+                    flex-direction: column;
+                }
+
+                .tests-search-input-wrapper,
+                .tests-search-button {
+                    width: 100%;
+                }
+            }
+
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .tests-content {
+                    padding: 20px 15px;
+                }
+
+                .tests-page-title {
+                    font-size: 28px;
+                }
+
+                .tests-page-subtitle {
+                    font-size: 14px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a href="@Url.Action(
+                                                             "Index",
+                                                             "AdminReports",
+                                                             new
+                                                             {
+                                                                 area = ""
+                                                             })"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-right">
+
+                    <div class="dropdown">
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+                        </button>
+
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+                            
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="tests-content">
+
+
+                <!-- PAGE HEADER -->
+
+                <div class="tests-header">
+
+
+                    <div>
+
+                        <h1 class="tests-page-title">
+                            Manage Tests
+                        </h1>
+
+                        <p class="tests-page-subtitle">
+                            Manage laboratory tests and their information.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ADD TEST -->
+
+                    <a asp-controller="Tests"
+                       asp-action="Create"
+                       class="add-test-button">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        Add Test
+
+                    </a>
+
+                </div>
+
+
+                <!-- SUCCESS -->
+                @if (TempData["Success"] != null)
+                {
+
+                    <div class="alert alert-success alert-dismissible fade show tests-alert">
+
+                        <i class="bi bi-check-circle-fill me-2"></i>
+
+                        @TempData["Success"]
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+
+                }
+
+
+                <!-- ERROR -->
+                @if (TempData["Error"] != null)
+                {
+
+                    <div class="alert alert-danger alert-dismissible fade show tests-alert">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                        @TempData["Error"]
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+
+                }
+
+
+                <!-- SEARCH -->
+
+                <div class="tests-search-card">
+
+                    <form method="get"
+                          asp-controller="Tests"
+                          asp-action="Index"
+                          class="tests-search-form">
+
+
+                        <div class="tests-search-input-wrapper">
+
+                            <i class="bi bi-search tests-search-icon"></i>
+
+                            <input type="text"
+                                   name="search"
+                                   value="@ViewBag.Search"
+                                   class="tests-search-input"
+                                   placeholder="Search by test name or test code..."
+                                   autocomplete="off" />
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="tests-search-button">
+
+                            <i class="bi bi-search"></i>
+
+                            Search
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- TEST TABLE -->
+
+                <div class="tests-table-card">
+
+
+                    <div class="tests-table-wrapper">
+
+                        <table class="tests-table">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Code
+                                    </th>
+
+                                    <th>
+                                        Test Name
+                                    </th>
+
+                                    <th>
+                                        Price
+                                    </th>
+
+                                    <th>
+                                        Unit
+                                    </th>
+
+                                    <th>
+                                        Turn Around
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+
+                                @if (Model != null &&
+                                     Model.Any())
+                                {
+
+                                    var counter = 1;
+
+
+                                    foreach (var test in Model)
+                                    {
+
+                                        <tr>
+
+
+                                            <!-- NUMBER -->
+
+                                            <td>
+                                                @counter
+                                            </td>
+
+
+                                            <!-- CODE -->
+
+                                            <td>
+
+                                                <span class="test-code">
+
+                                                    @(string.IsNullOrEmpty(test.TestCode)
+                                                        ? "-"
+                                                        : test.TestCode)
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- TEST NAME -->
+
+                                            <td>
+
+                                                <div class="test-cell">
+
+
+                                                    <div class="test-avatar">
+
+                                                        <i class="bi bi-eyedropper"></i>
+
+                                                    </div>
+
+
+                                                    <strong class="test-name">
+
+                                                        @test.TestName
+
+                                                    </strong>
+
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- PRICE -->
+
+                                            <td>
+
+                                                <span class="test-price">
+
+                                                    ৳ @test.Price.ToString("N2")
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- UNIT -->
+
+                                            <td>
+
+                                                @(string.IsNullOrEmpty(test.Unit)
+                                                    ? "-"
+                                                    : test.Unit)
+
+                                            </td>
+
+
+                                            <!-- TURN AROUND -->
+
+                                            <td>
+
+                                                @if (test.TurnAroundTime.HasValue)
+                                                {
+
+                                                    @test.TurnAroundTime
+
+                                                    <span>
+                                                        Hours
+                                                    </span>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="text-muted">
+                                                        -
+                                                    </span>
+
+                                                }
+
+                                            </td>
+
+
+                                            <!-- STATUS -->
+
+                                            <td>
+
+                                                @if (test.IsActive == true)
+                                                {
+
+                                                    <span class="status-active">
+
+                                                        <i class="bi bi-check-circle"></i>
+
+                                                        Active
+
+                                                    </span>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="status-inactive">
+
+                                                        <i class="bi bi-x-circle"></i>
+
+                                                        Inactive
+
+                                                    </span>
+
+                                                }
+
+                                            </td>
+
+
+                                            <!-- ACTIONS -->
+
+                                            <td>
+
+                                                <div class="test-actions">
+
+
+                                                    <!-- EDIT -->
+
+                                                    <a asp-controller="Tests"
+                                                       asp-action="Edit"
+                                                       asp-route-id="@test.Id"
+                                                       class="btn btn-outline-primary test-action-button"
+                                                       title="Edit">
+
+                                                        <i class="bi bi-pencil"></i>
+
+                                                    </a>
+
+
+                                                    <!-- TOGGLE -->
+
+                                                    <form asp-controller="Tests"
+                                                          asp-action="ToggleStatus"
+                                                          method="post"
+                                                          class="d-inline">
+
+                                                        @Html.AntiForgeryToken()
+
+                                                        <input type="hidden"
+                                                               name="id"
+                                                               value="@test.Id" />
+
+
+                                                        @if (test.IsActive == true)
+                                                        {
+
+                                                            <button type="submit"
+                                                                    class="btn btn-outline-warning test-action-button"
+                                                                    title="Deactivate">
+
+                                                                <i class="bi bi-toggle-on"></i>
+
+                                                            </button>
+
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <button type="submit"
+                                                                    class="btn btn-outline-success test-action-button"
+                                                                    title="Activate">
+
+                                                                <i class="bi bi-toggle-off"></i>
+
+                                                            </button>
+
+                                                        }
+
+                                                    </form>
+
+
+                                                    
+
+
+                                                </div>
+
+                                            </td>
+
+
+                                        </tr>
+
+
+                                        counter++;
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    <!-- EMPTY -->
+
+                                    <tr>
+
+                                        <td colspan="8">
+
+                                            <div class="tests-empty">
+
+                                                <div class="tests-empty-icon">
+
+                                                    <i class="bi bi-eyedropper"></i>
+
+                                                </div>
+
+
+                                                <h5>
+                                                    No tests found
+                                                </h5>
+
+
+                                                <p>
+                                                    No laboratory tests are available.
+                                                </p>
+
+
+                                                <a asp-controller="Tests"
+                                                   asp-action="Create"
+                                                   class="add-test-button">
+
+                                                    <i class="bi bi-plus-lg"></i>
+
+                                                    Add First Test
+
+                                                </a>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BACK -->
+
+                <div class="mt-4">
+
+                    <a asp-controller="Admin"
+                       asp-action="Index"
+                       class="text-decoration-none">
+
+                        <i class="bi bi-arrow-left me-1"></i>
+
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

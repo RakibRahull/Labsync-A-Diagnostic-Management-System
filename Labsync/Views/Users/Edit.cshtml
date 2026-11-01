@@ -1,0 +1,1890 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+
+@model LabSync.Models.UserManagementViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = null;
+
+    var roles = ViewBag.Roles as IEnumerable<LabSync.Models.Role>;
+
+    var branches = ViewBag.Branches as IEnumerable<SelectListItem>;
+    var cities = ViewBag.Cities as IEnumerable<SelectListItem>;
+
+    var firstName = ViewBag.FirstName as string ?? "";
+    var lastName = ViewBag.LastName as string ?? "";
+    var phone = ViewBag.Phone as string ?? "";
+    var address = ViewBag.Address as string ?? "";
+    var dateOfBirth = ViewBag.DateOfBirth as string ?? "";
+    var gender = ViewBag.Gender as string ?? "";
+    var religion = ViewBag.Religion as string ?? "";
+    var maritalStatus = ViewBag.MaritalStatus as string ?? "";
+    var bloodGroup = ViewBag.BloodGroup as string ?? "";
+    var fatherName = ViewBag.FatherName as string ?? "";
+    var motherName = ViewBag.MotherName as string ?? "";
+    var nid = ViewBag.NID as string ?? "";
+    var emergencyContact = ViewBag.EmergencyContact as string ?? "";
+    var education = ViewBag.Education as string ?? "";
+    var joiningDate = ViewBag.JoiningDate as string ?? "";
+    var currentSalary = ViewBag.CurrentSalary as string ?? "";
+
+    var currentCityId = ViewBag.CityId as int?;
+    var currentCityName = ViewBag.CityName as string ?? "";
+    var currentBranchId = ViewBag.BranchId as int?;
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Edit User</title>
+
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                               TOPBAR
+                            ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            /* =====================================================
+                               PROFILE
+                            ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                               PROFILE DROPDOWN
+                            ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                               CONTENT
+                            ====================================================== */
+
+            .edit-user-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                               PAGE HEADER
+                            ====================================================== */
+
+            .edit-user-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .edit-user-header-left {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .edit-user-small-title {
+                margin: 0 0 4px;
+                color: #9b96a8;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .edit-user-page-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .edit-user-page-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+
+            /* =====================================================
+                               BACK BUTTON
+                            ====================================================== */
+
+            .edit-user-back-button {
+                min-height: 46px;
+                padding: 0 17px;
+                border-radius: 10px;
+                border: 1px solid #dedbe6;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                transition: .2s ease;
+            }
+
+                .edit-user-back-button:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                               FORM WRAPPER
+                            ====================================================== */
+
+            .edit-user-form-wrapper {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+
+            /* =====================================================
+                               FORM CARD
+                            ====================================================== */
+
+            .edit-user-card {
+                width: 100%;
+                max-width: 1100px;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, .04);
+            }
+
+
+            /* =====================================================
+                               CARD HEADER
+                            ====================================================== */
+
+            .edit-user-card-header {
+                padding: 23px 30px;
+                border-bottom: 1px solid #eeeaf3;
+            }
+
+                .edit-user-card-header h4 {
+                    margin: 0 0 4px;
+                    color: #29243a;
+                    font-size: 19px;
+                    font-weight: 700;
+                }
+
+                .edit-user-card-header p {
+                    margin: 0;
+                    color: #9993a8;
+                    font-size: 13px;
+                }
+
+
+            /* =====================================================
+                               FORM BODY
+                            ====================================================== */
+
+            .edit-user-form-body {
+                padding: 30px;
+            }
+
+            .edit-user-form-row {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+
+            /* =====================================================
+                               SECTION
+                            ====================================================== */
+
+            .form-section {
+                margin-bottom: 30px;
+            }
+
+            .form-section-header {
+                margin-bottom: 18px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #eeeaf3;
+            }
+
+                .form-section-header h5 {
+                    margin: 0;
+                    color: #29243a;
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+
+                .form-section-header p {
+                    margin: 3px 0 0;
+                    color: #9993a8;
+                    font-size: 12px;
+                }
+
+
+            /* =====================================================
+                               LABEL
+                            ====================================================== */
+
+            .edit-user-form-label {
+                display: block;
+                margin-bottom: 7px;
+                color: #514b61;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                               INPUT
+                            ====================================================== */
+
+            .edit-user-input,
+            .edit-user-select,
+            .edit-user-textarea {
+                width: 100%;
+                border: 1px solid #ddd9e5;
+                border-radius: 10px;
+                background: #ffffff;
+                padding: 11px 14px;
+                color: #29243a;
+                font-size: 14px;
+                outline: none;
+                transition: .2s ease;
+            }
+
+            .edit-user-input,
+            .edit-user-select {
+                height: 48px;
+            }
+
+            .edit-user-textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+
+                .edit-user-input::placeholder,
+                .edit-user-textarea::placeholder {
+                    color: #aaa3af;
+                }
+
+                .edit-user-input:focus,
+                .edit-user-select:focus,
+                .edit-user-textarea:focus {
+                    border-color: #9b5cff;
+                    box-shadow: 0 0 0 3px rgba(139, 92, 246, .08);
+                }
+
+
+            /* =====================================================
+                               DISABLED / READONLY EMAIL
+                            ====================================================== */
+
+            .email-help {
+                margin-top: 6px;
+                color: #9993a8;
+                font-size: 11px;
+            }
+
+
+            /* =====================================================
+                               CITY
+                            ====================================================== */
+
+            .city-helper {
+                margin-top: 6px;
+                color: #9993a8;
+                font-size: 11px;
+            }
+
+            .city-validation {
+                display: block;
+                margin-top: 6px;
+                color: #dc2626;
+                font-size: 12px;
+            }
+
+
+            /* =====================================================
+                               STATUS
+                            ====================================================== */
+
+            .edit-user-status-box {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                padding: 12px 14px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                background: #faf9fc;
+            }
+
+                .edit-user-status-box .form-check-input {
+                    width: 18px;
+                    height: 18px;
+                    margin-top: 0;
+                    cursor: pointer;
+                }
+
+                    .edit-user-status-box .form-check-input:checked {
+                        background-color: #8b5cf6;
+                        border-color: #8b5cf6;
+                    }
+
+                .edit-user-status-box .form-check-label {
+                    margin-left: 8px;
+                    color: #514b61;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+
+
+            /* =====================================================
+                               VALIDATION
+                            ====================================================== */
+
+            .edit-user-validation {
+                display: block;
+                margin-top: 6px;
+                font-size: 12px;
+            }
+
+
+            /* =====================================================
+                               FORM ACTIONS
+                            ====================================================== */
+
+            .edit-user-actions {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                margin-top: 10px;
+                padding-top: 22px;
+                border-top: 1px solid #eeeaf3;
+            }
+
+            .edit-user-submit {
+                min-height: 46px;
+                padding: 0 19px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                cursor: pointer;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, .20);
+                transition: .2s ease;
+            }
+
+                .edit-user-submit:hover {
+                    opacity: .94;
+                    transform: translateY(-1px);
+                }
+
+            .edit-user-cancel {
+                min-height: 46px;
+                padding: 0 19px;
+                border: 1px solid #dedbe6;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: .2s ease;
+            }
+
+                .edit-user-cancel:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                               MOBILE
+                            ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .edit-user-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+
+                .edit-user-back-button {
+                    align-self: flex-start;
+                }
+
+                .edit-user-card {
+                    max-width: 100%;
+                }
+            }
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .edit-user-content {
+                    padding: 20px 15px;
+                }
+
+                .edit-user-page-title {
+                    font-size: 28px;
+                }
+
+                .edit-user-page-subtitle {
+                    font-size: 14px;
+                }
+
+                .edit-user-form-body {
+                    padding: 20px;
+                }
+
+                .edit-user-form-row {
+                    max-width: 100%;
+                }
+
+                .edit-user-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .edit-user-submit,
+                .edit-user-cancel {
+                    width: 100%;
+                }
+            }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+        <aside class="sidebar">
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIDEBAR MENU -->
+
+            <div class="sidebar-menu">
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a asp-controller="AdminReports"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+           
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+            <header class="topbar">
+
+                <div class="topbar-right">
+
+                    <div class="dropdown">
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+                        </button>
+
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+                            <li>
+
+                                @{
+                                    var logoutUrl =
+                                        Url.Action(
+                                            "Logout",
+                                            "Account",
+                                            new { area = "" }
+                                        );
+                                }
+
+                                <form action="@logoutUrl"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+            <div class="edit-user-content">
+
+
+                <!-- HEADER -->
+
+                <div class="edit-user-header">
+
+                    <div class="edit-user-header-left">
+
+                        <p class="edit-user-small-title">
+                            User Management
+                        </p>
+
+                        <h1 class="edit-user-page-title">
+                            Edit User
+                        </h1>
+
+                        <p class="edit-user-page-subtitle">
+                            Update account and employee information.
+                        </p>
+
+                    </div>
+
+
+                    <a asp-controller="Users"
+                       asp-action="Index"
+                       class="edit-user-back-button">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Users
+
+                    </a>
+
+                </div>
+
+
+                <!-- FORM WRAPPER -->
+
+                <div class="edit-user-form-wrapper">
+
+
+                    <div class="edit-user-card">
+
+
+                        <!-- CARD HEADER -->
+
+                        <div class="edit-user-card-header">
+
+                            <h4>
+                                Edit Staff User
+                            </h4>
+
+                            <p>
+                                Update login, branch, personal and employment information.
+                            </p>
+
+                        </div>
+
+
+                        <!-- FORM BODY -->
+
+                        <div class="edit-user-form-body">
+
+                            <div class="edit-user-form-row">
+
+
+                                <form asp-controller="Users"
+                                      asp-action="Edit"
+                                      asp-route-id="@Model.Id"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <!-- USER ID -->
+
+                                    <input type="hidden"
+                                           asp-for="Id" />
+
+
+                                    <!-- =================================================
+                                     VALIDATION
+                                ================================================== -->
+
+                                    <div asp-validation-summary="ModelOnly"
+                                         class="text-danger mb-4">
+                                    </div>
+
+
+                                    <!-- =================================================
+                                     ACCOUNT INFORMATION
+                                ================================================== -->
+
+                                    <div class="form-section">
+
+                                        <div class="form-section-header">
+
+                                            <h5>
+                                                Account Information
+                                            </h5>
+
+                                        </div>
+
+
+                                        <div class="row g-4">
+
+
+                                            <!-- EMAIL -->
+
+                                            <div class="col-md-6">
+
+                                                <label asp-for="Email"
+                                                       class="edit-user-form-label">
+
+                                                    Email
+
+                                                </label>
+
+                                                <input asp-for="Email"
+                                                       type="email"
+                                                       class="edit-user-input"
+                                                       maxlength="100"
+                                                       readonly />
+
+                                                <div class="email-help">
+                                                    Email is used as the login identifier.
+                                                </div>
+
+                                                <span asp-validation-for="Email"
+                                                      class="text-danger edit-user-validation">
+                                                </span>
+
+                                            </div>
+
+
+                                            <!-- ROLE -->
+
+                                            <div class="col-md-6">
+
+                                                <label asp-for="RoleId"
+                                                       class="edit-user-form-label">
+
+                                                    Role
+
+                                                </label>
+
+                                                <select asp-for="RoleId"
+                                                        class="edit-user-select"
+                                                        required>
+
+                                                    <option value="">
+                                                        -- Select Role --
+                                                    </option>
+
+                                                    @if (roles != null)
+                                                    {
+                                                        foreach (var role in roles)
+                                                        {
+                                                            <option value="@role.Id">
+                                                                @role.RoleName
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="RoleId"
+                                                      class="text-danger edit-user-validation">
+                                                </span>
+
+                                            </div>
+
+
+                                            <!-- PASSWORD -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    New Password
+
+                                                </label>
+
+                                                <input type="password"
+                                                       name="newPassword"
+                                                       class="edit-user-input"
+                                                       placeholder="Leave blank to keep current password" />
+
+                                                <div class="email-help">
+                                                    Leave blank to keep the existing password.
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- STATUS -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Account Status
+
+                                                </label>
+
+                                                <div class="edit-user-status-box">
+
+                                                    <input asp-for="IsActive"
+                                                           class="form-check-input"
+                                                           id="IsActive" />
+
+                                                    <label asp-for="IsActive"
+                                                           class="form-check-label">
+
+                                                        Active User
+
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- =================================================
+                                     EMPLOYMENT INFORMATION
+                                ================================================== -->
+
+                                    <div class="form-section">
+
+                                        <div class="form-section-header">
+
+                                            <h5>
+                                                Employment Information
+                                            </h5>
+                                        </div>
+
+
+                                        <div class="row g-4">
+
+
+                                            
+
+                                            <!-- JOINING DATE -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Joining Date
+
+                                                </label>
+
+                                                <input type="date"
+                                                       name="joiningDate"
+                                                       class="edit-user-input"
+                                                       value="@joiningDate" />
+
+                                            </div>
+
+
+                                            <!-- SALARY -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Current Salary
+
+                                                </label>
+
+                                                <input type="number"
+                                                       name="currentSalary"
+                                                       class="edit-user-input"
+                                                       min="0"
+                                                       step="0.01"
+                                                       value="@currentSalary"
+                                                       placeholder="Enter current salary" />
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- =================================================
+                                     PERSONAL INFORMATION
+                                ================================================== -->
+
+                                    <div class="form-section">
+
+                                        <div class="form-section-header">
+
+                                            <h5>
+                                                Personal Information
+                                            </h5>
+
+                                        </div>
+
+
+                                        <div class="row g-4">
+
+
+                                            <!-- FIRST NAME -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    First Name
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="firstName"
+                                                       class="edit-user-input"
+                                                       maxlength="50"
+                                                       value="@firstName"
+                                                       placeholder="Enter first name"
+                                                       required />
+
+                                                <span class="text-danger edit-user-validation">
+                                                    @Html.ValidationMessage("FirstName")
+                                                </span>
+
+                                            </div>
+
+
+                                            <!-- LAST NAME -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Last Name
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="lastName"
+                                                       class="edit-user-input"
+                                                       maxlength="50"
+                                                       value="@lastName"
+                                                       placeholder="Enter last name"
+                                                       required />
+
+                                                <span class="text-danger edit-user-validation">
+                                                    @Html.ValidationMessage("LastName")
+                                                </span>
+
+                                            </div>
+
+
+                                            <!-- PHONE -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Phone
+
+                                                </label>
+
+                                                <input type="tel"
+                                                       name="phone"
+                                                       class="edit-user-input"
+                                                       maxlength="15"
+                                                       value="@phone"
+                                                       placeholder="Enter phone number" />
+
+                                                <span class="text-danger edit-user-validation">
+                                                    @Html.ValidationMessage("Phone")
+                                                </span>
+
+                                            </div>
+
+
+                                            <!-- EMERGENCY CONTACT -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Emergency Contact
+
+                                                </label>
+
+                                                <input type="tel"
+                                                       name="emergencyContact"
+                                                       class="edit-user-input"
+                                                       maxlength="15"
+                                                       value="@emergencyContact"
+                                                       placeholder="Emergency contact number" />
+
+                                            </div>
+
+
+                                            <!-- DOB -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Date of Birth
+
+                                                </label>
+
+                                                <input type="date"
+                                                       name="dateOfBirth"
+                                                       class="edit-user-input"
+                                                       value="@dateOfBirth" />
+
+                                            </div>
+
+
+                                            <!-- GENDER -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Gender
+
+                                                </label>
+
+                                                <select name="gender"
+                                                        class="edit-user-select">
+
+                                                    <option value="">
+                                                        -- Select Gender --
+                                                    </option>
+
+                                                    @if (gender == "Male")
+                                                    {
+                                                        <option value="Male" selected>
+                                                            Male
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Male">
+                                                            Male
+                                                        </option>
+                                                    }
+
+                                                    @if (gender == "Female")
+                                                    {
+                                                        <option value="Female" selected>
+                                                            Female
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Female">
+                                                            Female
+                                                        </option>
+                                                    }
+
+                                                    @if (gender == "Other")
+                                                    {
+                                                        <option value="Other" selected>
+                                                            Other
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Other">
+                                                            Other
+                                                        </option>
+                                                    }
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <!-- RELIGION -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Religion
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="religion"
+                                                       class="edit-user-input"
+                                                       maxlength="50"
+                                                       value="@religion"
+                                                       placeholder="Enter religion" />
+
+                                            </div>
+
+
+                                            <!-- MARITAL STATUS -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Marital Status
+
+                                                </label>
+
+                                                <select name="maritalStatus"
+                                                        class="edit-user-select">
+
+                                                    <option value="">
+                                                        -- Select Marital Status --
+                                                    </option>
+
+                                                    @if (maritalStatus == "Single")
+                                                    {
+                                                        <option value="Single" selected>
+                                                            Single
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Single">
+                                                            Single
+                                                        </option>
+                                                    }
+
+                                                    @if (maritalStatus == "Married")
+                                                    {
+                                                        <option value="Married" selected>
+                                                            Married
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Married">
+                                                            Married
+                                                        </option>
+                                                    }
+
+                                                    @if (maritalStatus == "Divorced")
+                                                    {
+                                                        <option value="Divorced" selected>
+                                                            Divorced
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Divorced">
+                                                            Divorced
+                                                        </option>
+                                                    }
+
+                                                    @if (maritalStatus == "Widowed")
+                                                    {
+                                                        <option value="Widowed" selected>
+                                                            Widowed
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Widowed">
+                                                            Widowed
+                                                        </option>
+                                                    }
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <!-- BLOOD GROUP -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Blood Group
+
+                                                </label>
+
+                                                <select name="bloodGroup"
+                                                        class="edit-user-select">
+
+                                                    <option value="">
+                                                        -- Select Blood Group --
+                                                    </option>
+
+                                                    @foreach (var group in new[]
+                                                    {
+                                                    "A+",
+                                                    "A-",
+                                                    "B+",
+                                                    "B-",
+                                                    "AB+",
+                                                    "AB-",
+                                                    "O+",
+                                                    "O-"
+                                                })
+                                                    {
+                                                        if (bloodGroup == group)
+                                                        {
+                                                            <option value="@group"
+                                                                    selected>
+                                                                @group
+                                                            </option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@group">
+                                                                @group
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                            </div>
+
+
+                                            <!-- NID -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    NID
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="nid"
+                                                       class="edit-user-input"
+                                                       maxlength="20"
+                                                       value="@nid"
+                                                       placeholder="Enter NID number" />
+
+                                            </div>
+
+
+                                            <!-- EDUCATION -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Education
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="education"
+                                                       class="edit-user-input"
+                                                       maxlength="100"
+                                                       value="@education"
+                                                       placeholder="e.g. B.Sc. in Computer Science" />
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- =================================================
+                                     FAMILY & ADDRESS
+                                ================================================== -->
+
+                                    <div class="form-section">
+
+                                        <div class="form-section-header">
+
+                                            <h5>
+                                                Family & Address
+                                            </h5>
+
+                                        </div>
+
+
+                                        <div class="row g-4">
+
+
+                                            <!-- FATHER -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Father Name
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="fatherName"
+                                                       class="edit-user-input"
+                                                       maxlength="100"
+                                                       value="@fatherName"
+                                                       placeholder="Enter father name" />
+
+                                            </div>
+
+
+                                            <!-- MOTHER -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Mother Name
+
+                                                </label>
+
+                                                <input type="text"
+                                                       name="motherName"
+                                                       class="edit-user-input"
+                                                       maxlength="100"
+                                                       value="@motherName"
+                                                       placeholder="Enter mother name" />
+
+                                            </div>
+
+
+                                            
+
+                                            <!-- ADDRESS -->
+
+                                            <div class="col-md-6">
+
+                                                <label class="edit-user-form-label">
+
+                                                    Address
+
+                                                </label>
+
+                                                <textarea name="address"
+                                                          class="edit-user-textarea"
+                                                          maxlength="250"
+                                                          placeholder="Enter full residential address">@address</textarea>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- =================================================
+                                     ACTIONS
+                                ================================================== -->
+
+                                    <div class="edit-user-actions">
+
+
+                                        <button type="submit"
+                                                class="edit-user-submit">
+
+                                            <i class="bi bi-check-lg"></i>
+
+                                            Save Changes
+
+                                        </button>
+
+
+                                        <a asp-controller="Users"
+                                           asp-action="Index"
+                                           class="edit-user-cancel">
+
+                                            Cancel
+
+                                        </a>
+
+                                    </div>
+
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- =====================================================
+     CITY SEARCH
+====================================================== -->
+
+    <script>
+
+            document.addEventListener("DOMContentLoaded", function() {
+
+                const citySearch =
+                    document.getElementById("citySearch");
+
+                const cityId =
+                    document.getElementById("cityId");
+
+                const cityError =
+                    document.getElementById("cityError");
+
+                const cityOptions =
+                    document.querySelectorAll(
+                        "#cityOptions option"
+                    );
+
+
+                function findCityId(cityName) {
+
+                    const typedName =
+                        cityName.trim().toLowerCase();
+
+
+                    for (const option of cityOptions) {
+
+                        const optionName =
+                            (option.value || "")
+                                .trim()
+                                .toLowerCase();
+
+
+                        if (optionName === typedName) {
+
+                            return option.dataset.id || "";
+
+                        }
+
+                    }
+
+
+                    return "";
+
+                }
+
+
+                citySearch.addEventListener(
+                    "input",
+                    function() {
+
+                        const selectedId =
+                            findCityId(citySearch.value);
+
+
+                        if (selectedId) {
+
+                            cityId.value =
+                                selectedId;
+
+                            cityError.style.display =
+                                "none";
+
+                        }
+                        else {
+
+                            cityId.value = "";
+
+                        }
+
+                    }
+                );
+
+
+                citySearch.addEventListener(
+                    "change",
+                    function() {
+
+                        const selectedId =
+                            findCityId(citySearch.value);
+
+
+                        if (selectedId) {
+
+                            cityId.value =
+                                selectedId;
+
+                            cityError.style.display =
+                                "none";
+
+                        }
+                        else if (
+                            citySearch.value.trim() !== ""
+                        ) {
+
+                            cityId.value = "";
+
+                            cityError.style.display =
+                                "block";
+
+                        }
+                        else {
+
+                            cityId.value = "";
+
+                            cityError.style.display =
+                                "none";
+
+                        }
+
+                    }
+                );
+
+
+                const form =
+                    citySearch.closest("form");
+
+
+                if (form) {
+
+                    form.addEventListener(
+                        "submit",
+                        function(event) {
+
+                            const cityName =
+                                citySearch.value.trim();
+
+
+                            if (
+                                cityName !== "" &&
+                                !cityId.value
+                            ) {
+
+                                event.preventDefault();
+
+                                cityError.style.display =
+                                    "block";
+
+                                citySearch.focus();
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

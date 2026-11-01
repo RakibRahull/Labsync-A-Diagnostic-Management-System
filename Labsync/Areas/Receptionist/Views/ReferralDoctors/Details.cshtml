@@ -1,0 +1,402 @@
+﻿@model LabSync.Models.ReferralDoctor
+
+@{
+    ViewData["Title"] = "Doctor Details";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           DETAILS CARD
+        ====================================================== */
+
+    .doctor-details-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+           DOCTOR HEADER
+        ====================================================== */
+
+    .doctor-card-header {
+        padding: 30px 38px;
+        border-bottom: 1px solid #eeeaf5;
+    }
+
+        .doctor-card-header h2 {
+            margin: 0;
+            color: #18213a;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .doctor-card-header p {
+            margin: 8px 0 0;
+            color: #9993a8;
+            font-size: 13px;
+        }
+
+
+    /* =====================================================
+           CONTENT
+        ====================================================== */
+
+    .doctor-card-body {
+        padding: 38px;
+    }
+
+    .section-title {
+        margin: 0 0 20px;
+        color: #18213a;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           INFORMATION GRID
+        ====================================================== */
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .information-item {
+        background: #ffffff;
+        border: 1px solid #e4deec;
+        border-radius: 12px;
+        padding: 22px;
+        min-height: 92px;
+    }
+
+    .information-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #9993a8;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .information-value {
+        color: #18213a;
+        font-size: 15px;
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 750px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .back-btn {
+            width: 100%;
+        }
+
+        .doctor-card-header,
+        .doctor-card-body {
+            padding: 24px 20px;
+        }
+
+        .information-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Doctor Details
+        </h1>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="ReferralDoctors"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Referral Doctors
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     DETAILS CARD
+====================================================== -->
+
+<div class="doctor-details-card">
+
+
+    <!-- =================================================
+         DOCTOR HEADER
+    ================================================== -->
+
+    <div class="doctor-card-header">
+
+        <h2>
+
+            @(string.IsNullOrWhiteSpace(Model.DoctorName)
+                ? "N/A"
+                : Model.DoctorName)
+
+        </h2>
+
+        <p>
+
+            @(string.IsNullOrWhiteSpace(Model.Specialization)
+                ? "N/A"
+                : Model.Specialization)
+
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         DOCTOR INFORMATION
+    ================================================== -->
+
+    <div class="doctor-card-body">
+
+        <h3 class="section-title">
+            Doctor Information
+        </h3>
+
+
+        <div class="information-grid">
+
+
+            <!-- Doctor ID -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Doctor ID
+                </span>
+
+                <div class="information-value">
+
+                    @Model.Id
+
+                </div>
+
+            </div>
+
+
+            <!-- Doctor Name -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Doctor Name
+                </span>
+
+                <div class="information-value">
+
+                    @(string.IsNullOrWhiteSpace(Model.DoctorName)
+                        ? "N/A"
+                        : Model.DoctorName)
+
+                </div>
+
+            </div>
+
+
+            <!-- Specialization -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Specialization
+                </span>
+
+                <div class="information-value">
+
+                    @(string.IsNullOrWhiteSpace(Model.Specialization)
+                        ? "N/A"
+                        : Model.Specialization)
+
+                </div>
+
+            </div>
+
+
+            <!-- Hospital -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Hospital Name
+                </span>
+
+                <div class="information-value">
+
+                    @(string.IsNullOrWhiteSpace(Model.HospitalName)
+                        ? "N/A"
+                        : Model.HospitalName)
+
+                </div>
+
+            </div>
+
+
+            <!-- Phone -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Phone Number
+                </span>
+
+                <div class="information-value">
+
+                    @(string.IsNullOrWhiteSpace(Model.Phone)
+                        ? "N/A"
+                        : Model.Phone)
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Email Address
+                </span>
+
+                <div class="information-value">
+
+                    @(string.IsNullOrWhiteSpace(Model.Email)
+                        ? "N/A"
+                        : Model.Email)
+
+                </div>
+
+            </div>
+
+
+            <!-- Created At -->
+
+            <div class="information-item">
+
+                <span class="information-label">
+                    Created At
+                </span>
+
+                <div class="information-value">
+
+                    @(Model.CreatedAt.HasValue
+                        ? Model.CreatedAt.Value.ToString(
+                            "dd MMM yyyy hh:mm tt")
+                        : "N/A")
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

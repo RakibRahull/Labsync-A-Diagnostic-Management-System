@@ -1,0 +1,146 @@
+﻿@model LabSync.Models.Payment
+
+@{
+    ViewData["Title"] = "Delete Payment";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Delete Payment</h2>
+            <p class="text-muted mb-0">
+                Remove payment record
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Payments
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-danger">
+
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-exclamation-triangle"></i>
+                Confirm Payment Deletion
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-circle"></i>
+                Are you sure you want to delete this payment?
+                This action cannot be undone.
+            </div>
+
+            <div class="row">
+
+                <!-- Payment ID -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Payment ID
+                    </label>
+
+                    <input class="form-control"
+                           value="@Model.Id"
+                           readonly />
+                </div>
+
+                <!-- Invoice -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Invoice
+                    </label>
+
+                    <input class="form-control"
+                           value="@Model.Invoice?.InvoiceNumber"
+                           readonly />
+                </div>
+
+                <!-- Amount -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Payment Amount
+                    </label>
+
+                    <input class="form-control"
+                           value="৳ @Model.Amount.ToString("N2")"
+                           readonly />
+                </div>
+
+                <!-- Payment Method -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Payment Method
+                    </label>
+
+                    <input class="form-control"
+                           value="@Model.PaymentMethod?.MethodName"
+                           readonly />
+                </div>
+
+                <!-- Payment Date -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Payment Date
+                    </label>
+
+                    <input class="form-control"
+                           value="@(Model.PaymentDate?.ToString("dd MMM yyyy") ?? "N/A")"
+                           readonly />
+                </div>
+
+                <!-- Transaction Number -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">
+                        Transaction Number
+                    </label>
+
+                    <input class="form-control"
+                           value="@(Model.TransactionNumber ?? "N/A")"
+                           readonly />
+                </div>
+
+                <!-- Remarks -->
+                <div class="col-md-12 mb-3">
+                    <label class="form-label fw-semibold">
+                        Remarks
+                    </label>
+
+                    <textarea class="form-control"
+                              rows="3"
+                              readonly>@(Model.Remarks ?? "N/A")</textarea>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <form asp-action="Delete" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Payment
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

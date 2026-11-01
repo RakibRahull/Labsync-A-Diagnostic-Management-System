@@ -1,0 +1,1315 @@
+﻿@model LabSync.Models.Invoice
+
+@{
+    ViewData["Title"] = "Edit Invoice";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+    decimal discountAmount = Model.Discount ?? 0m;
+    decimal taxAmount = Model.Tax ?? 0m;
+
+    decimal discountPercent = 0m;
+    decimal taxPercent = 0m;
+
+    if (Model.Subtotal > 0)
+    {
+        discountPercent =
+            Math.Round(
+                (discountAmount / Model.Subtotal) * 100m,
+                2);
+    }
+
+    decimal amountAfterDiscount =
+        Model.Subtotal - discountAmount;
+
+    if (amountAfterDiscount > 0)
+    {
+        taxPercent =
+            Math.Round(
+                (taxAmount / amountAfterDiscount) * 100m,
+                2);
+    }
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+        }
+
+
+    /* =====================================================
+           MAIN CARD
+        ====================================================== */
+
+    .invoice-form-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+    }
+
+
+    /* =====================================================
+           SECTION
+        ====================================================== */
+
+    .invoice-section {
+        margin-bottom: 28px;
+    }
+
+        .invoice-section:last-child {
+            margin-bottom: 0;
+        }
+
+    .section-header {
+        margin-bottom: 18px;
+    }
+
+        .section-header h2 {
+            margin: 0;
+            color: #29243a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .section-header span {
+            display: block;
+            margin-top: 5px;
+            color: #9993a8;
+            font-size: 12px;
+        }
+
+
+    /* =====================================================
+           INFORMATION BOX
+        ====================================================== */
+
+    .information-box {
+        background: #faf9fd;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .information-item {
+        min-width: 0;
+        background: #ffffff;
+        border: 1px solid #ece9f3;
+        border-radius: 10px;
+        padding: 15px 16px;
+    }
+
+    .information-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #9993a8;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .information-value {
+        color: #29243a;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.45;
+        word-break: break-word;
+    }
+
+    .invoice-number {
+        color: #7c3aed;
+        font-weight: 800;
+    }
+
+
+    /* =====================================================
+           FORM LABEL
+        ====================================================== */
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 7px;
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .required-mark {
+        color: #dc2626;
+    }
+
+
+    /* =====================================================
+           INPUT
+        ====================================================== */
+
+    .invoice-input {
+        width: 100%;
+        height: 43px;
+        padding: 0 12px;
+        background: #ffffff;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        color: #29243a;
+        font-size: 13px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+        .invoice-input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .10);
+        }
+
+        .invoice-input[readonly] {
+            background: #faf9fd;
+            color: #514b61;
+            cursor: not-allowed;
+        }
+
+
+    /* =====================================================
+           EDITABLE SECTION
+        ====================================================== */
+
+    .editable-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .amount-input-group {
+        position: relative;
+    }
+
+    .percent-symbol {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        color: #9993a8;
+        font-size: 13px;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+    .percent-input {
+        padding-right: 33px;
+    }
+
+    .field-help {
+        display: block;
+        margin-top: 6px;
+        color: #9993a8;
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+           AMOUNT SUMMARY
+        ====================================================== */
+
+    .total-box {
+        margin-top: 20px;
+        background: #faf9fd;
+        border: 1px solid #e8e5ef;
+        border-radius: 13px;
+        padding: 20px;
+    }
+
+    .total-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 8px 0;
+        color: #514b61;
+        font-size: 13px;
+    }
+
+    .total-value {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+    .discount-value {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .grand-total-row {
+        margin-top: 7px;
+        padding-top: 15px;
+        border-top: 1px solid #dfd9e8;
+    }
+
+    .grand-total-label {
+        color: #29243a;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .grand-total-value {
+        color: #7c3aed;
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+
+    /* =====================================================
+           STATUS
+        ====================================================== */
+
+    .status-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 31px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: #f3edff;
+        border: 1px solid #e5d8ff;
+        color: #514b61;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           READ ONLY NOTE
+        ====================================================== */
+
+    .readonly-note {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f7f5fb;
+        border: 1px solid #e8e5ef;
+        color: #9296aa;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 27px;
+        padding-top: 22px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+    .cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 43px;
+        padding: 0 18px;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+        .cancel-btn:hover {
+            background: #f8f6fc;
+            color: #29243a;
+        }
+
+    .update-btn {
+        min-height: 43px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 5px 14px rgba(139, 92, 246, .18);
+        transition: .2s ease;
+    }
+
+        .update-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+        }
+
+        .update-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+
+    /* =====================================================
+           VALIDATION
+        ====================================================== */
+
+    .validation-summary {
+        margin-bottom: 20px;
+    }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 900px) {
+
+        .information-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .back-btn {
+            width: 100%;
+        }
+
+        .invoice-form-card {
+            padding: 20px;
+        }
+
+        .information-grid,
+        .editable-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .cancel-btn,
+        .update-btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Edit Invoice
+        </h1>
+
+        <p>
+            Update discount and tax information for this invoice.
+        </p>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Invoices"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Invoices
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN CARD
+====================================================== -->
+
+<div class="invoice-form-card">
+
+
+    <!-- =================================================
+         VALIDATION
+    ================================================== -->
+
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger validation-summary"
+         style="@(ViewData.ModelState.ErrorCount > 0
+                             ? "display:block;"
+                             : "display:none;")">
+    </div>
+
+
+    <form asp-area="Receptionist"
+          asp-controller="Invoices"
+          asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post"
+          id="editInvoiceForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- =================================================
+             HIDDEN ID
+        ================================================== -->
+
+        <input type="hidden"
+               asp-for="Id" />
+
+
+        <!-- =================================================
+             BASIC INFORMATION
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Invoice Information
+                </h2>
+
+            </div>
+
+
+            <div class="information-box">
+
+                <div class="information-grid">
+
+
+                    <!-- Invoice Number -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Invoice Number
+                        </span>
+
+                        <div class="information-value invoice-number">
+
+                            @(Model.InvoiceNumber ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Invoice Date -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Invoice Date
+                        </span>
+
+                        <div class="information-value">
+
+                            @(Model.InvoiceDate.HasValue
+                                ? Model.InvoiceDate.Value.ToString(
+                                    "dd MMM yyyy hh:mm tt")
+                                : "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Appointment -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Appointment ID
+                        </span>
+
+                        <div class="information-value">
+
+                            @(Model.Appointment?.AppointmentCode
+                                ?? Model.AppointmentId.ToString())
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Patient ID -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Patient ID
+                        </span>
+
+                        <div class="information-value">
+
+                            @(Model.Patient?.PatientCode
+                                ?? Model.PatientId.ToString())
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Patient Name -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Patient Name
+                        </span>
+
+                        <div class="information-value">
+
+                            @(Model.Patient != null
+                                ? $"{Model.Patient.FirstName} {Model.Patient.LastName}"
+                                : "N/A")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Phone -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Patient Phone
+                        </span>
+
+                        <div class="information-value">
+
+                            @(Model.Patient?.Phone ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BILLING
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Billing Information
+                </h2>
+
+            </div>
+
+
+            <div class="information-box">
+
+                <div class="information-grid">
+
+
+                    <!-- Subtotal -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Subtotal
+                        </span>
+
+                        <div class="information-value">
+
+                            BDT @Model.Subtotal.ToString("N2")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Paid Amount -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Paid Amount
+                        </span>
+
+                        <div class="information-value">
+
+                            BDT @((Model.PaidAmount ?? 0m).ToString("N2"))
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Current Net -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Current Net Amount
+                        </span>
+
+                        <div class="information-value">
+
+                            BDT @Model.NetAmount.ToString("N2")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Current Due -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Current Due Amount
+                        </span>
+
+                        <div class="information-value">
+
+                            BDT @Model.DueAmount.ToString("N2")
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Payment Status -->
+
+                    <div class="information-item">
+
+                        <span class="information-label">
+                            Payment Status
+                        </span>
+
+                        <div class="information-value">
+
+                            <span class="status-box">
+
+                                @(
+                                    ViewBag.PaymentStatus
+                                    ?? Model.PaymentStatusId.ToString()
+                                )
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DISCOUNT + TAX
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Discount & Tax
+                </h2>
+
+            </div>
+
+
+            <div class="editable-grid">
+
+
+                <!-- DISCOUNT -->
+
+                <div>
+
+                    <label for="Discount"
+                           class="form-label-custom">
+
+                        Discount (%)
+
+                    </label>
+
+
+                    <div class="amount-input-group">
+
+                        <input type="number"
+                               id="Discount"
+                               name="Discount"
+                               class="invoice-input percent-input"
+                               value="@discountPercent.ToString("0.##")"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               inputmode="decimal" />
+
+
+                        <span class="percent-symbol">
+                            %
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TAX -->
+
+                <div>
+
+                    <label for="Tax"
+                           class="form-label-custom">
+
+                        Tax (%)
+
+                    </label>
+
+
+                    <div class="amount-input-group">
+
+                        <input type="number"
+                               id="Tax"
+                               name="Tax"
+                               class="invoice-input percent-input"
+                               value="@taxPercent.ToString("0.##")"
+                               min="0"
+                               max="100"
+                               step="0.01"
+                               inputmode="decimal" />
+
+
+                        <span class="percent-symbol">
+                            %
+                        </span>
+
+                    </div>>
+
+                </div>
+
+            </div>
+
+
+            <div class="readonly-note">
+
+                <i class="bi bi-info-circle me-1"></i>
+
+                Discount and Tax are entered as percentages.
+                The system will calculate the final amounts automatically.
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             UPDATED TOTAL
+        ================================================== -->
+
+        <div class="invoice-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Updated Invoice Summary
+                </h2>
+
+            </div>
+
+
+            <div class="total-box">
+
+
+                <!-- Subtotal -->
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span class="total-value">
+
+                        BDT
+                        <span id="summarySubtotal">
+                            @Model.Subtotal.ToString("N2")
+                        </span>
+
+                    </span>
+
+                </div>
+
+
+                <!-- Discount -->
+
+                <div class="total-row">
+
+                    <span>
+                        Discount
+                    </span>
+
+                    <span class="discount-value">
+
+                        - BDT
+                        <span id="summaryDiscount">
+                            @discountAmount.ToString("N2")
+                        </span>
+
+                    </span>
+
+                </div>
+
+
+                <!-- Tax -->
+
+                <div class="total-row">
+
+                    <span>
+                        Tax
+                    </span>
+
+                    <span class="total-value">
+
+                        + BDT
+                        <span id="summaryTax">
+                            @taxAmount.ToString("N2")
+                        </span>
+
+                    </span>
+
+                </div>
+
+
+                <!-- Grand Total -->
+
+                <div class="total-row grand-total-row">
+
+                    <span class="grand-total-label">
+
+                        Grand Total
+
+                    </span>
+
+                    <span class="grand-total-value">
+
+                        BDT
+                        <span id="grandTotal">
+                            @Model.NetAmount.ToString("N2")
+                        </span>
+
+                    </span>
+
+                </div>
+
+
+                <!-- Paid -->
+
+                <div class="total-row">
+
+                    <span>
+                        Paid Amount
+                    </span>
+
+                    <span class="total-value">
+
+                        BDT
+                        <span id="summaryPaid">
+                            @((Model.PaidAmount ?? 0m).ToString("N2"))
+                        </span>
+
+                    </span>
+
+                </div>
+
+
+                <!-- Due -->
+
+                <div class="total-row">
+
+                    <span>
+                        Due Amount
+                    </span>
+
+                    <span class="total-value">
+
+                        BDT
+                        <span id="summaryDue">
+                            @Model.DueAmount.ToString("N2")
+                        </span>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <div class="form-actions">
+
+
+            <a asp-area="Receptionist"
+               asp-controller="Invoices"
+               asp-action="Index"
+               class="cancel-btn">
+
+                <i class="bi bi-x-lg"></i>
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    id="updateInvoiceBtn"
+                    class="update-btn">
+
+                <i class="bi bi-save"></i>
+
+                Update Invoice
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        // =====================================================
+        // ELEMENTS
+        // =====================================================
+
+        const discountInput =
+            document.getElementById("Discount");
+
+        const taxInput =
+            document.getElementById("Tax");
+
+        const subtotal =
+            parseFloat(
+                "@Model.Subtotal.ToString(
+                                                    System.Globalization.CultureInfo.InvariantCulture)"
+            ) || 0;
+
+        const paidAmount =
+            parseFloat(
+                "@((Model.PaidAmount ?? 0m).ToString(
+                                                    System.Globalization.CultureInfo.InvariantCulture))"
+            ) || 0;
+
+
+        // =====================================================
+        // UPDATE TOTAL
+        // =====================================================
+
+        function updateTotal() {
+
+            let discountPercent =
+                parseFloat(
+                    discountInput.value
+                ) || 0;
+
+            let taxPercent =
+                parseFloat(
+                    taxInput.value
+                ) || 0;
+
+
+            if (discountPercent < 0) {
+                discountPercent = 0;
+            }
+
+            if (discountPercent > 100) {
+                discountPercent = 100;
+            }
+
+            if (taxPercent < 0) {
+                taxPercent = 0;
+            }
+
+            if (taxPercent > 100) {
+                taxPercent = 100;
+            }
+
+
+            const discountAmount =
+                subtotal *
+                discountPercent /
+                100;
+
+
+            const afterDiscount =
+                subtotal -
+                discountAmount;
+
+
+            const taxAmount =
+                afterDiscount *
+                taxPercent /
+                100;
+
+
+            const grandTotal =
+                afterDiscount +
+                taxAmount;
+
+
+            let dueAmount =
+                grandTotal -
+                paidAmount;
+
+
+            if (dueAmount < 0) {
+                dueAmount = 0;
+            }
+
+
+            document.getElementById(
+                "summarySubtotal"
+            ).textContent =
+                subtotal.toFixed(2);
+
+
+            document.getElementById(
+                "summaryDiscount"
+            ).textContent =
+                discountAmount.toFixed(2);
+
+
+            document.getElementById(
+                "summaryTax"
+            ).textContent =
+                taxAmount.toFixed(2);
+
+
+            document.getElementById(
+                "grandTotal"
+            ).textContent =
+                grandTotal.toFixed(2);
+
+
+            document.getElementById(
+                "summaryPaid"
+            ).textContent =
+                paidAmount.toFixed(2);
+
+
+            document.getElementById(
+                "summaryDue"
+            ).textContent =
+                dueAmount.toFixed(2);
+
+        }
+
+
+        // =====================================================
+        // EVENTS
+        // =====================================================
+
+        discountInput.addEventListener(
+            "input",
+            updateTotal
+        );
+
+
+        taxInput.addEventListener(
+            "input",
+            updateTotal
+        );
+
+
+        // =====================================================
+        // FORM SUBMIT VALIDATION
+        // =====================================================
+
+        document.getElementById(
+            "editInvoiceForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                let discountPercent =
+                    parseFloat(
+                        discountInput.value
+                    ) || 0;
+
+                let taxPercent =
+                    parseFloat(
+                        taxInput.value
+                    ) || 0;
+
+
+                if (
+                    discountPercent < 0 ||
+                    discountPercent > 100
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Discount must be between 0% and 100%."
+                    );
+
+                    discountInput.focus();
+
+                    return;
+                }
+
+
+                if (
+                    taxPercent < 0 ||
+                    taxPercent > 100
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Tax must be between 0% and 100%."
+                    );
+
+                    taxInput.focus();
+
+                    return;
+                }
+
+
+                const updateButton =
+                    document.getElementById(
+                        "updateInvoiceBtn"
+                    );
+
+
+                updateButton.disabled =
+                    true;
+
+
+                updateButton.innerHTML =
+                    '<span class="spinner-border spinner-border-sm"></span> Updating Invoice...';
+
+            }
+        );
+
+
+        // =====================================================
+        // INITIAL CALCULATION
+        // =====================================================
+
+        updateTotal();
+
+    </script>
+
+}

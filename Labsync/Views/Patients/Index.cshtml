@@ -1,0 +1,1122 @@
+﻿@model IEnumerable<LabSync.Models.Patient>
+
+@{
+    ViewData["Title"] = "Patients";
+    Layout = null;
+
+    var logoutUrl = Url.Action("Logout", "Account", new { area = "" });
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Patients</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #f7f7fc;
+                font-family: Arial, Helvetica, sans-serif;
+                color: #29243a;
+            }
+
+            /* ================================
+                       TOPBAR
+                    ================================= */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            /* ================================
+                       PROFILE
+                    ================================= */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                    outline: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+            /* ================================
+                       PROFILE DROPDOWN
+                    ================================= */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 190px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+            .logout-form {
+                margin: 0;
+                padding: 0;
+            }
+
+            .logout-item {
+                width: 100%;
+                border: none;
+                background: transparent;
+                border-radius: 8px;
+                padding: 11px 12px;
+                color: #dc2626;
+                font-size: 14px;
+                font-family: inherit;
+                text-align: left;
+                cursor: pointer;
+                transition: .2s ease;
+            }
+
+                .logout-item:hover {
+                    background: #fef2f2;
+                }
+
+                .logout-item i {
+                    width: 22px;
+                    margin-right: 7px;
+                }
+
+            /* ================================
+                       SIDEBAR ACTIVE
+                    ================================= */
+
+            .sidebar .menu-item.patients-active {
+                background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+                color: #ffffff !important;
+                border-radius: 11px;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.25);
+            }
+
+                .sidebar .menu-item.patients-active i,
+                .sidebar .menu-item.patients-active span {
+                    color: #ffffff !important;
+                }
+
+                .sidebar .menu-item.patients-active:hover {
+                    background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+                    color: #ffffff !important;
+                }
+
+            /* ================================
+                       PAGE CONTENT
+                    ================================= */
+
+            .dashboard-content {
+                padding: 30px;
+            }
+
+            .welcome-section {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                flex-wrap: wrap;
+                margin-bottom: 28px;
+            }
+
+            .welcome-small {
+                color: #9993a8;
+                font-size: 13px;
+                margin-bottom: 7px;
+            }
+
+            .welcome-section h1 {
+                font-size: 32px;
+                font-weight: 700;
+                color: #29243a;
+                margin: 0 0 10px;
+            }
+
+                .welcome-section h1 span {
+                    color: #8b5cf6;
+                }
+
+            .welcome-description {
+                color: #9993a8;
+                font-size: 14px;
+                margin: 0;
+            }
+
+            /* ================================
+                       CALENDAR BOX
+                    ================================= */
+
+            .date-box {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 14px;
+                padding: 14px 18px;
+                min-width: 215px;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                transition: .2s ease;
+            }
+
+                .date-box:hover {
+                    border-color: #c9b5f7;
+                    box-shadow: 0 7px 22px rgba(139, 92, 246, 0.10);
+                }
+
+                .date-box > i {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 11px;
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                    flex-shrink: 0;
+                }
+
+            .date-picker-content {
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+                .date-picker-content small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-bottom: 4px;
+                }
+
+            .dashboard-date-picker {
+                border: none;
+                outline: none;
+                background: transparent;
+                color: #29243a;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                padding: 0;
+                width: 155px;
+                font-family: Arial, Helvetica, sans-serif;
+                color-scheme: light;
+            }
+
+            /* ================================
+                       STAT CARD
+                    ================================= */
+
+            .stat-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 16px;
+                padding: 22px;
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                height: 100%;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+            }
+
+            .stat-icon {
+                width: 52px;
+                height: 52px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 23px;
+                flex-shrink: 0;
+            }
+
+                .stat-icon.purple {
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                }
+
+            .stat-card span {
+                color: #9993a8;
+                font-size: 13px;
+            }
+
+            .stat-card h2 {
+                font-size: 27px;
+                font-weight: 700;
+                color: #29243a;
+                margin: 5px 0;
+            }
+
+            .stat-card small {
+                color: #8b5cf6;
+                font-size: 12px;
+            }
+
+            /* ================================
+                       PATIENT TABLE CARD
+                    ================================= */
+
+            .dashboard-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 16px;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                overflow: hidden;
+            }
+
+            .card-header-custom {
+                padding: 22px 24px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                flex-wrap: wrap;
+                border-bottom: 1px solid #eeeaf5;
+            }
+
+                .card-header-custom h5 {
+                    color: #29243a;
+                    font-size: 19px;
+                    font-weight: 700;
+                    margin: 0 0 6px;
+                }
+
+                .card-header-custom span {
+                    color: #9993a8;
+                    font-size: 13px;
+                }
+
+            
+
+            /* ================================
+                       SEARCH
+                    ================================= */
+
+            .table-tools {
+                padding: 20px 24px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                position: relative;
+                width: 100%;
+                max-width: 360px;
+            }
+
+                .search-box i {
+                    position: absolute;
+                    left: 14px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #9993a8;
+                    font-size: 15px;
+                }
+
+            .search-input {
+                width: 100%;
+                height: 44px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                padding: 0 14px 0 40px;
+                font-size: 13px;
+                outline: none;
+                background: #ffffff;
+                color: #29243a;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+                .search-input:focus {
+                    border-color: #a78bfa;
+                    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+                }
+
+            .patient-count {
+                color: #9993a8;
+                font-size: 13px;
+            }
+
+                .patient-count strong {
+                    color: #8b5cf6;
+                }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            /* ================================
+                       TABLE
+                    ================================= */
+
+            .table-responsive {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            .patient-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin: 0;
+            }
+
+                .patient-table thead th {
+                    background: #faf9fe;
+                    color: #777087;
+                    font-size: 12px;
+                    font-weight: 700;
+                    padding: 16px 22px;
+                    border-top: 1px solid #eeeaf5;
+                    border-bottom: 1px solid #eeeaf5;
+                    white-space: nowrap;
+                }
+
+                .patient-table tbody td {
+                    padding: 17px 22px;
+                    border-bottom: 1px solid #f0edf6;
+                    color: #514b61;
+                    font-size: 13px;
+                    vertical-align: middle;
+                    white-space: nowrap;
+                }
+
+                .patient-table tbody tr:hover {
+                    background: #fcfbff;
+                }
+
+                .patient-table tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+            .patient-id {
+                color: #8b5cf6;
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            .patient-name {
+                color: #29243a;
+                font-weight: 700;
+                font-size: 14px;
+            }
+
+            .patient-phone {
+                color: #777087;
+                font-size: 13px;
+            }
+
+            .gender-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 66px;
+                padding: 6px 10px;
+                border-radius: 20px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            .details-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border: 1px solid #d8cafa;
+                border-radius: 8px;
+                background: #ffffff;
+                color: #8b5cf6;
+                padding: 8px 12px;
+                font-size: 12px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: .2s ease;
+            }
+
+                .details-btn:hover {
+                    background: #f1eaff;
+                    color: #7c3aed;
+                    border-color: #bda6f5;
+                }
+
+            /* ================================
+                       EMPTY STATE
+                    ================================= */
+
+            .empty-state {
+                text-align: center;
+                padding: 55px 20px;
+            }
+
+            .empty-state-icon {
+                width: 62px;
+                height: 62px;
+                border-radius: 18px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 27px;
+                margin: 0 auto 16px;
+            }
+
+            .empty-state h5 {
+                font-size: 17px;
+                font-weight: 700;
+                color: #29243a;
+                margin-bottom: 8px;
+            }
+
+            .empty-state p {
+                font-size: 13px;
+                color: #9993a8;
+                margin-bottom: 0;
+            }
+
+            .alert {
+                font-size: 13px;
+                border-radius: 10px;
+            }
+
+            /* ================================
+                       MOBILE
+                    ================================= */
+
+            @@media (max-width: 700px) {
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .dashboard-content {
+                    padding: 20px 15px;
+                }
+
+                .welcome-section h1 {
+                    font-size: 26px;
+                }
+
+                .date-box {
+                    min-width: 180px;
+                    padding: 12px 14px;
+                }
+
+                .dashboard-date-picker {
+                    width: 130px;
+                }
+
+                .card-header-custom {
+                    padding: 18px;
+                }
+
+                .table-tools {
+                    padding: 16px 18px;
+                }
+
+                .patient-table thead th,
+                .patient-table tbody td {
+                    padding: 14px 16px;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-page">
+
+        <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+                    <h4>LabSync</h4>
+                    <small>Diagnostic Management</small>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+
+                <p class="menu-title">MAIN MENU</p>
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Users</span>
+                </a>
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item patients-active">
+                    <i class="bi bi-person-vcard-fill"></i>
+                    <span>Patients</span>
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+                    <i class="bi bi-calendar-check-fill"></i>
+                    <span>Appointments</span>
+                </a>
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-eyedropper"></i>
+                    <span>Tests</span>
+                </a>
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Referral Doctors</span>
+                </a>
+
+                <p class="menu-title mt-4">OPERATIONS</p>
+
+                <a href="@Url.Action("Index", "AdminReports", new { area = "" })"
+                   class="menu-item">
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+                    <span>Reports</span>
+                </a>
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-credit-card-fill"></i>
+                    <span>Payments</span>
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <span>Analytics</span>
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Audit Logs</span>
+                </a>
+
+                
+
+            </div>
+        </aside>
+
+        <!-- =========================================
+         MAIN CONTENT
+    ========================================== -->
+
+        <main class="dashboard-main">
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-right">
+
+                    <div class="dropdown">
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <div class="profile-avatar">A</div>
+
+                            <div class="profile-info">
+                                <strong>Admin</strong>
+                                <small>Administrator</small>
+                            </div>
+
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+                            <li>
+                                <form action="@logoutUrl"
+                                      method="post"
+                                      class="logout-form">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit" class="logout-item">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        Logout
+                                    </button>
+
+                                </form>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- =========================================
+             PAGE CONTENT
+        ========================================== -->
+
+            <div class="dashboard-content">
+
+                <!-- PAGE HEADER + CALENDAR -->
+
+                <div class="welcome-section">
+
+                    <div>
+                        
+
+                        <h1>
+                            Patient Management
+                        </h1>
+
+                        
+                    </div>
+
+                    <!-- WORKABLE CALENDAR -->
+
+                    <div class="date-box">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        <div class="date-picker-content">
+                            <small>Filter by Registration Date</small>
+
+                            <input type="date"
+                                   id="patientDatePicker"
+                                   class="dashboard-date-picker"
+                                   aria-label="Filter patients by registration date" />
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- TOTAL PATIENTS -->
+
+                <div class="row g-4 mt-1 mb-4">
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="stat-card">
+
+                            <div class="stat-icon purple">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+
+                            <div>
+                                <span>Total Patients</span>
+
+                                <h2 id="totalPatientCount">
+                                    @(Model?.Count() ?? 0)
+                                </h2>
+
+                                <small>
+                                    <i class="bi bi-person-check"></i>
+                                    Registered patients
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- SUCCESS MESSAGE -->
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show mb-4"
+                         role="alert">
+
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        @TempData["Success"]
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close">
+                        </button>
+
+                    </div>
+                }
+
+                <!-- PATIENT TABLE -->
+
+                <div class="dashboard-card">
+
+                    <div class="card-header-custom">
+
+                        <div>
+                            <h5>All Patients</h5>
+                            <span>Patient records and registration details</span>
+                        </div>
+
+                     
+
+                    </div>
+
+                    <!-- SEARCH AND COUNT -->
+
+                    <div class="table-tools">
+
+                        <div class="search-box">
+
+                            <i class="bi bi-search"></i>
+
+                            <input type="text"
+                                   id="patientSearch"
+                                   class="search-input"
+                                   placeholder="Search ID, name, phone or email..." />
+
+                        </div>
+
+                        <div class="patient-count">
+                            Showing <strong id="visiblePatientCount">@(Model?.Count() ?? 0)</strong>
+                            of <strong>@(Model?.Count() ?? 0)</strong> patients
+                        </div>
+
+                    </div>
+
+                    <!-- TABLE -->
+
+                    <div class="table-responsive">
+
+                        <table class="patient-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Gender</th>
+                                    <th>Registration Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="patientTableBody">
+
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var patient in Model)
+                                    {
+                                        <tr class="patient-row"
+                                            data-search="@($"{patient.PatientCode} {patient.FirstName} {patient.LastName} {patient.Phone} {patient.Email}".ToLower())"
+                                            data-date="@(patient.CreatedAt.HasValue ? patient.CreatedAt.Value.ToString("yyyy-MM-dd") : "")">
+
+                                            <!-- PATIENT ID -->
+
+                                            <td>
+                                                <span class="patient-id">
+                                                    @(string.IsNullOrWhiteSpace(patient.PatientCode)
+                                                        ? "PAT" + patient.Id
+                                                        : patient.PatientCode)
+                                                </span>
+                                            </td>
+
+                                            <!-- PATIENT NAME -->
+
+                                            <td>
+                                                <span class="patient-name">
+                                                    @patient.FirstName @patient.LastName
+                                                </span>
+                                            </td>
+
+                                            <!-- PHONE -->
+
+                                            <td>
+                                                <span class="patient-phone">
+                                                    @(string.IsNullOrWhiteSpace(patient.Phone)
+                                                        ? "N/A"
+                                                        : patient.Phone)
+                                                </span>
+                                            </td>
+
+                                            <!-- EMAIL -->
+
+                                            <td>
+                                                @(string.IsNullOrWhiteSpace(patient.Email)
+                                                    ? "N/A"
+                                                    : patient.Email)
+                                            </td>
+
+                                            <!-- GENDER -->
+
+                                            <td>
+                                                <span class="gender-badge">
+                                                    @(string.IsNullOrWhiteSpace(patient.Gender)
+                                                        ? "N/A"
+                                                        : patient.Gender)
+                                                </span>
+                                            </td>
+
+                                            <!-- REGISTRATION DATE -->
+
+                                            <td>
+                                                @(patient.CreatedAt.HasValue
+                                                    ? patient.CreatedAt.Value.ToString("dd MMM yyyy")
+                                                    : "N/A")
+                                            </td>
+
+                                            <!-- DETAILS ONLY: NO EDIT / DELETE -->
+
+                                            <td>
+                                                <a asp-controller="Patients"
+                                                   asp-action="Details"
+                                                   asp-route-id="@patient.Id"
+                                                   class="details-btn">
+
+                                                    <i class="bi bi-eye"></i>
+                                                    
+
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="empty-state">
+
+                                                <div class="empty-state-icon">
+                                                    <i class="bi bi-person-vcard"></i>
+                                                </div>
+
+                                                <h5>No Patients Found</h5>
+
+                                                <p>
+                                                    There are no registered patients yet.
+                                                </p>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <!-- NO MATCH MESSAGE -->
+
+                    <div id="noMatchMessage"
+                         class="empty-state"
+                         style="display:none;">
+
+                        <div class="empty-state-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <h5>No Matching Patients</h5>
+
+                        <p>
+                            Try changing the search text or selected date.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                const datePicker = document.getElementById("patientDatePicker");
+                const searchInput = document.getElementById("patientSearch");
+                const tableBody = document.getElementById("patientTableBody");
+                const rows = Array.from(document.querySelectorAll(".patient-row"));
+
+                const visibleCount = document.getElementById("visiblePatientCount");
+                const totalCount = document.getElementById("totalPatientCount");
+                const noMatchMessage = document.getElementById("noMatchMessage");
+
+                // Set today's date initially.
+                // Remove this line if you want to show all dates initially.
+                datePicker.value = new Date().toLocaleDateString("en-CA");
+
+                function filterPatients() {
+
+                    const selectedDate = datePicker.value;
+                    const searchText = searchInput.value.trim().toLowerCase();
+
+                    let visible = 0;
+
+                    rows.forEach(function(row) {
+
+                        const patientDate = row.dataset.date || "";
+                        const searchData = row.dataset.search || "";
+
+                        const matchesDate =
+                            !selectedDate || patientDate === selectedDate;
+
+                        const matchesSearch =
+                            !searchText || searchData.includes(searchText);
+
+                        const showRow = matchesDate && matchesSearch;
+
+                        row.style.display = showRow ? "" : "none";
+
+                        if (showRow) {
+                            visible++;
+                        }
+
+                    });
+
+                    visibleCount.textContent = visible;
+
+                    noMatchMessage.style.display =
+                        rows.length > 0 && visible === 0 ? "block" : "none";
+
+                    // Keep the table body visible; only show matching rows.
+                    if (rows.length > 0) {
+                        tableBody.style.display = "";
+                    }
+
+                    totalCount.textContent = rows.length;
+                }
+
+                datePicker.addEventListener("change", filterPatients);
+                searchInput.addEventListener("input", filterPatients);
+
+                filterPatients();
+
+            });
+    </script>
+
+</body>
+</html>

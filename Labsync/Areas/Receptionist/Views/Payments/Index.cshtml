@@ -1,0 +1,1045 @@
+﻿@model IEnumerable<LabSync.Models.Payment>
+
+@{
+    ViewData["Title"] = "Payments";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+    var paymentId =
+        ViewBag.PaymentId?.ToString() ?? "";
+
+    var paymentDate =
+        ViewBag.PaymentDate?.ToString() ?? "";
+
+    var paymentStatuses =
+        ViewBag.PaymentStatuses
+        as Dictionary<int, string>;
+}
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #000000;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+           ADD PAYMENT BUTTON
+        ====================================================== */
+
+    .add-payment-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        border: none;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 5px 14px rgba(139, 92, 246, .18);
+        transition: .2s ease;
+    }
+
+        .add-payment-btn:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+        }
+
+
+    /* =====================================================
+           SEARCH CARD
+        ====================================================== */
+
+    .search-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 22px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+    }
+
+
+    .search-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+    }
+
+
+    .search-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #000000;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+
+    .search-input {
+        width: 100%;
+        height: 43px;
+        padding: 0 12px;
+        background: #ffffff;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        color: #000000;
+        font-size: 13px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+
+        .search-input::placeholder {
+            color: #8f8f8f;
+        }
+
+
+        .search-input:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .10);
+        }
+
+
+    .search-btn {
+        height: 43px;
+        padding: 0 19px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+    }
+
+
+        .search-btn:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+        }
+
+
+    /* =====================================================
+           PAYMENTS CARD
+        ====================================================== */
+
+    .payments-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 24px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+    }
+
+
+    /* =====================================================
+           CARD HEADER
+        ====================================================== */
+
+    .payments-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+
+    .payments-card-title {
+        margin: 0;
+        color: #000000;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+
+    .payments-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 30px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: #f3edff;
+        border: 1px solid #e5d8ff;
+        color: #7c3aed;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           TABLE
+        ====================================================== */
+
+    .payments-table-wrapper {
+        overflow-x: auto;
+    }
+
+
+    .payments-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1200px;
+    }
+
+
+        .payments-table thead th {
+            background: #faf9fd;
+            padding: 14px 15px;
+            color: #000000;
+            border-bottom: 1px solid #e8e5ef;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+
+        .payments-table tbody td {
+            padding: 14px 15px;
+            color: #000000;
+            border-bottom: 1px solid #eeeaf5;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+
+        .payments-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .payments-table tbody tr:hover {
+            background: #fcfbfe;
+        }
+
+
+    /* =====================================================
+           PAYMENT ID
+        ====================================================== */
+
+    .payment-id {
+        color: #000000;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           INVOICE ID
+        ====================================================== */
+
+    .invoice-id {
+        color: #000000;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+           PATIENT
+        ====================================================== */
+
+    .patient-name {
+        color: #000000;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           DATE
+        ====================================================== */
+
+    .payment-date {
+        color: #000000;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           METHOD
+        ====================================================== */
+
+    .payment-method {
+        color: #000000;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           AMOUNT
+        ====================================================== */
+
+    .payment-amount {
+        color: #000000;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           TRANSACTION
+        ====================================================== */
+
+    .transaction-number {
+        color: #000000;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+
+    .muted-value {
+        color: #000000;
+    }
+
+
+    /* =====================================================
+           PAYMENT STATUS
+        ====================================================== */
+
+    .payment-status {
+        color: #000000;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+           STATUS TEXT COLORS
+           No pill / no round badge
+        ====================================================== */
+
+    .status-paid {
+        color: #198754;
+    }
+
+
+    .status-partial {
+        color: #d97706;
+    }
+
+
+    .status-unpaid {
+        color: #dc2626;
+    }
+
+
+    .status-other {
+        color: #000000;
+    }
+
+
+    /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 13px;
+        transition: .2s ease;
+    }
+
+
+    /* Details */
+
+    .action-view {
+        background: #f3edff;
+        border: 1px solid #e5d8ff;
+        color: #7c3aed;
+    }
+
+
+        .action-view:hover {
+            background: #e8dcff;
+            color: #6d28d9;
+        }
+
+
+    /* Edit */
+
+    .action-edit {
+        background: #eef4ff;
+        border: 1px solid #d9e5ff;
+        color: #2563eb;
+    }
+
+
+        .action-edit:hover {
+            background: #e0ebff;
+            color: #1d4ed8;
+        }
+
+
+    /* Delete */
+
+    .action-delete {
+        background: #fff1f2;
+        border: 1px solid #ffd9de;
+        color: #dc2626;
+    }
+
+
+        .action-delete:hover {
+            background: #ffe4e8;
+            color: #b91c1c;
+        }
+
+
+    /* =====================================================
+           EMPTY STATE
+        ====================================================== */
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: #000000;
+        font-size: 13px;
+    }
+
+
+    .empty-state-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #f3edff;
+        color: #8b5cf6;
+        font-size: 20px;
+    }
+
+
+    /* =====================================================
+           SUCCESS
+        ====================================================== */
+
+    .success-message {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 20px;
+        padding: 13px 16px;
+        border-radius: 10px;
+        background: #eaf8f0;
+        border: 1px solid #ccefdc;
+        color: #198754;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+           ERROR
+        ====================================================== */
+
+    .error-message {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 20px;
+        padding: 13px 16px;
+        border-radius: 10px;
+        background: #fff1f2;
+        border: 1px solid #ffd9de;
+        color: #dc2626;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 900px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .add-payment-btn {
+            width: 100%;
+        }
+
+        .search-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .search-btn {
+            width: 100%;
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .payments-card {
+            padding: 20px;
+        }
+
+        .search-card {
+            padding: 18px;
+        }
+
+        .payments-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Payments
+        </h1>
+
+        <p>
+            Manage patient invoice payments.
+        </p>
+
+    </div>
+
+
+    <a asp-area="Receptionist"
+       asp-controller="Payments"
+       asp-action="Create"
+       class="add-payment-btn">
+
+        <i class="bi bi-credit-card-fill"></i>
+
+        Add Payment
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     SUCCESS MESSAGE
+====================================================== -->
+@if (TempData["Success"] != null)
+{
+    <div class="success-message">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        @TempData["Success"]
+
+    </div>
+}
+
+
+<!-- =====================================================
+     ERROR MESSAGE
+====================================================== -->
+@if (TempData["Error"] != null)
+{
+    <div class="error-message">
+
+        <i class="bi bi-exclamation-circle-fill"></i>
+
+        @TempData["Error"]
+
+    </div>
+}
+
+
+<!-- =====================================================
+     SEARCH CARD
+====================================================== -->
+
+<div class="search-card">
+
+    <form asp-area="Receptionist"
+          asp-controller="Payments"
+          asp-action="Index"
+          method="get">
+
+        <div class="search-grid">
+
+            <!-- Payment ID -->
+
+            <div class="search-field">
+
+                <label for="paymentId">
+                    Payment ID
+                </label>
+
+                <input type="text"
+                       id="paymentId"
+                       name="paymentId"
+                       value="@paymentId"
+                       class="search-input"
+                       placeholder="Enter Payment ID"
+                       autocomplete="off" />
+
+            </div>
+
+
+            <!-- Payment Date -->
+
+            <div class="search-field">
+
+                <label for="paymentDate">
+                    Payment Date
+                </label>
+
+                <input type="date"
+                       id="paymentDate"
+                       name="paymentDate"
+                       value="@paymentDate"
+                       class="search-input" />
+
+            </div>
+
+
+            <!-- Search -->
+
+            <div>
+
+                <button type="submit"
+                        class="search-btn">
+
+                    <i class="bi bi-search"></i>
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     PAYMENT LIST
+====================================================== -->
+
+<div class="payments-card">
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <div class="payments-card-header">
+
+        <h2 class="payments-card-title">
+            Payment List
+        </h2>
+
+
+        <span class="payments-count">
+
+            Total:
+            @(Model?.Count() ?? 0)
+
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         TABLE
+    ================================================== -->
+
+    <div class="payments-table-wrapper">
+
+        <table class="payments-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Payment ID
+                    </th>
+
+                    <th>
+                        Invoice ID
+                    </th>
+
+                    <th>
+                        Patient Name
+                    </th>
+
+                    <th>
+                        Payment Date
+                    </th>
+
+                    <th>
+                        Payment Method
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Transaction Number
+                    </th>
+
+                    <th>
+                        Payment Status
+                    </th>
+
+                    <th style="width:130px;">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var payment in Model)
+                    {
+                        string statusName = "N/A";
+
+                        if (paymentStatuses != null &&
+                            payment.Invoice != null &&
+                            paymentStatuses.TryGetValue(
+                                payment.Invoice.PaymentStatusId,
+                                out string? foundStatus))
+                        {
+                            statusName =
+                                foundStatus;
+                        }
+
+
+                        string statusClass =
+                            statusName
+                                .ToLower()
+                                .Contains("paid") &&
+                            !statusName
+                                .ToLower()
+                                .Contains("partial")
+                                ? "status-paid"
+                                : statusName
+                                    .ToLower()
+                                    .Contains("partial")
+                                    ? "status-partial"
+                                    : statusName
+                                        .ToLower()
+                                        .Contains("unpaid")
+                                    ? "status-unpaid"
+                                    : "status-other";
+
+
+                        <tr>
+
+                            <!-- =================================
+                                 PAYMENT ID
+                            ================================== -->
+
+                            <td>
+
+                                <span class="payment-id">
+
+                                    PAT@(payment.Id)
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 INVOICE ID
+                            ================================== -->
+
+                            <td>
+
+                                <span class="invoice-id">
+
+                                    @payment.InvoiceId
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PATIENT NAME
+                            ================================== -->
+
+                            <td>
+
+                                @if (payment.Invoice?.Patient != null)
+                                {
+                                    <span class="patient-name">
+
+                                        @payment.Invoice.Patient.FirstName
+                                        @payment.Invoice.Patient.LastName
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="muted-value">
+                                        N/A
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PAYMENT DATE
+                            ================================== -->
+
+                            <td>
+
+                                @if (payment.PaymentDate.HasValue)
+                                {
+                                    <span class="payment-date">
+
+                                        @payment.PaymentDate.Value.ToString(
+                                            "dd MMM yyyy")
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="muted-value">
+                                        N/A
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PAYMENT METHOD
+                            ================================== -->
+
+                            <td>
+
+                                <span class="payment-method">
+
+                                    @(payment.PaymentMethod?.MethodName
+                                        ?? payment.PaymentMethodId.ToString())
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 AMOUNT
+                            ================================== -->
+
+                            <td>
+
+                                <span class="payment-amount">
+
+                                    BDT @payment.Amount.ToString("N2")
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 TRANSACTION NUMBER
+                            ================================== -->
+
+                            <td>
+
+                                @if (string.IsNullOrWhiteSpace(
+                                    payment.TransactionNumber))
+                                {
+                                    <span class="muted-value">
+                                        N/A
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="transaction-number">
+
+                                        @payment.TransactionNumber
+
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PAYMENT STATUS
+                            ================================== -->
+
+                            <td>
+
+                                <span class="payment-status @statusClass">
+
+                                    @statusName
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 ACTIONS
+                            ================================== -->
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <!-- View -->
+
+                                    <a asp-area="Receptionist"
+                                       asp-controller="Payments"
+                                       asp-action="Details"
+                                       asp-route-id="@payment.Id"
+                                       class="action-btn action-view"
+                                       title="View Details">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+                                    <!-- Edit -->
+
+                                    <a asp-area="Receptionist"
+                                       asp-controller="Payments"
+                                       asp-action="Edit"
+                                       asp-route-id="@payment.Id"
+                                       class="action-btn action-edit"
+                                       title="Edit">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+
+                                    <!-- Delete -->
+
+                                    <a asp-area="Receptionist"
+                                       asp-controller="Payments"
+                                       asp-action="Delete"
+                                       asp-route-id="@payment.Id"
+                                       class="action-btn action-delete"
+                                       title="Delete">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="9">
+
+                            <div class="empty-state">
+
+                                <div class="empty-state-icon">
+
+                                    <i class="bi bi-credit-card"></i>
+
+                                </div>
+
+                                No payments found.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

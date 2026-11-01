@@ -1,0 +1,1064 @@
+﻿@model LabSync.Models.Patient
+
+@{
+    ViewData["Title"] = "Add Patient";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+<style>
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #9296aa;
+        font-size: 14px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        .back-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+            text-decoration: none;
+        }
+
+    .validation-box {
+        background: #fff1f2;
+        color: #dc2626;
+        border: 1px solid #ffd9de;
+        border-radius: 11px;
+        padding: 15px 18px;
+        margin-bottom: 22px;
+        font-size: 13px;
+    }
+
+        .validation-box strong {
+            font-size: 14px;
+        }
+
+        .validation-box ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+        }
+
+        .validation-box li {
+            margin-bottom: 4px;
+        }
+
+    .patient-form-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+    }
+
+    .form-card-header {
+        margin-bottom: 24px;
+    }
+
+        .form-card-header h2 {
+            margin: 0;
+            color: #29243a;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .form-card-header span {
+            display: block;
+            margin-top: 5px;
+            color: #9993a8;
+            font-size: 12px;
+        }
+
+    .patient-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 7px;
+        color: #514b61;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .required-mark {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .patient-input,
+    .patient-select,
+    .patient-textarea {
+        width: 100%;
+        background: #ffffff;
+        color: #29243a;
+        border: 1px solid #e1ddea;
+        border-radius: 9px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .patient-input,
+    .patient-select {
+        height: 42px;
+        padding: 0 12px;
+    }
+
+    .patient-textarea {
+        min-height: 95px;
+        padding: 11px 12px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+        .patient-input::placeholder,
+        .patient-textarea::placeholder {
+            color: #aaa4b5;
+        }
+
+        .patient-input:focus,
+        .patient-select:focus,
+        .patient-textarea:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+            outline: none;
+        }
+
+    /* DATE PICKER */
+
+    .date-picker-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+        .date-picker-wrapper > i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8b5cf6;
+            font-size: 16px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+    .date-picker-input {
+        padding-left: 40px !important;
+        cursor: pointer;
+    }
+
+    .flatpickr-calendar {
+        border: 1px solid #e8e5ef !important;
+        border-radius: 14px !important;
+        box-shadow: 0 12px 35px rgba(30, 20, 50, 0.15) !important;
+        overflow: hidden;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .flatpickr-months {
+        padding: 8px;
+    }
+
+    .flatpickr-current-month {
+        font-size: 14px !important;
+        font-weight: 700;
+    }
+
+    .flatpickr-weekdays {
+        background: #faf9fc;
+    }
+
+    .flatpickr-weekday {
+        color: #777084 !important;
+        font-size: 11px !important;
+        font-weight: 700;
+    }
+
+    .flatpickr-day {
+        height: 36px;
+        line-height: 36px;
+        border-radius: 8px !important;
+        margin: 2px;
+    }
+
+        .flatpickr-day:hover {
+            background: #f1ebff !important;
+            border-color: #f1ebff !important;
+        }
+
+        .flatpickr-day.selected {
+            background: #8b5cf6 !important;
+            border-color: #8b5cf6 !important;
+        }
+
+        .flatpickr-day.today {
+            border-color: #a78bfa !important;
+        }
+
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+        padding: 8px !important;
+    }
+
+    /* PHONE */
+
+    .phone-hint {
+        display: block;
+        margin-top: 5px;
+        color: #9993a8;
+        font-size: 11px;
+    }
+
+        .phone-hint.error {
+            color: #dc2626;
+        }
+
+    .patient-input.phone-invalid {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10) !important;
+        background-color: #fff8f8;
+    }
+
+    .patient-input.phone-valid {
+        border-color: #22c55e;
+    }
+
+    /* ACTIONS */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #eeeaf5;
+    }
+
+    .cancel-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #514b61;
+        border: 1px solid #ded8e8;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        .cancel-btn:hover {
+            background: #f8f6fc;
+            border-color: #cfc7dc;
+            color: #29243a;
+            text-decoration: none;
+        }
+
+    .save-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 5px 14px rgba(139, 92, 246, 0.18);
+        transition: 0.2s ease;
+        cursor: pointer;
+    }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    @@media (max-width: 800px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .patient-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field-full {
+            grid-column: auto;
+        }
+
+        .patient-form-card {
+            padding: 20px;
+        }
+
+        .form-actions {
+            justify-content: stretch;
+        }
+
+        .cancel-btn,
+        .save-btn {
+            flex: 1;
+        }
+    }
+
+</style>
+
+
+<!-- PAGE HEADER -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Add Patient
+        </h1>
+
+        <p>
+            Register a new patient.
+        </p>
+
+    </div>
+
+    <a asp-area="Receptionist"
+       asp-controller="Patients"
+       asp-action="Index"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Patients
+
+    </a>
+
+</div>
+
+
+<!-- VALIDATION -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="validation-box">
+
+        <strong>
+            Please fix the following:
+        </strong>
+
+        <ul>
+
+            @foreach (var error in ViewData.ModelState.Values
+                .SelectMany(v => v.Errors))
+            {
+                <li>
+                    @error.ErrorMessage
+                </li>
+            }
+
+        </ul>
+
+    </div>
+}
+
+
+<!-- FORM -->
+
+<div class="patient-form-card">
+
+    <div class="form-card-header">
+
+        <h2>
+            Patient Information
+        </h2>
+
+        <span>
+            Enter the patient's personal and contact information.
+        </span>
+
+    </div>
+
+
+    <form asp-area="Receptionist"
+          asp-controller="Patients"
+          asp-action="Create"
+          method="post"
+          autocomplete="off"
+          id="patientForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <div class="patient-form-grid">
+
+
+            <!-- FIRST NAME -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+
+                    First Name
+
+                    <span class="required-mark">*</span>
+
+                </label>
+
+                <input type="text"
+                       name="FirstName"
+                       value="@Model.FirstName"
+                       class="patient-input"
+                       placeholder="Enter first name"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="words"
+                       spellcheck="false"
+                       required />
+
+            </div>
+
+
+            <!-- LAST NAME -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+
+                    Last Name
+
+                    <span class="required-mark">*</span>
+
+                </label>
+
+                <input type="text"
+                       name="LastName"
+                       value="@Model.LastName"
+                       class="patient-input"
+                       placeholder="Enter last name"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="words"
+                       spellcheck="false"
+                       required />
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Phone Number
+                </label>
+
+                <input type="tel"
+                       id="phoneInput"
+                       name="Phone"
+                       value="@Model.Phone"
+                       class="patient-input"
+                       placeholder="01XXXXXXXXX"
+                       autocomplete="off"
+                       autocorrect="off"
+                       spellcheck="false"
+                       inputmode="numeric"
+                       maxlength="11" />
+
+                <span id="phoneHint"
+                      class="phone-hint">
+
+                    Optional. If entered, phone number must contain exactly 11 digits.
+
+                </span>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Email
+                </label>
+
+                <input type="email"
+                       name="Email"
+                       value="@Model.Email"
+                       class="patient-input"
+                       placeholder="patient@email.com"
+                       autocomplete="off"
+                       autocorrect="off"
+                       spellcheck="false" />
+
+            </div>
+
+
+            <!-- DATE OF BIRTH -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Date of Birth
+                </label>
+
+                <div class="date-picker-wrapper">
+
+                    <i class="bi bi-calendar3"></i>
+
+                    <input type="text"
+                           id="dateOfBirth"
+                           name="DateOfBirth"
+                           value="@(Model.DateOfBirth.HasValue
+                                                   ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd")
+                                               : "")"
+                           class="patient-input date-picker-input"
+                           placeholder="Select date of birth"
+                           autocomplete="off"
+                           readonly />
+
+                </div>
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Gender
+                </label>
+
+                <select name="Gender"
+                        class="patient-select"
+                        autocomplete="off">
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male"
+                            selected="@(Model.Gender == "Male")">
+                        Male
+                    </option>
+
+                    <option value="Female"
+                            selected="@(Model.Gender == "Female")">
+                        Female
+                    </option>
+
+                    <option value="Other"
+                            selected="@(Model.Gender == "Other")">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- BLOOD GROUP -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Blood Group
+                </label>
+
+                <select name="BloodGroup"
+                        class="patient-select"
+                        autocomplete="off">
+
+                    <option value="">
+                        Select Blood Group
+                    </option>
+
+                    <option value="A+"
+                            selected="@(Model.BloodGroup == "A+")">
+                        A+
+                    </option>
+
+                    <option value="A-"
+                            selected="@(Model.BloodGroup == "A-")">
+                        A-
+                    </option>
+
+                    <option value="B+"
+                            selected="@(Model.BloodGroup == "B+")">
+                        B+
+                    </option>
+
+                    <option value="B-"
+                            selected="@(Model.BloodGroup == "B-")">
+                        B-
+                    </option>
+
+                    <option value="AB+"
+                            selected="@(Model.BloodGroup == "AB+")">
+                        AB+
+                    </option>
+
+                    <option value="AB-"
+                            selected="@(Model.BloodGroup == "AB-")">
+                        AB-
+                    </option>
+
+                    <option value="O+"
+                            selected="@(Model.BloodGroup == "O+")">
+                        O+
+                    </option>
+
+                    <option value="O-"
+                            selected="@(Model.BloodGroup == "O-")">
+                        O-
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- MARITAL STATUS -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Marital Status
+                </label>
+
+                <select name="MaritalStatus"
+                        class="patient-select"
+                        autocomplete="off">
+
+                    <option value="">
+                        Select Status
+                    </option>
+
+                    <option value="Single"
+                            selected="@(Model.MaritalStatus == "Single")">
+                        Single
+                    </option>
+
+                    <option value="Married"
+                            selected="@(Model.MaritalStatus == "Married")">
+                        Married
+                    </option>
+
+                    <option value="Divorced"
+                            selected="@(Model.MaritalStatus == "Divorced")">
+                        Divorced
+                    </option>
+
+                    <option value="Widowed"
+                            selected="@(Model.MaritalStatus == "Widowed")">
+                        Widowed
+                    </option>
+
+                </select>
+
+            </div>
+            <!-- RELIGION -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Religion
+                </label>
+
+                <select name="Religion"
+                        class="patient-select"
+                        autocomplete="off">
+
+                    <option value="">
+                        Select Religion
+                    </option>
+
+                    <option value="Islam"
+                            selected="@(Model.Religion == "Islam")">
+                        Islam
+                    </option>
+
+                    <option value="Hinduism"
+                            selected="@(Model.Religion == "Hinduism")">
+                        Hinduism
+                    </option>
+
+                    <option value="Christianity"
+                            selected="@(Model.Religion == "Christianity")">
+                        Christianity
+                    </option>
+
+                    <option value="Buddhism"
+                            selected="@(Model.Religion == "Buddhism")">
+                        Buddhism
+                    </option>
+
+                    <option value="Other"
+                            selected="@(Model.Religion == "Other")">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- NID -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    NID Number
+                </label>
+
+                <input type="text"
+                       name="NID"
+                       value="@Model.NID"
+                       class="patient-input"
+                       placeholder="Enter NID number"
+                       autocomplete="off"
+                       autocorrect="off"
+                       spellcheck="false"
+                       inputmode="numeric" />
+
+            </div>
+
+
+            <!-- FATHER -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Father's Name
+                </label>
+
+                <input type="text"
+                       name="FatherName"
+                       value="@Model.FatherName"
+                       class="patient-input"
+                       placeholder="Enter father's name"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="words"
+                       spellcheck="false" />
+
+            </div>
+
+
+            <!-- MOTHER -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Mother's Name
+                </label>
+
+                <input type="text"
+                       name="MotherName"
+                       value="@Model.MotherName"
+                       class="patient-input"
+                       placeholder="Enter mother's name"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="words"
+                       spellcheck="false" />
+
+            </div>
+
+
+            <!-- OCCUPATION -->
+
+            <div class="form-field">
+
+                <label class="form-label-custom">
+                    Occupation
+                </label>
+
+                <input type="text"
+                       name="Occupation"
+                       value="@Model.Occupation"
+                       class="patient-input"
+                       placeholder="Enter occupation"
+                       autocomplete="off"
+                       autocorrect="off"
+                       spellcheck="false" />
+
+            </div>
+
+
+            <!-- ADDRESS -->
+
+            <div class="form-field form-field-full">
+
+                <label class="form-label-custom">
+                    Address
+                </label>
+
+                <textarea name="Address"
+                          class="patient-textarea"
+                          rows="3"
+                          placeholder="Enter patient address"
+                          autocomplete="off"
+                          autocorrect="off"
+                          spellcheck="false">@Model.Address</textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="form-actions">
+
+            <a asp-area="Receptionist"
+               asp-controller="Patients"
+               asp-action="Index"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+
+                <i class="bi bi-person-plus-fill"></i>
+
+                Save Patient
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        /* =================================================
+           PHONE VALIDATION
+        ================================================= */
+
+        const phoneInput =
+            document.getElementById("phoneInput");
+
+        const phoneHint =
+            document.getElementById("phoneHint");
+
+        const patientForm =
+            document.getElementById("patientForm");
+
+
+        function validatePhone() {
+
+            if (!phoneInput) {
+                return true;
+            }
+
+            phoneInput.value =
+                phoneInput.value
+                    .replace(/[^0-9]/g, '')
+                    .slice(0, 11);
+
+
+            const value =
+                phoneInput.value.trim();
+
+
+            if (value.length === 0) {
+
+                phoneInput.classList.remove("phone-invalid");
+                phoneInput.classList.remove("phone-valid");
+
+                phoneHint.classList.remove("error");
+
+                phoneHint.textContent =
+                    "Optional. If entered, phone number must contain exactly 11 digits.";
+
+                return true;
+            }
+
+
+            if (value.length < 11) {
+
+                phoneInput.classList.add("phone-invalid");
+                phoneInput.classList.remove("phone-valid");
+
+                phoneHint.classList.add("error");
+
+                phoneHint.textContent =
+                    "Phone number must contain exactly 11 digits.";
+
+                return false;
+            }
+
+
+            if (value.length === 11) {
+
+                phoneInput.classList.remove("phone-invalid");
+                phoneInput.classList.add("phone-valid");
+
+                phoneHint.classList.remove("error");
+
+                phoneHint.textContent =
+                    "Phone number is valid.";
+
+                return true;
+            }
+
+
+            return false;
+        }
+
+
+        if (phoneInput) {
+
+            phoneInput.addEventListener(
+                "input",
+                validatePhone
+            );
+
+            phoneInput.addEventListener(
+                "blur",
+                validatePhone
+            );
+        }
+
+
+        if (patientForm) {
+
+            patientForm.addEventListener(
+                "submit",
+                function(event) {
+
+                    if (!validatePhone()) {
+
+                        event.preventDefault();
+
+                        phoneInput.focus();
+                    }
+
+                }
+            );
+        }
+
+
+        /* =================================================
+           MODERN DATE PICKER
+        ================================================= */
+
+        const dobInput =
+            document.getElementById("dateOfBirth");
+
+
+        if (
+            dobInput &&
+            typeof flatpickr !== "undefined"
+        ) {
+
+            flatpickr(
+                dobInput,
+                {
+                    dateFormat: "Y-m-d",
+
+                    altInput: true,
+
+                    altFormat: "d M Y",
+
+                    maxDate: "today",
+
+                    minDate: "1900-01-01",
+
+                    allowInput: false,
+
+                    disableMobile: true,
+
+                    monthSelectorType: "dropdown",
+
+                    yearRange:
+                        "1900:" +
+                        new Date().getFullYear(),
+
+                    clickOpens: true
+                }
+            );
+        }
+
+    });
+
+</script>

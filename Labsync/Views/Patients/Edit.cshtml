@@ -1,0 +1,522 @@
+﻿@model LabSync.Models.Patient
+
+@{
+    ViewData["Title"] = "Edit Patient";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Edit Patient</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+</head>
+
+<body>
+
+    <div class="dashboard-page">
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <i class="bi bi-beaker-fill"></i>
+                </div>
+
+                <div>
+                    <h4>LabSync</h4>
+                    <small>Diagnostic Management</small>
+                </div>
+
+            </div>
+
+            <div class="sidebar-menu">
+
+                <p class="menu-title">MAIN MENU</p>
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Users</span>
+                </a>
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item active">
+                    <i class="bi bi-person-vcard-fill"></i>
+                    <span>Patients</span>
+                </a>
+
+                <a asp-controller="Appointments"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-calendar-check-fill"></i>
+                    <span>Appointments</span>
+                </a>
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-eyedropper"></i>
+                    <span>Tests</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <span>Referral Doctors</span>
+                </a>
+
+                <p class="menu-title mt-4">OPERATIONS</p>
+
+                <a asp-controller="Reports"
+                   asp-action="Index"
+                   class="menu-item">
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+                    <span>Reports</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <i class="bi bi-credit-card-fill"></i>
+                    <span>Payments</span>
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <span>Analytics</span>
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <main class="dashboard-main">
+
+            <header class="topbar">
+
+                <div></div>
+
+                <div class="topbar-right">
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+                    <div class="profile-info">
+                        <strong>Admin</strong>
+                        <small>Administrator</small>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <div class="dashboard-content">
+
+                <div class="welcome-section">
+
+                    <div>
+
+                        <p class="welcome-small">
+                            Patient Management
+                        </p>
+
+                        <h1>
+                            Edit Patient
+                        </h1>
+
+                        <p class="welcome-description">
+                            Update patient information.
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Back to Patients
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-card mt-4">
+
+                    <div class="card-header-custom">
+
+                        <div>
+
+                            <h5>
+                                Edit Patient Information
+                            </h5>
+
+                            <span>
+                                Patient ID: @Model.Id
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="p-4">
+
+                        <form asp-action="Edit"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   asp-for="Id" />
+
+                            <input type="hidden"
+                                   asp-for="CreatedAt" />
+
+
+                            <div asp-validation-summary="ModelOnly"
+                                 class="text-danger mb-3">
+                            </div>
+
+
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="FirstName"
+                                           class="form-label">
+                                        First Name *
+                                    </label>
+
+                                    <input asp-for="FirstName"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="FirstName"
+                                          class="text-danger">
+                                    </span>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="LastName"
+                                           class="form-label">
+                                        Last Name *
+                                    </label>
+
+                                    <input asp-for="LastName"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="LastName"
+                                          class="text-danger">
+                                    </span>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="PatientCode"
+                                           class="form-label">
+                                        Patient Code
+                                    </label>
+
+                                    <input asp-for="PatientCode"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="DateOfBirth"
+                                           class="form-label">
+                                        Date of Birth
+                                    </label>
+
+                                    <input asp-for="DateOfBirth"
+                                           type="date"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="Gender"
+                                           class="form-label">
+                                        Gender
+                                    </label>
+
+                                    <select asp-for="Gender"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select Gender
+                                        </option>
+
+                                        <option value="Male">
+                                            Male
+                                        </option>
+
+                                        <option value="Female">
+                                            Female
+                                        </option>
+
+                                        <option value="Other">
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="BloodGroup"
+                                           class="form-label">
+                                        Blood Group
+                                    </label>
+
+                                    <select asp-for="BloodGroup"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select Blood Group
+                                        </option>
+
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="Phone"
+                                           class="form-label">
+                                        Phone
+                                    </label>
+
+                                    <input asp-for="Phone"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="Email"
+                                           class="form-label">
+                                        Email
+                                    </label>
+
+                                    <input asp-for="Email"
+                                           class="form-control" />
+
+                                    <span asp-validation-for="Email"
+                                          class="text-danger">
+                                    </span>
+
+                                </div>
+
+
+                                <div class="col-12">
+
+                                    <label asp-for="Address"
+                                           class="form-label">
+                                        Address
+                                    </label>
+
+                                    <textarea asp-for="Address"
+                                              class="form-control"
+                                              rows="3"></textarea>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="Religion"
+                                           class="form-label">
+                                        Religion
+                                    </label>
+
+                                    <input asp-for="Religion"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="MaritalStatus"
+                                           class="form-label">
+                                        Marital Status
+                                    </label>
+
+                                    <select asp-for="MaritalStatus"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select Status
+                                        </option>
+
+                                        <option value="Single">
+                                            Single
+                                        </option>
+
+                                        <option value="Married">
+                                            Married
+                                        </option>
+
+                                        <option value="Divorced">
+                                            Divorced
+                                        </option>
+
+                                        <option value="Widowed">
+                                            Widowed
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="FatherName"
+                                           class="form-label">
+                                        Father Name
+                                    </label>
+
+                                    <input asp-for="FatherName"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="MotherName"
+                                           class="form-label">
+                                        Mother Name
+                                    </label>
+
+                                    <input asp-for="MotherName"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="NID"
+                                           class="form-label">
+                                        NID
+                                    </label>
+
+                                    <input asp-for="NID"
+                                           class="form-control" />
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label asp-for="Occupation"
+                                           class="form-label">
+                                        Occupation
+                                    </label>
+
+                                    <input asp-for="Occupation"
+                                           class="form-control" />
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+
+                                <a asp-action="Index"
+                                   class="btn btn-outline-secondary">
+
+                                    Cancel
+
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-primary">
+
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Save Changes
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

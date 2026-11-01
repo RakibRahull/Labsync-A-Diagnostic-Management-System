@@ -1,0 +1,1526 @@
+﻿@model LabSync.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = null;
+
+    var selectedDate =
+        ViewBag.SelectedDateDisplay
+        ?? DateTime.Today.ToString("dd MMM yyyy");
+
+    var selectedDateValue =
+        ViewBag.SelectedDate
+        ?? DateTime.Today.ToString("yyyy-MM-dd");
+
+    
+    // ROOT ACCOUNT LOGOUT URL
+    
+    var logoutUrl =
+        Url.Action(
+            "Logout",
+            "Account",
+            new
+            {
+                area = ""
+            });
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        LabSync - Admin Dashboard
+    </title>
+
+
+    
+    <!-- BOOTSTRAP --!>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- BOOTSTRAP ICONS -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- SITE CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* TOPBAR */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* PROFILE */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+
+                .profile:focus {
+                    box-shadow: none;
+                    outline: none;
+                }
+
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /*  DASHBOARD ACTIVE */
+
+            .sidebar .menu-item.dashboard-active {
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 ) !important;
+                color: #ffffff !important;
+                border-radius: 11px;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.25);
+            }
+
+
+                .sidebar .menu-item.dashboard-active i {
+                    color: #ffffff !important;
+                }
+
+
+                .sidebar .menu-item.dashboard-active span {
+                    color: #ffffff !important;
+                }
+
+
+                .sidebar .menu-item.dashboard-active:hover {
+                    background: linear-gradient( 135deg, #7c3aed, #a855f7 ) !important;
+                    color: #ffffff !important;
+                }
+
+
+                    .sidebar .menu-item.dashboard-active:hover i,
+                    .sidebar .menu-item.dashboard-active:hover span {
+                        color: #ffffff !important;
+                    }
+
+
+            /* PROFILE DROPDOWN */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 190px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+
+                /* LOGOUT FORM */
+
+                .profile-dropdown .logout-form {
+                    margin: 0;
+                    padding: 0;
+                }
+
+
+                /* LOGOUT BUTTON */
+
+                .profile-dropdown .logout-item {
+                    width: 100%;
+                    border: none;
+                    background: transparent;
+                    border-radius: 8px;
+                    padding: 11px 12px;
+                    color: #dc2626;
+                    font-size: 14px;
+                    font-family: inherit;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: .2s ease;
+                }
+
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+                    .profile-dropdown .logout-item i {
+                        width: 22px;
+                        margin-right: 7px;
+                    }
+
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            /* SIDEBAR LOGOUT */
+
+            .sidebar-logout-form {
+                margin: 0;
+                padding: 0;
+            }
+
+
+            .sidebar-logout-button {
+                width: 100%;
+                border: none;
+                background: transparent;
+                text-align: left;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+
+                .sidebar-logout-button:hover {
+                    background: #fef2f2 !important;
+                    color: #dc2626 !important;
+                }
+
+
+                    .sidebar-logout-button:hover i,
+                    .sidebar-logout-button:hover span {
+                        color: #dc2626 !important;
+                    }
+
+
+            /* DATE BOX */
+
+            .date-box {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 14px;
+                padding: 14px 18px;
+                min-width: 215px;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                transition: .2s ease;
+            }
+
+
+                .date-box:hover {
+                    border-color: #c9b5f7;
+                    box-shadow: 0 7px 22px rgba(139, 92, 246, 0.10);
+                }
+
+
+                /* DATE ICON */
+
+                .date-box > i {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 11px;
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                    flex-shrink: 0;
+                }
+
+
+            /* DATE CONTENT */
+
+            .date-picker-content {
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+
+                .date-picker-content small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-bottom: 4px;
+                }
+
+
+            /* DATE INPUT */
+
+            .dashboard-date-picker {
+                border: none;
+                outline: none;
+                background: transparent;
+                color: #29243a;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                padding: 0;
+                width: 155px;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+
+                .dashboard-date-picker:focus {
+                    border: none;
+                    outline: none;
+                    box-shadow: none;
+                }
+
+
+                .dashboard-date-picker::-webkit-calendar-picker-indicator {
+                    cursor: pointer;
+                    width: 18px;
+                    height: 18px;
+                    opacity: .75;
+                }
+
+
+                    .dashboard-date-picker::-webkit-calendar-picker-indicator:hover {
+                        opacity: 1;
+                    }
+
+
+            .dashboard-date-picker {
+                color-scheme: light;
+            }
+
+
+            /* APPOINTMENT VIEW ALL */
+
+            .appointments-view-all {
+                color: #8b5cf6;
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: none;
+                white-space: nowrap;
+                transition: .2s ease;
+            }
+
+
+                .appointments-view-all:hover {
+                    color: #7c3aed;
+                    text-decoration: underline;
+                }
+
+
+            /* NO APPOINTMENTS */
+
+            .no-appointments p {
+                margin-bottom: 0;
+            }
+
+
+            /* MOBILE */
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+
+                .profile-info {
+                    display: none;
+                }
+
+
+                .date-box {
+                    min-width: 180px;
+                    padding: 12px 14px;
+                }
+
+
+                .dashboard-date-picker {
+                    width: 130px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- =================================================
+                 BRAND
+            ================================================== -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SIDEBAR MENU
+            ================================================== -->
+
+            <div class="sidebar-menu">
+
+
+                <!-- =================================================
+                     MAIN MENU
+                ================================================== -->
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- =================================================
+                     DASHBOARD
+                ================================================== -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item dashboard-active">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     USERS
+                ================================================== -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     PATIENTS
+                ================================================== -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     APPOINTMENTS
+                ================================================== -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   asp-route-selectedDate="@selectedDateValue"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     TESTS
+                ================================================== -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     REFERRAL DOCTORS
+                ================================================== -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     OPERATIONS
+                ================================================== -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- =================================================
+                     REPORTS
+                ================================================== -->
+
+                <a href="@Url.Action(
+                                          "Index",
+                                          "AdminReports",
+                                          new
+                                          {
+                                              area = ""
+                                          })"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     INVOICES
+                ================================================== -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     PAYMENTS
+                ================================================== -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     ANALYTICS
+                ================================================== -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Analytics" ? "active" : "")">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- =================================================
+                     AUDIT LOGS
+                ================================================== -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AuditLogs" ? "active" : "")">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+               
+
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <!-- =================================================
+                         ADMIN PROFILE
+                    ================================================== -->
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE BUTTON -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+
+                            <!-- AVATAR -->
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+
+                            <!-- ADMIN INFO -->
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+
+                        </button>
+
+
+                        <!-- =================================================
+                             DROPDOWN
+                             ONLY LOGOUT
+                        ================================================== -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            <li>
+
+                                <form action="@logoutUrl"
+                                      method="post"
+                                      class="logout-form">
+
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <button type="submit"
+                                            class="logout-item">
+
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+
+                                        Logout
+
+
+                                    </button>
+
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 DASHBOARD CONTENT
+            ================================================== -->
+
+            <div class="dashboard-content">
+
+
+                <!-- =================================================
+                     WELCOME
+                ================================================== -->
+
+                <div class="welcome-section">
+
+
+                    <div>
+
+                        
+
+
+                        <h1>
+
+                            Welcome back,
+                            <span>Admin</span> 👋
+
+                        </h1>
+
+
+                        <p class="welcome-description">
+
+                            Here's what's happening in your diagnostic
+                            center today.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DATE PICKER
+                    ================================================== -->
+
+                    <div class="date-box">
+
+
+                        <i class="bi bi-calendar3"></i>
+
+
+                        <div class="date-picker-content">
+
+
+                            <small>
+                                Select Date
+                            </small>
+
+
+                            <input type="date"
+                                   id="dashboardDate"
+                                   class="dashboard-date-picker"
+                                   value="@selectedDateValue"
+                                   aria-label="Select dashboard date" />
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     STAT CARDS
+                ================================================== -->
+
+                <div class="row g-4 mt-1">
+
+
+                    <!-- TOTAL PATIENTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="stat-card">
+
+
+                            <div class="stat-icon purple">
+
+                                <i class="bi bi-people-fill"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Total Patients
+                                </span>
+
+
+                                <h2>
+                                    @Model.TotalPatients
+                                </h2>
+
+
+                                <small class="positive">
+
+                                    <i class="bi bi-arrow-up"></i>
+
+                                    Total registered patients
+
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- APPOINTMENTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="stat-card">
+
+
+                            <div class="stat-icon blue">
+
+                                <i class="bi bi-calendar-check-fill"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Appointments
+                                </span>
+
+
+                                <h2>
+                                    @Model.TodayAppointments
+                                </h2>
+
+
+                                <small class="positive">
+
+                                    <i class="bi bi-calendar-check"></i>
+
+                                    @selectedDate appointments
+
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PENDING REPORTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="stat-card">
+
+
+                            <div class="stat-icon pink">
+
+                                <i class="bi bi-file-earmark-medical-fill"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Pending Reports
+                                </span>
+
+
+                                <h2>
+                                    @Model.PendingReports
+                                </h2>
+
+
+                                <small class="warning-text">
+                                    Need attention
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- COMPLETED TESTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="stat-card">
+
+
+                            <div class="stat-icon cyan">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Completed Tests
+                                </span>
+
+
+                                <h2>
+                                    @Model.CompletedTests
+                                </h2>
+
+
+                                <small class="positive">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Completed tests
+
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     LOWER SECTION
+                ================================================== -->
+
+                <div class="row g-4 mt-1">
+
+
+                    <!-- =================================================
+                         APPOINTMENTS
+                    ================================================== -->
+
+                    <div class="col-xl-7">
+
+
+                        <div class="dashboard-card">
+
+
+                            <div class="card-header-custom">
+
+
+                                <div>
+
+                                    <h5>
+                                        Appointments for @selectedDate
+                                    </h5>
+
+
+                                    <span>
+                                        Patient appointment schedule
+                                    </span>
+
+                                </div>
+
+
+                                <a asp-controller="Admin"
+                                   asp-action="AppointmentDetails"
+                                   asp-route-selectedDate="@selectedDateValue"
+                                   class="appointments-view-all">
+
+                                    View All
+
+                                </a>
+
+
+                            </div>
+
+
+                            <div class="appointment-list">
+
+
+                                @if (
+                                    Model.TodayAppointmentsList != null
+                                    &&
+                                    Model.TodayAppointmentsList.Any()
+                                )
+                                {
+                                    foreach (
+                                        var appointment
+                                        in Model.TodayAppointmentsList
+                                    )
+                                    {
+
+                                        <div class="appointment-row">
+
+
+                                            <div class="appointment-time">
+
+                                                @appointment.AppointmentTime
+
+                                            </div>
+
+
+                                            <div class="patient-icon">
+
+                                                <i class="bi bi-person-fill"></i>
+
+                                            </div>
+
+
+                                            <div class="patient-info">
+
+                                                <strong>
+                                                    @appointment.PatientName
+                                                </strong>
+
+
+                                                <small>
+                                                    @appointment.TestName
+                                                </small>
+
+                                            </div>
+
+
+                                            @if (
+                                                !string.IsNullOrEmpty(
+                                                    appointment.StatusName
+                                                )
+                                                &&
+                                                appointment.StatusName
+                                                    .ToLower()
+                                                    .Contains("confirm")
+                                            )
+                                            {
+
+                                                <span class="status confirmed">
+
+                                                    @appointment.StatusName
+
+                                                </span>
+
+                                            }
+                                            else
+                                            {
+
+                                                <span class="status pending">
+
+                                                    @(appointment.StatusName
+                                                        ?? "Pending")
+
+                                                </span>
+
+                                            }
+
+
+                                        </div>
+
+                                    }
+                                }
+                                else
+                                {
+
+                                    <div class="no-appointments">
+
+
+                                        <div class="no-appointment-icon">
+
+                                            <i class="bi bi-calendar-x"></i>
+
+                                        </div>
+
+
+                                        <p>
+
+                                            No appointments for
+                                            @selectedDate.
+
+                                        </p>
+
+
+                                    </div>
+
+                                }
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+                         QUICK ACTIONS
+                    ================================================== -->
+
+                    <div class="col-xl-5">
+
+
+                        <div class="dashboard-card">
+
+
+                            <div class="card-header-custom">
+
+
+                                <div>
+
+                                    <h5>
+                                        Quick Actions
+                                    </h5>
+
+
+                                    <span>
+                                        Frequently used features
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="quick-actions">
+
+                                <!-- MANAGE USERS -->
+                                <a asp-controller="Users"
+                                   asp-action="Index"
+                                   class="quick-action text-decoration-none">
+
+                                    <div class="quick-icon purple">
+                                        <i class="bi bi-person-plus-fill"></i>
+                                    </div>
+
+                                    <span>Manage Users</span>
+
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+
+                                <!-- MANAGE TESTS -->
+                                <a asp-controller="Tests"
+                                   asp-action="Index"
+                                   class="quick-action text-decoration-none">
+
+                                    <div class="quick-icon blue">
+                                        <i class="bi bi-eyedropper"></i>
+                                    </div>
+
+                                    <span>Manage Tests</span>
+
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+
+                                <!-- REVIEW REPORTS -->
+                                <a href="@Url.Action(
+                                                       "Index",
+                                                       "AdminReports",
+                                                       new { area = "" })"
+                                   class="quick-action text-decoration-none">
+
+                                    <div class="quick-icon pink">
+                                        <i class="bi bi-file-earmark-medical-fill"></i>
+                                    </div>
+
+                                    <span>Review Reports</span>
+
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+
+                                <!-- VIEW ANALYTICS -->
+                                <a asp-controller="Admin"
+                                   asp-action="Analytics"
+                                   class="quick-action text-decoration-none">
+
+                                    <div class="quick-icon cyan">
+                                        <i class="bi bi-bar-chart-fill"></i>
+                                    </div>
+
+                                    <span>View Analytics</span>
+
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     RECENT ACTIVITY
+                ================================================== -->
+
+                <div class="dashboard-card mt-4">
+
+
+                    <div class="card-header-custom">
+
+
+                        <div>
+
+                            <h5>
+                                Recent Activity
+                            </h5>
+
+
+                            <span>
+                                Latest activities in LabSync
+                            </span>
+
+                        </div>
+
+
+                        <a asp-controller="Admin"
+                           asp-action="RecentActivity"
+                           class="text-decoration-none">
+
+                            View All
+
+                        </a>
+
+
+                    </div>
+
+
+                    <div class="activity-list">
+
+
+                        @if (
+                            Model.RecentActivities != null
+                            &&
+                            Model.RecentActivities.Any()
+                        )
+                        {
+
+                            foreach (
+                                var activity
+                                in Model.RecentActivities
+                            )
+                            {
+
+                                <div class="activity-item">
+
+
+                                    <div class="activity-icon @activity.IconClass">
+
+                                        <i class="bi @activity.Icon"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+                                            @activity.Title
+                                        </strong>
+
+
+                                        <small>
+                                            @activity.Description
+                                        </small>
+
+                                    </div>
+
+
+                                    <span>
+                                        @activity.TimeAgo
+                                    </span>
+
+
+                                </div>
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            <div class="text-center py-4">
+
+
+                                <div class="activity-icon blue mx-auto mb-2">
+
+                                    <i class="bi bi-clock-history"></i>
+
+                                </div>
+
+
+                                <strong>
+                                    No recent activity
+                                </strong>
+
+
+                                <small class="d-block text-muted">
+
+                                    There are no recent activities to display.
+
+                                </small>
+
+
+                            </div>
+
+                        }
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOTSTRAP JS
+    ====================================================== -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <!-- =====================================================
+         DASHBOARD DATE PICKER
+    ====================================================== -->
+
+    <script>
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                function() {
+
+                    const datePicker =
+                        document.getElementById(
+                            "dashboardDate"
+                        );
+
+
+                    if (!datePicker) {
+                        return;
+                    }
+
+
+                    // =================================================
+                    // SERVER DATE
+                    // =================================================
+
+                    const serverSelectedDate =
+                        "@selectedDateValue";
+
+
+                    if (serverSelectedDate) {
+
+                        datePicker.value =
+                            serverSelectedDate;
+
+                    }
+
+
+                    // =================================================
+                    // DATE CHANGE
+                    // =================================================
+
+                    datePicker.addEventListener(
+                        "change",
+                        function() {
+
+                            const selectedDate =
+                                this.value;
+
+
+                            if (!selectedDate) {
+                                return;
+                            }
+
+
+                            const url =
+                                new URL(
+                                    window.location.href
+                                );
+
+
+                            url.searchParams.set(
+                                "selectedDate",
+                                selectedDate
+                            );
+
+
+                            window.location.href =
+                                url.toString();
+
+                        }
+                    );
+
+                }
+            );
+
+    </script>
+
+
+</body>
+
+</html>

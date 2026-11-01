@@ -1,0 +1,1363 @@
+﻿@model LabSync.Models.Report
+
+@{
+    ViewData["Title"] = "Review Report";
+    Layout = null;
+
+    var reportStatus =
+        Model.ApprovalStatus?.StatusName ?? "Pending";
+
+    var statusLower =
+        reportStatus.Trim().ToLowerInvariant();
+
+    var isApproved =
+        statusLower.Contains("approved");
+
+    var isRejected =
+        statusLower.Contains("reject");
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Review Report</title>
+
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       REPORT CONTENT
+                    ====================================================== */
+
+            .report-details-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       PAGE HEADER
+                    ====================================================== */
+
+            .report-details-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .report-details-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .report-details-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+
+            /* =====================================================
+                       BACK BUTTON
+                    ====================================================== */
+
+            .report-back-button {
+                min-height: 46px;
+                padding: 0 17px;
+                border-radius: 10px;
+                border: 1px solid #dedbe6;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                transition: .2s ease;
+            }
+
+                .report-back-button:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                       MAIN CARD
+                    ====================================================== */
+
+            .report-details-card {
+                width: 100%;
+                max-width: 1050px;
+                margin: 0 auto;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, .04);
+            }
+
+
+            /* =====================================================
+                       CARD HEADER
+                    ====================================================== */
+
+            .report-card-header {
+                padding: 23px 30px;
+                border-bottom: 1px solid #eeeaf3;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+            }
+
+            .report-card-header-left h4 {
+                margin: 0 0 5px;
+                color: #29243a;
+                font-size: 20px;
+                font-weight: 700;
+            }
+
+            .report-card-header-left p {
+                margin: 0;
+                color: #9993a8;
+                font-size: 13px;
+            }
+
+
+            /* =====================================================
+                       STATUS BADGES
+                    ====================================================== */
+
+            .report-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 8px 13px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+
+            .report-status-approved {
+                background: #dcfce7;
+                color: #159447;
+            }
+
+            .report-status-rejected {
+                background: #fee2e2;
+                color: #dc2626;
+            }
+
+            .report-status-pending {
+                background: #fff7df;
+                color: #b98100;
+            }
+
+
+            /* =====================================================
+                       BODY
+                    ====================================================== */
+
+            .report-details-body {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       SECTION TITLE
+                    ====================================================== */
+
+            .report-section-title {
+                margin: 0 0 18px;
+                color: #302b40;
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       INFORMATION BOX
+                    ====================================================== */
+
+            .report-info-box {
+                height: 100%;
+                padding: 17px 18px;
+                background: #ffffff;
+                border: 1px solid #e9e5ef;
+                border-radius: 12px;
+                transition: .2s ease;
+            }
+
+                .report-info-box:hover {
+                    border-color: #d8caf2;
+                    box-shadow: 0 4px 14px rgba(139, 92, 246, .05);
+                }
+
+            .report-info-label {
+                display: block;
+                margin-bottom: 6px;
+                color: #9892a6;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .report-info-value {
+                margin: 0;
+                color: #302b40;
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 1.4;
+                word-break: break-word;
+            }
+
+            .report-id-value,
+            .report-appointment-value {
+                color: #7c3aed;
+            }
+
+
+            /* =====================================================
+                       PDF SECTION
+                    ====================================================== */
+
+            .report-file-section {
+                margin-top: 28px;
+                padding-top: 25px;
+                border-top: 1px solid #eeeaf3;
+            }
+
+            .report-pdf-button {
+                min-height: 46px;
+                padding: 0 18px;
+                border: none;
+                border-radius: 10px;
+                background: #212529;
+                color: #ffffff !important;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: .2s ease;
+            }
+
+                .report-pdf-button:hover {
+                    background: #111315;
+                    color: #ffffff !important;
+                    transform: translateY(-1px);
+                }
+
+            .report-no-file {
+                color: #9993a8;
+                font-size: 13px;
+                margin: 0;
+            }
+
+
+            /* =====================================================
+                       ACTIONS
+                    ====================================================== */
+
+            .report-actions {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                margin-top: 28px;
+                padding-top: 22px;
+                border-top: 1px solid #eeeaf3;
+            }
+
+            .report-approve-button {
+                min-height: 46px;
+                padding: 0 19px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient( 135deg, #16a34a, #22c55e );
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                cursor: pointer;
+                box-shadow: 0 7px 18px rgba(22, 163, 74, .18);
+            }
+
+                .report-approve-button:hover {
+                    opacity: .94;
+                    transform: translateY(-1px);
+                }
+
+            .report-reject-button {
+                min-height: 46px;
+                padding: 0 19px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient( 135deg, #dc2626, #ef4444 );
+                color: #ffffff;
+                font-size: 14px;
+                font-weight: 700;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                cursor: pointer;
+                box-shadow: 0 7px 18px rgba(220, 38, 38, .18);
+            }
+
+                .report-reject-button:hover {
+                    opacity: .94;
+                    transform: translateY(-1px);
+                }
+
+            .report-action-back {
+                min-height: 46px;
+                padding: 0 19px;
+                border: 1px solid #dedbe6;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #5f596c;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .report-action-back:hover {
+                    background: #f7f4fb;
+                    color: #7c3aed;
+                    border-color: #d5c5f5;
+                }
+
+
+            /* =====================================================
+                       FINAL STATUS MESSAGE
+                    ====================================================== */
+
+            .report-final-status {
+                min-height: 46px;
+                padding: 0 17px;
+                border-radius: 10px;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+                .report-final-status.approved {
+                    background: #ecfdf3;
+                    color: #15803d;
+                    border: 1px solid #bbf7d0;
+                }
+
+                .report-final-status.rejected {
+                    background: #fef2f2;
+                    color: #b91c1c;
+                    border: 1px solid #fecaca;
+                }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .report-details-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+
+                .report-back-button {
+                    align-self: flex-start;
+                }
+
+                .report-details-card {
+                    max-width: 100%;
+                }
+            }
+
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .report-details-content {
+                    padding: 20px 15px;
+                }
+
+                .report-details-title {
+                    font-size: 28px;
+                }
+
+                .report-details-subtitle {
+                    font-size: 14px;
+                }
+
+                .report-card-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .report-details-body {
+                    padding: 20px;
+                }
+
+                .report-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .report-approve-button,
+                .report-reject-button,
+                .report-action-back,
+                .report-final-status {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+
+                    <i class="bi bi-beaker-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- OPERATIONS -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a asp-controller="Reports"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+              
+
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+
+                        </button>
+
+
+                        <!-- DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="report-details-content">
+
+
+                <!-- HEADER -->
+
+                <div class="report-details-header">
+
+
+                    <div>
+
+                        <h1 class="report-details-title">
+                            Review Report
+                        </h1>
+
+                        <p class="report-details-subtitle">
+                            Review report information and approval status.
+                        </p>
+
+                    </div>
+
+
+                    <a asp-controller="Reports"
+                       asp-action="Index"
+                       class="report-back-button">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Reports
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     MAIN CARD
+                ================================================== -->
+
+                <div class="report-details-card">
+
+
+                    <!-- CARD HEADER -->
+
+                    <div class="report-card-header">
+
+
+                        <div class="report-card-header-left">
+
+                            <h4>
+                                Report #@Model.Id
+                            </h4>
+
+                            <p>
+                                Laboratory report review
+                            </p>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+                        @if (isApproved)
+                        {
+
+                            <span class="report-status report-status-approved">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Approved
+
+                            </span>
+
+                        }
+                        else if (isRejected)
+                        {
+
+                            <span class="report-status report-status-rejected">
+
+                                <i class="bi bi-x-circle"></i>
+
+                                Rejected
+
+                            </span>
+
+                        }
+                        else
+                        {
+
+                            <span class="report-status report-status-pending">
+
+                                <i class="bi bi-clock"></i>
+
+                                Pending
+
+                            </span>
+
+                        }
+
+
+                    </div>
+
+
+                    <!-- BODY -->
+
+                    <div class="report-details-body">
+
+
+                        <h6 class="report-section-title">
+                            Report Information
+                        </h6>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- REPORT ID -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Report ID
+                                    </span>
+
+                                    <p class="report-info-value report-id-value">
+
+                                        #@Model.Id
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- APPOINTMENT -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Appointment
+                                    </span>
+
+                                    <p class="report-info-value report-appointment-value">
+
+                                        @(Model.Appointment?.AppointmentCode
+                                            ?? $"Appointment #{Model.AppointmentId}")
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- GENERATED BY -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Generated By
+                                    </span>
+
+                                    <p class="report-info-value">
+
+                                        @(Model.GeneratedByUser?.Email ?? "-")
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- GENERATED DATE -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Generated Date
+                                    </span>
+
+                                    <p class="report-info-value">
+
+                                        @(
+                                            Model.GeneratedDate.HasValue
+                                                ? Model.GeneratedDate.Value.ToString(
+                                                    "dd MMM yyyy hh:mm tt"
+                                                  )
+                                                : "-"
+                                        )
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- APPROVAL STATUS -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Approval Status
+                                    </span>
+
+                                    <p class="report-info-value">
+
+                                        @reportStatus
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- APPROVED / REJECTED BY -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Approved / Rejected By
+                                    </span>
+
+                                    <p class="report-info-value">
+
+                                        @(Model.ApprovedByUser?.Email ?? "-")
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- APPROVAL DATE -->
+
+                            <div class="col-md-6">
+
+                                <div class="report-info-box">
+
+                                    <span class="report-info-label">
+                                        Approval Date
+                                    </span>
+
+                                    <p class="report-info-value">
+
+                                        @(
+                                            Model.ApprovalDate.HasValue
+                                                ? Model.ApprovalDate.Value.ToString(
+                                                    "dd MMM yyyy hh:mm tt"
+                                                  )
+                                                : "-"
+                                        )
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- =================================================
+                             PDF
+                        ================================================== -->
+
+                        <div class="report-file-section">
+
+
+                            <h6 class="report-section-title">
+                                Report File
+                            </h6>
+
+
+                            @if (!string.IsNullOrWhiteSpace(Model.PdfPath))
+                            {
+
+                                <a href="@Model.PdfPath"
+                                   target="_blank"
+                                   class="report-pdf-button">
+
+                                    <i class="bi bi-file-earmark-pdf"></i>
+
+                                    View Report PDF
+
+                                </a>
+
+                            }
+                            else
+                            {
+
+                                <p class="report-no-file">
+                                    No PDF file available.
+                                </p>
+
+                            }
+
+
+                        </div>
+
+
+                        <!-- =================================================
+                             ACTIONS
+                        ================================================== -->
+
+                        <div class="report-actions">
+
+
+                            @if (!isApproved &&
+                                 !isRejected)
+                            {
+
+
+                                <!-- APPROVE -->
+
+                                <form asp-controller="Reports"
+                                      asp-action="Approve"
+                                      method="post">
+
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@Model.Id" />
+
+
+                                    <button type="submit"
+                                            class="report-approve-button"
+                                            onclick="return confirm('Approve this report?');">
+
+                                        <i class="bi bi-check-lg"></i>
+
+                                        Approve Report
+
+                                    </button>
+
+
+                                </form>
+
+
+                                <!-- REJECT -->
+
+                                <form asp-controller="Reports"
+                                      asp-action="Reject"
+                                      method="post">
+
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@Model.Id" />
+
+
+                                    <button type="submit"
+                                            class="report-reject-button"
+                                            onclick="return confirm('Reject this report?');">
+
+                                        <i class="bi bi-x-lg"></i>
+
+                                        Reject Report
+
+                                    </button>
+
+
+                                </form>
+
+
+                            }
+                            else if (isApproved)
+                            {
+
+
+                                <div class="report-final-status approved">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    This report has already been approved.
+
+                                </div>
+
+
+                            }
+                            else
+                            {
+
+
+                                <div class="report-final-status rejected">
+
+                                    <i class="bi bi-x-circle"></i>
+
+                                    This report has been rejected.
+
+                                </div>
+
+
+                            }
+
+
+                            <!-- BACK -->
+
+                            <a asp-controller="Reports"
+                               asp-action="Index"
+                               class="report-action-back">
+
+                                Back to Reports
+
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOTSTRAP JS
+    ====================================================== -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

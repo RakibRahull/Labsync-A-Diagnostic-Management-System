@@ -1,0 +1,1314 @@
+﻿@model LabSync.Models.AdminAnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Analytics";
+    Layout = null;
+
+    var approvedPercent =
+        Model.TotalReports > 0
+            ? (Model.ApprovedReports * 100 / Model.TotalReports)
+            : 0;
+
+    var pendingPercent =
+        Model.TotalReports > 0
+            ? (Model.PendingReports * 100 / Model.TotalReports)
+            : 0;
+
+    var rejectedPercent =
+        Model.TotalReports > 0
+            ? (Model.RejectedReports * 100 / Model.TotalReports)
+            : 0;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Analytics</title>
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       ANALYTICS CONTENT
+                    ====================================================== */
+
+            .analytics-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       PAGE HEADER
+                    ====================================================== */
+
+            .analytics-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .analytics-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .analytics-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            /* =====================================================
+                       BACK BUTTON
+                    ====================================================== */
+
+            .analytics-back-button {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 11px 16px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #514b61;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: .2s ease;
+            }
+
+                .analytics-back-button:hover {
+                    background: #f5efff;
+                    border-color: #d8c7f8;
+                    color: #7c3aed;
+                }
+
+
+            /* =====================================================
+                       STAT CARDS
+                    ====================================================== */
+
+            .analytics-stat-card {
+                height: 100%;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                padding: 22px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .analytics-stat-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 21px;
+                flex-shrink: 0;
+            }
+
+                .analytics-stat-icon.purple {
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                }
+
+                .analytics-stat-icon.blue {
+                    background: #e9f2ff;
+                    color: #4385dd;
+                }
+
+                .analytics-stat-icon.pink {
+                    background: #fdeffc;
+                    color: #d946a8;
+                }
+
+                .analytics-stat-icon.cyan {
+                    background: #e8faff;
+                    color: #1297b8;
+                }
+
+            .analytics-stat-info span {
+                display: block;
+                color: #8b8798;
+                font-size: 13px;
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+
+            .analytics-stat-info h2 {
+                margin: 0;
+                color: #29243a;
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 1.1;
+            }
+
+            .analytics-stat-info small {
+                display: block;
+                color: #a09bab;
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+
+            /* =====================================================
+                       ANALYTICS CARDS
+                    ====================================================== */
+
+            .analytics-card {
+                height: 100%;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .analytics-card-header {
+                padding: 22px 24px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid #eeeaf3;
+            }
+
+                .analytics-card-header h5 {
+                    margin: 0 0 5px;
+                    color: #29243a;
+                    font-size: 18px;
+                    font-weight: 700;
+                }
+
+                .analytics-card-header span {
+                    color: #9993a8;
+                    font-size: 13px;
+                }
+
+            .analytics-card-body {
+                padding: 24px;
+            }
+
+
+            /* =====================================================
+                       REPORT STATUS
+                    ====================================================== */
+
+            .status-row {
+                margin-bottom: 22px;
+            }
+
+                .status-row:last-child {
+                    margin-bottom: 0;
+                }
+
+            .status-row-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                margin-bottom: 8px;
+                color: #514b61;
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+                .status-row-header strong {
+                    color: #29243a;
+                    font-size: 14px;
+                }
+
+            .status-progress {
+                height: 10px;
+                background: #f0edf5;
+                border-radius: 20px;
+                overflow: hidden;
+            }
+
+            .status-progress-bar {
+                height: 100%;
+                border-radius: 20px;
+            }
+
+                .status-progress-bar.approved {
+                    background: #22a45a;
+                }
+
+                .status-progress-bar.pending {
+                    background: #eab308;
+                }
+
+                .status-progress-bar.rejected {
+                    background: #dc4a55;
+                }
+
+
+            /* =====================================================
+                       SUMMARY
+                    ====================================================== */
+
+            .summary-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 15px 0;
+                border-bottom: 1px solid #f0edf4;
+                color: #514b61;
+                font-size: 14px;
+            }
+
+                .summary-row:first-child {
+                    padding-top: 0;
+                }
+
+                .summary-row:last-child {
+                    border-bottom: none;
+                    padding-bottom: 0;
+                }
+
+                .summary-row strong {
+                    color: #29243a;
+                    font-weight: 700;
+                }
+
+                    .summary-row strong.approved {
+                        color: #159447;
+                    }
+
+                    .summary-row strong.pending {
+                        color: #b98100;
+                    }
+
+                    .summary-row strong.rejected {
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       FOOTER BACK
+                    ====================================================== */
+
+            .analytics-bottom-back {
+                margin-top: 22px;
+            }
+
+                .analytics-bottom-back a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    color: #7c3aed;
+                    font-size: 14px;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+
+                    .analytics-bottom-back a:hover {
+                        color: #6d28d9;
+                        text-decoration: underline;
+                    }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .analytics-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+            }
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .analytics-content {
+                    padding: 20px 15px;
+                }
+
+                .analytics-title {
+                    font-size: 28px;
+                }
+
+                .analytics-subtitle {
+                    font-size: 14px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- OPERATIONS -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a href="@Url.Action(
+                                                             "Index",
+                                                             "AdminReports",
+                                                             new
+                                                             {
+                                                                 area = ""
+                                                             })"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item active">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+               
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+
+                        </button>
+
+
+                        <!-- PROFILE DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="analytics-content">
+
+
+                <!-- =================================================
+                     PAGE HEADER
+                ================================================== -->
+
+                <div class="analytics-header">
+
+
+                    <div>
+
+                        <h1 class="analytics-title">
+                            Analytics
+                        </h1>
+
+                        <p class="analytics-subtitle">
+                            Overview of laboratory operations and performance.
+                        </p>
+
+                    </div>
+
+
+                    <a asp-controller="Admin"
+                       asp-action="Index"
+                       class="analytics-back-button">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     STAT CARDS
+                ================================================== -->
+
+                <div class="row g-4 mb-4">
+
+
+                    <!-- TOTAL PATIENTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="analytics-stat-card">
+
+
+                            <div class="analytics-stat-icon purple">
+
+                                <i class="bi bi-people-fill"></i>
+
+                            </div>
+
+
+                            <div class="analytics-stat-info">
+
+                                <span>
+                                    Total Patients
+                                </span>
+
+                                <h2>
+                                    @Model.TotalPatients
+                                </h2>
+
+                                <small>
+                                    Registered patients
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL APPOINTMENTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="analytics-stat-card">
+
+
+                            <div class="analytics-stat-icon blue">
+
+                                <i class="bi bi-calendar-check-fill"></i>
+
+                            </div>
+
+
+                            <div class="analytics-stat-info">
+
+                                <span>
+                                    Total Appointments
+                                </span>
+
+                                <h2>
+                                    @Model.TotalAppointments
+                                </h2>
+
+                                <small>
+                                    All appointments
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL REPORTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="analytics-stat-card">
+
+
+                            <div class="analytics-stat-icon pink">
+
+                                <i class="bi bi-file-earmark-medical-fill"></i>
+
+                            </div>
+
+
+                            <div class="analytics-stat-info">
+
+                                <span>
+                                    Total Reports
+                                </span>
+
+                                <h2>
+                                    @Model.TotalReports
+                                </h2>
+
+                                <small>
+                                    Generated reports
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- COMPLETED TESTS -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="analytics-stat-card">
+
+
+                            <div class="analytics-stat-icon cyan">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                            </div>
+
+
+                            <div class="analytics-stat-info">
+
+                                <span>
+                                    Completed Tests
+                                </span>
+
+                                <h2>
+                                    @Model.CompletedTests
+                                </h2>
+
+                                <small>
+                                    Completed results
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     ANALYTICS ROW
+                ================================================== -->
+
+                <div class="row g-4">
+
+
+                    <!-- REPORT STATUS -->
+
+                    <div class="col-xl-6">
+
+
+                        <div class="analytics-card">
+
+
+                            <div class="analytics-card-header">
+
+
+                                <div>
+
+                                    <h5>
+                                        Report Status
+                                    </h5>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="analytics-card-body">
+
+
+                                <!-- APPROVED -->
+
+                                <div class="status-row">
+
+
+                                    <div class="status-row-header">
+
+                                        <span>
+                                            Approved Reports
+                                        </span>
+
+                                        <strong>
+                                            @Model.ApprovedReports
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="status-progress">
+
+                                        <div class="status-progress-bar approved"
+                                             style="width:@approvedPercent%">
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- PENDING -->
+
+                                <div class="status-row">
+
+
+                                    <div class="status-row-header">
+
+                                        <span>
+                                            Pending Reports
+                                        </span>
+
+                                        <strong>
+                                            @Model.PendingReports
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="status-progress">
+
+                                        <div class="status-progress-bar pending"
+                                             style="width:@pendingPercent%">
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- REJECTED -->
+
+                                <div class="status-row">
+
+
+                                    <div class="status-row-header">
+
+                                        <span>
+                                            Rejected Reports
+                                        </span>
+
+                                        <strong>
+                                            @Model.RejectedReports
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="status-progress">
+
+                                        <div class="status-progress-bar rejected"
+                                             style="width:@rejectedPercent%">
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- LABORATORY SUMMARY -->
+
+                    <div class="col-xl-6">
+
+
+                        <div class="analytics-card">
+
+
+                            <div class="analytics-card-header">
+
+
+                                <div>
+
+                                    <h5>
+                                        Laboratory Summary
+                                    </h5>
+
+                                    <span>
+                                        Overall system statistics
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="analytics-card-body">
+
+
+                                <!-- PATIENTS -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Total Patients
+                                    </span>
+
+                                    <strong>
+                                        @Model.TotalPatients
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- APPOINTMENTS -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Total Appointments
+                                    </span>
+
+                                    <strong>
+                                        @Model.TotalAppointments
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- REPORTS -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Total Reports
+                                    </span>
+
+                                    <strong>
+                                        @Model.TotalReports
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- APPROVED -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Approved Reports
+                                    </span>
+
+                                    <strong class="approved">
+                                        @Model.ApprovedReports
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- PENDING -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Pending Reports
+                                    </span>
+
+                                    <strong class="pending">
+                                        @Model.PendingReports
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- REJECTED -->
+
+                                <div class="summary-row">
+
+                                    <span>
+                                        Rejected Reports
+                                    </span>
+
+                                    <strong class="rejected">
+                                        @Model.RejectedReports
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

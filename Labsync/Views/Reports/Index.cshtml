@@ -1,0 +1,1683 @@
+﻿@model List<LabSync.Models.ReportListRowViewModel>
+
+@{
+    ViewData["Title"] = "Reports";
+    Layout = null;
+
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString();
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString();
+
+    var pendingCount =
+        Model?.Count(x => x.ApprovalStatusId == 1) ?? 0;
+
+    var approvedCount =
+        Model?.Count(x => x.ApprovalStatusId == 2) ?? 0;
+
+    var rejectedCount =
+        Model?.Count(x => x.ApprovalStatusId == 3) ?? 0;
+
+    var totalCount =
+        Model?.Count ?? 0;
+
+    var selectedAppointment =
+        Context.Request.Query["appointmentId"].ToString();
+
+    var selectedStatus =
+        Context.Request.Query["approvalStatusId"].ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        LabSync - Reports
+    </title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+    <style>
+
+            /* =========================================================
+                       REPORT PAGE
+                    ========================================================= */
+
+            .reports-page {
+                min-height: 100vh;
+                background: #f7f7fc;
+            }
+
+
+            /* =========================================================
+                       TOPBAR
+                    ========================================================= */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =========================================================
+                       PROFILE
+                    ========================================================= */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =========================================================
+                       ACTIVE REPORT MENU
+                    ========================================================= */
+
+            .sidebar .menu-item.reports-active {
+                background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+                color: #ffffff !important;
+                border-radius: 11px;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.25);
+            }
+
+                .sidebar .menu-item.reports-active i,
+                .sidebar .menu-item.reports-active span {
+                    color: #ffffff !important;
+                }
+
+                .sidebar .menu-item.reports-active:hover {
+                    background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+                    color: #ffffff !important;
+                }
+
+
+            /* =========================================================
+                       PROFILE DROPDOWN
+                    ========================================================= */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =========================================================
+                       PAGE CONTENT
+                    ========================================================= */
+
+            .reports-content {
+                padding: 30px;
+            }
+
+
+            /* =========================================================
+                       PAGE HEADER
+                    ========================================================= */
+
+            .reports-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 26px;
+            }
+
+            .reports-header-left h1 {
+                font-size: 28px;
+                font-weight: 700;
+                color: #29243a;
+                margin: 0;
+            }
+
+            .reports-header-left p {
+                color: #9993a8;
+                margin: 7px 0 0;
+                font-size: 14px;
+            }
+
+            .reports-header-icon {
+                width: 54px;
+                height: 54px;
+                border-radius: 15px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+
+            /* =========================================================
+                       STAT CARDS
+                    ========================================================= */
+
+            .report-stat-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 16px;
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                height: 100%;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                transition: 0.2s ease;
+            }
+
+                .report-stat-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(30, 20, 50, 0.07);
+                }
+
+            .report-stat-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 13px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 21px;
+                flex-shrink: 0;
+            }
+
+                .report-stat-icon.purple {
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                }
+
+                .report-stat-icon.orange {
+                    background: #fff4df;
+                    color: #e59a17;
+                }
+
+                .report-stat-icon.green {
+                    background: #e4f8ed;
+                    color: #1b9b58;
+                }
+
+                .report-stat-icon.red {
+                    background: #fdeaea;
+                    color: #dc4f4f;
+                }
+
+            .report-stat-content span {
+                display: block;
+                color: #9993a8;
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+
+            .report-stat-content h3 {
+                margin: 0;
+                color: #29243a;
+                font-size: 25px;
+                font-weight: 700;
+            }
+
+
+            /* =========================================================
+                       FILTER CARD
+                    ========================================================= */
+
+            .reports-filter-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 16px;
+                padding: 22px;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                margin-top: 25px;
+            }
+
+            .filter-title {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                margin-bottom: 18px;
+            }
+
+                .filter-title i {
+                    color: #8b5cf6;
+                    font-size: 18px;
+                }
+
+                .filter-title h5 {
+                    margin: 0;
+                    color: #29243a;
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+
+            .filter-label {
+                color: #514b61;
+                font-size: 13px;
+                font-weight: 600;
+                margin-bottom: 7px;
+            }
+
+            .filter-control {
+                height: 44px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                font-size: 13px;
+                color: #29243a;
+            }
+
+                .filter-control:focus {
+                    border-color: #a78bfa;
+                    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+                }
+
+            .search-btn {
+                height: 44px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+                color: #ffffff;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 0 18px;
+            }
+
+                .search-btn:hover {
+                    color: #ffffff;
+                    opacity: 0.95;
+                }
+
+            .reset-btn {
+                height: 44px;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 0 18px;
+            }
+
+
+            /* =========================================================
+                       TABLE CARD
+                    ========================================================= */
+
+            .reports-table-card {
+                background: #ffffff;
+                border: 1px solid #eeeaf5;
+                border-radius: 16px;
+                box-shadow: 0 5px 18px rgba(30, 20, 50, 0.04);
+                margin-top: 25px;
+                overflow: hidden;
+            }
+
+            .reports-table-header {
+                padding: 20px 22px;
+                border-bottom: 1px solid #eeeaf5;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .reports-table-header-left h5 {
+                margin: 0;
+                color: #29243a;
+                font-size: 17px;
+                font-weight: 700;
+            }
+
+            .reports-table-header-left span {
+                color: #9993a8;
+                font-size: 12px;
+                margin-top: 4px;
+                display: block;
+            }
+
+            .report-count-badge {
+                background: #f1eaff;
+                color: #7c3aed;
+                border-radius: 20px;
+                padding: 7px 13px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+
+            /* =========================================================
+                       TABLE
+                    ========================================================= */
+
+            .reports-table {
+                margin: 0;
+            }
+
+                .reports-table thead th {
+                    background: #faf9fd;
+                    border-bottom: 1px solid #eeeaf5;
+                    color: #6e687d;
+                    font-size: 12px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.2px;
+                    white-space: nowrap;
+                    padding: 14px 15px;
+                }
+
+                .reports-table tbody td {
+                    border-bottom: 1px solid #f0edf5;
+                    padding: 15px;
+                    vertical-align: middle;
+                    font-size: 13px;
+                    color: #514b61;
+                }
+
+                .reports-table tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+                .reports-table tbody tr:hover {
+                    background: #fcfbff;
+                }
+
+
+            /* =========================================================
+                       APPOINTMENT / PATIENT
+                    ========================================================= */
+
+            .appointment-code {
+                color: #7c3aed;
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            .patient-name {
+                color: #29243a;
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            .patient-code {
+                color: #9993a8;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+
+            .date-text {
+                color: #514b61;
+                font-weight: 600;
+            }
+
+            .time-text {
+                color: #9993a8;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+
+
+            /* =========================================================
+                       STATUS
+                    ========================================================= */
+
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                border-radius: 20px;
+                padding: 7px 11px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+                .status-badge.pending {
+                    background: #fff4df;
+                    color: #c4820e;
+                }
+
+                .status-badge.approved {
+                    background: #e4f8ed;
+                    color: #1b8b52;
+                }
+
+                .status-badge.rejected {
+                    background: #fdeaea;
+                    color: #cf4040;
+                }
+
+
+            /* =========================================================
+                       ACTIONS
+                    ========================================================= */
+
+            .report-action {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                min-height: 34px;
+                border-radius: 8px;
+                padding: 6px 10px;
+                font-size: 11px;
+                font-weight: 600;
+                margin-right: 4px;
+                margin-bottom: 4px;
+                text-decoration: none;
+            }
+
+            .report-action-view {
+                background: #f1eaff;
+                color: #7c3aed;
+            }
+
+                .report-action-view:hover {
+                    background: #e8dcff;
+                    color: #6d28d9;
+                }
+
+            .report-action-download {
+                background: #f5f5f8;
+                color: #5d5868;
+            }
+
+                .report-action-download:hover {
+                    background: #e9e7ef;
+                    color: #383344;
+                }
+
+            .report-action-approve {
+                background: #e4f8ed;
+                color: #168047;
+                border: none;
+            }
+
+                .report-action-approve:hover {
+                    background: #d3f1df;
+                    color: #126a3b;
+                }
+
+            .report-action-reject {
+                background: #fdeaea;
+                color: #ce3e3e;
+                border: none;
+            }
+
+                .report-action-reject:hover {
+                    background: #fbdcdc;
+                    color: #b52f2f;
+                }
+
+
+            /* =========================================================
+                       EMPTY STATE
+                    ========================================================= */
+
+            .empty-state {
+                padding: 65px 25px;
+                text-align: center;
+            }
+
+            .empty-state-icon {
+                width: 65px;
+                height: 65px;
+                border-radius: 16px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 15px;
+                font-size: 27px;
+            }
+
+            .empty-state h5 {
+                color: #29243a;
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 7px;
+            }
+
+            .empty-state p {
+                color: #9993a8;
+                font-size: 13px;
+                margin: 0;
+            }
+
+
+            /* =========================================================
+                       MOBILE
+                    ========================================================= */
+
+            @@media (max-width: 900px) {
+
+                .reports-content {
+                    padding: 20px;
+                }
+
+                .reports-header {
+                    align-items: flex-start;
+                }
+
+                .reports-header-left h1 {
+                    font-size: 23px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page reports-page">
+
+
+        <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
+
+        <aside class="sidebar">
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIDEBAR MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <!-- MAIN MENU -->
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- OPERATIONS -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS ACTIVE -->
+
+                <a href="@Url.Action(
+                                            "Index",
+                                            "AdminReports",
+                                            new
+                                            {
+                                                area = ""
+                                            })"
+                   class="menu-item reports-active">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+               
+
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =====================================================
+             TOPBAR
+        ====================================================== -->
+
+            <header class="topbar">
+
+                <div class="topbar-right">
+
+                    <div class="dropdown">
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <!-- AVATAR -->
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+
+                            <!-- ADMIN INFO -->
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+                        </button>
+
+
+                        <!-- PROFILE DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            
+
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =====================================================
+             REPORT CONTENT
+        ====================================================== -->
+
+            <div class="reports-content">
+
+
+                <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+                <div class="reports-header">
+
+                    <div class="reports-header-left">
+
+                        <h1>
+                            Laboratory Reports
+                        </h1>
+
+                        <p>
+                            Review generated reports and manage report approval.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                 STAT CARDS
+            ================================================== -->
+
+                <div class="row g-4">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="report-stat-card">
+
+                            <div class="report-stat-icon purple">
+
+                                <i class="bi bi-files"></i>
+
+                            </div>
+
+                            <div class="report-stat-content">
+
+                                <span>
+                                    Total Reports
+                                </span>
+
+                                <h3>
+                                    @totalCount
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PENDING -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="report-stat-card">
+
+                            <div class="report-stat-icon orange">
+
+                                <i class="bi bi-hourglass-split"></i>
+
+                            </div>
+
+                            <div class="report-stat-content">
+
+                                <span>
+                                    Pending
+                                </span>
+
+                                <h3>
+                                    @pendingCount
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- APPROVED -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="report-stat-card">
+
+                            <div class="report-stat-icon green">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                            </div>
+
+                            <div class="report-stat-content">
+
+                                <span>
+                                    Approved
+                                </span>
+
+                                <h3>
+                                    @approvedCount
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REJECTED -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="report-stat-card">
+
+                            <div class="report-stat-icon red">
+
+                                <i class="bi bi-x-circle-fill"></i>
+
+                            </div>
+
+                            <div class="report-stat-content">
+
+                                <span>
+                                    Rejected
+                                </span>
+
+                                <h3>
+                                    @rejectedCount
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                 FILTER
+            ================================================== -->
+
+                <div class="reports-filter-card">
+
+                    <div class="filter-title">
+
+                        <i class="bi bi-funnel-fill"></i>
+
+                        <h5>
+                            Filter Reports
+                        </h5>
+
+                    </div>
+
+
+                    <form method="get"
+                          action="@Url.Action(
+                                                  "Index",
+                                                  "AdminReports",
+                                                  new
+                                                  {
+                                                      area = ""
+                                                  })">
+
+                        <div class="row g-3 align-items-end">
+
+
+                            <!-- APPOINTMENT -->
+
+                            <div class="col-xl-5 col-md-6">
+
+                                <label class="filter-label">
+                                    Appointment Code
+                                </label>
+
+                                <input type="text"
+                                       name="appointmentId"
+                                       value="@selectedAppointment"
+                                       class="form-control filter-control"
+                                       placeholder="Enter appointment code..." />
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            <div class="col-xl-4 col-md-6">
+
+                                <label class="filter-label">
+                                    Approval Status
+                                </label>
+
+                                <select name="approvalStatusId"
+                                        class="form-select filter-control">
+
+                                    @if (selectedStatus == "")
+                                    {
+                                        <option value="" selected>
+                                            All Statuses
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="">
+                                            All Statuses
+                                        </option>
+                                    }
+
+
+                                    @if (selectedStatus == "1")
+                                    {
+                                        <option value="1" selected>
+                                            Pending
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="1">
+                                            Pending
+                                        </option>
+                                    }
+
+
+                                    @if (selectedStatus == "2")
+                                    {
+                                        <option value="2" selected>
+                                            Approved
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="2">
+                                            Approved
+                                        </option>
+                                    }
+
+
+                                    @if (selectedStatus == "3")
+                                    {
+                                        <option value="3" selected>
+                                            Rejected
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="3">
+                                            Rejected
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- BUTTONS -->
+
+                            <div class="col-xl-3 col-md-12 d-flex gap-2">
+
+                                <button type="submit"
+                                        class="search-btn">
+
+                                    <i class="bi bi-search"></i>
+                                    Search
+
+                                </button>
+
+
+                               
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- =================================================
+                 REPORT TABLE
+            ================================================== -->
+
+                <div class="reports-table-card">
+
+
+                    <!-- TABLE HEADER -->
+
+                    <div class="reports-table-header">
+
+                        <div class="reports-table-header-left">
+
+                            <h5>
+                                Generated Reports
+                            </h5>
+
+                        </div>
+
+
+                        <div class="report-count-badge">
+
+                            @totalCount Reports
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TABLE -->
+                    @if (Model != null && Model.Any())
+                    {
+
+                        <div class="table-responsive">
+
+                            <table class="table reports-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Appointment
+                                        </th>
+
+                                        <th>
+                                            Patient
+                                        </th>
+
+                                        <th>
+                                            Appointment Date
+                                        </th>
+
+                                        <th>
+                                            Generated By
+                                        </th>
+
+                                        <th>
+                                            Generated Date
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                        <th>
+                                            Actions
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    @foreach (var report in Model)
+                                    {
+
+                                        <tr>
+
+
+                                            <!-- APPOINTMENT -->
+
+                                            <td>
+
+                                                <div class="appointment-code">
+                                                    @report.AppointmentCode
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- PATIENT -->
+
+                                            <td>
+
+                                                <div class="patient-name">
+                                                    @report.PatientName
+                                                </div>
+
+                                                @if (!string.IsNullOrWhiteSpace(report.PatientCode))
+                                                {
+                                                    <div class="patient-code">
+                                                        @report.PatientCode
+                                                    </div>
+                                                }
+
+                                            </td>
+
+
+                                            <!-- DATE -->
+
+                                            <td>
+
+                                                <div class="date-text">
+
+                                                    @report.AppointmentDate.ToString("dd MMM yyyy")
+
+                                                </div>
+
+                                                <div class="time-text">
+
+                                                    @report.AppointmentTime
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- GENERATED BY -->
+
+                                            <td>
+
+                                                <div style="font-size:13px; font-weight:600; color:#514b61;">
+
+                                                    @(report.GeneratedByEmail ?? "-")
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- GENERATED DATE -->
+
+                                            <td>
+
+                                                @if (report.GeneratedDate.HasValue)
+                                                {
+
+                                                    <div class="date-text">
+
+                                                        @report.GeneratedDate.Value.ToString("dd MMM yyyy")
+
+                                                    </div>
+
+                                                    <div class="time-text">
+
+                                                        @report.GeneratedDate.Value.ToString("hh:mm tt")
+
+                                                    </div>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="text-muted">
+                                                        -
+                                                    </span>
+
+                                                }
+
+                                            </td>
+
+
+                                            <!-- STATUS -->
+
+                                            <td>
+
+                                                @if (report.ApprovalStatusId == 2)
+                                                {
+
+                                                    <span class="status-badge approved">
+
+                                                        <i class="bi bi-check-circle-fill"></i>
+
+                                                        @(report.ApprovalStatusName ?? "Approved")
+
+                                                    </span>
+
+                                                }
+                                                else if (report.ApprovalStatusId == 3)
+                                                {
+
+                                                    <span class="status-badge rejected">
+
+                                                        <i class="bi bi-x-circle-fill"></i>
+
+                                                        @(report.ApprovalStatusName ?? "Rejected")
+
+                                                    </span>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="status-badge pending">
+
+                                                        <i class="bi bi-hourglass-split"></i>
+
+                                                        @(report.ApprovalStatusName ?? "Pending")
+
+                                                    </span>
+
+                                                }
+
+                                            </td>
+
+
+                                            <!-- ACTIONS -->
+
+                                            <td>
+
+
+                                                <!-- VIEW PDF -->
+
+                                                <a href="@Url.Action(
+                                                                                                        "ViewPdf",
+                                                                                                        "AdminReports",
+                                                                                                        new
+                                                                                                        {
+                                                                                                            area = "",
+                                                                                                            id = report.Id
+                                                                                                        })"
+                                                   target="_blank"
+                                                   class="report-action report-action-view">
+
+                                                    <i class="bi bi-eye"></i>
+
+                                                    View
+
+                                                </a>
+
+
+                                                <!-- DOWNLOAD -->
+
+                                                <a href="@Url.Action(
+                                                                                                        "DownloadPdf",
+                                                                                                        "AdminReports",
+                                                                                                        new
+                                                                                                        {
+                                                                                                            area = "",
+                                                                                                            id = report.Id
+                                                                                                        })"
+                                                   class="report-action report-action-download">
+
+                                                    <i class="bi bi-download"></i>
+
+                                                    Download
+
+                                                </a>
+
+
+                                                @if (report.ApprovalStatusId == 1)
+                                                {
+
+                                                    <!-- APPROVE -->
+
+                                                    <form method="post"
+                                                          action="@Url.Action(
+                                                                                                                  "Approve",
+                                                                                                                  "AdminReports",
+                                                                                                                  new
+                                                                                                                  {
+                                                                                                                      area = "",
+                                                                                                                      id = report.Id
+                                                                                                                  })"
+                                                          style="display:inline-block;">
+
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit"
+                                                                class="report-action report-action-approve"
+                                                                onclick="return confirm('Are you sure you want to approve this report?');">
+
+                                                            <i class="bi bi-check-circle"></i>
+
+                                                            Approve
+
+                                                        </button>
+
+                                                    </form>
+
+
+                                                    <!-- REJECT -->
+
+                                                    <form method="post"
+                                                          action="@Url.Action(
+                                                                                                                  "Reject",
+                                                                                                                  "AdminReports",
+                                                                                                                  new
+                                                                                                                  {
+                                                                                                                      area = "",
+                                                                                                                      id = report.Id
+                                                                                                                  })"
+                                                          style="display:inline-block;">
+
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit"
+                                                                class="report-action report-action-reject"
+                                                                onclick="return confirm('Are you sure you want to reject this report?');">
+
+                                                            <i class="bi bi-x-circle"></i>
+
+                                                            Reject
+
+                                                        </button>
+
+                                                    </form>
+
+                                                }
+
+                                            </td>
+
+
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    }
+                    else
+                    {
+
+                        <!-- EMPTY -->
+
+                        <div class="empty-state">
+
+                            <div class="empty-state-icon">
+
+                                <i class="bi bi-file-earmark-x"></i>
+
+                            </div>
+
+                            <h5>
+                                No Reports Found
+                            </h5>
+
+                            <p>
+                                No laboratory reports match your current filter.
+                            </p>
+
+                        </div>
+
+                    }
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+
+</html>

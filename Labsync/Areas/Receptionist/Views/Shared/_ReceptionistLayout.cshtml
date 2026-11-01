@@ -1,0 +1,710 @@
+﻿@{
+    ViewData["Title"] ??= "Receptionist";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        LabSync - @ViewData["Title"]
+    </title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- =====================================================
+         SITE CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE BUTTON
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+
+            /* =====================================================
+                       PROFILE AVATAR
+                    ====================================================== */
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            /* =====================================================
+                       PROFILE INFO
+                    ====================================================== */
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 190px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+
+                /* =====================================================
+                       DROPDOWN ITEM
+                    ====================================================== */
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 11px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                    transition: .2s ease;
+                }
+
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 7px;
+                    }
+
+
+                /* =====================================================
+                       LOGOUT ITEM
+                    ====================================================== */
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                    border: none;
+                    background: transparent;
+                    width: 100%;
+                    text-align: left;
+                    cursor: pointer;
+                    font-family: inherit;
+                }
+
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+                .profile-dropdown .logout-form {
+                    margin: 0;
+                }
+
+
+            /* =====================================================
+                       SIDEBAR LOGOUT BUTTON
+                    ====================================================== */
+
+            .sidebar-logout-button {
+                width: 100%;
+                border: none;
+                background: transparent;
+                text-align: left;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+
+                .sidebar-logout-button:hover {
+                    background: #fef2f2 !important;
+                    color: #dc2626 !important;
+                }
+
+
+                    .sidebar-logout-button:hover i,
+                    .sidebar-logout-button:hover span {
+                        color: #dc2626 !important;
+                    }
+
+
+            /* =====================================================
+                       ACTIVE MENU
+                    ====================================================== */
+
+            .sidebar .menu-item.active {
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 ) !important;
+                color: #ffffff !important;
+                border-radius: 11px;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.25);
+            }
+
+
+                .sidebar .menu-item.active i {
+                    color: #ffffff !important;
+                }
+
+
+                .sidebar .menu-item.active span {
+                    color: #ffffff !important;
+                }
+
+
+                .sidebar .menu-item.active:hover {
+                    background: linear-gradient( 135deg, #7c3aed, #a855f7 ) !important;
+                    color: #ffffff !important;
+                }
+
+
+                    .sidebar .menu-item.active:hover i,
+                    .sidebar .menu-item.active:hover span {
+                        color: #ffffff !important;
+                    }
+
+
+            /* =====================================================
+                       CONTENT
+                    ====================================================== */
+
+            .dashboard-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+
+                .profile-info {
+                    display: none;
+                }
+
+
+                .dashboard-content {
+                    padding: 20px 15px;
+                }
+            }
+
+    </style>
+
+
+    @RenderSection(
+        "Styles",
+        required: false
+    )
+
+</head>
+
+
+<body>
+
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- =================================================
+                 BRAND
+            ================================================== -->
+
+            <div class="brand">
+
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 SIDEBAR MENU
+            ================================================== -->
+
+            <div class="sidebar-menu">
+
+
+                <!-- =================================================
+                     MAIN MENU
+                ================================================== -->
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- =================================================
+                     PATIENTS
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Patients" ? "active" : "")">
+
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+
+                    <span>
+                        Patients
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     APPOINTMENTS
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="Appointments"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Appointments" ? "active" : "")">
+
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+
+                    <span>
+                        Appointments
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     REFERRAL DOCTORS
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "ReferralDoctors" ? "active" : "")">
+
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     OPERATIONS
+                ================================================== -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- =================================================
+                     REPORTS
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="Reports"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
+
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+
+                    <span>
+                        Reports
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     INVOICES
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Invoices" ? "active" : "")">
+
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+
+                    <span>
+                        Invoices
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     PAYMENTS
+                ================================================== -->
+
+                <a asp-area="Receptionist"
+                   asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payments" ? "active" : "")">
+
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+
+                    <span>
+                        Payments
+                    </span>
+
+
+                </a>
+
+
+                <!-- =================================================
+                     ACCOUNT
+                ================================================== -->
+
+                <p class="menu-title mt-4">
+                    ACCOUNT
+                </p>
+
+
+                <!-- =================================================
+                     LOGOUT
+                ================================================== -->
+
+                <form asp-area=""
+                      asp-controller="Account"
+                      asp-action="Logout"
+                      method="post"
+                      style="margin:0;">
+
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="menu-item sidebar-logout-button">
+
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+
+                        <span>
+                            Logout
+                        </span>
+
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <!-- =================================================
+                         RECEPTIONIST PROFILE
+                    ================================================== -->
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE BUTTON -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+
+                            <!-- AVATAR -->
+
+                            <div class="profile-avatar">
+
+                                R
+
+                            </div>
+
+
+                            <!-- PROFILE INFO -->
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Receptionist
+                                </strong>
+
+                                <small>
+                                    Reception Staff
+                                </small>
+
+                            </div>
+
+
+                        </button>
+
+
+                        <!-- =================================================
+                             DROPDOWN
+                        ================================================== -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            <!-- =================================================
+                                 ONLY LOGOUT
+                            ================================================== -->
+
+                            <li>
+
+
+                                <form asp-area=""
+                                      asp-controller="Account"
+                                      asp-action="Logout"
+                                      method="post"
+                                      class="logout-form">
+
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+
+                                        Logout
+
+
+                                    </button>
+
+
+                                </form>
+
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 PAGE CONTENT
+            ================================================== -->
+
+            <div class="dashboard-content">
+
+                @RenderBody()
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOTSTRAP JS
+    ====================================================== -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    @RenderSection(
+        "Scripts",
+        required: false
+    )
+
+
+</body>
+
+</html>

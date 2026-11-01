@@ -1,0 +1,1016 @@
+﻿@model LabSync.Models.Payment
+
+@{
+    ViewData["Title"] = "Payment Details";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Payment Details</title>
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       PAYMENT DETAILS CONTENT
+                    ====================================================== */
+
+            .payment-details-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       PAGE HEADER
+                    ====================================================== */
+
+            .payment-details-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .payment-details-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .payment-details-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+
+            /* =====================================================
+                       BACK BUTTON
+                    ====================================================== */
+
+            .payment-back-button {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 11px 16px;
+                border: 1px solid #e8e5ef;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #514b61;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: .2s ease;
+            }
+
+                .payment-back-button:hover {
+                    background: #f5efff;
+                    border-color: #d8c7f8;
+                    color: #7c3aed;
+                }
+
+
+            /* =====================================================
+                       MAIN CARD
+                    ====================================================== */
+
+            .payment-details-card {
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+
+            /* =====================================================
+                       CARD HEADER
+                    ====================================================== */
+
+            .payment-details-card-header {
+                padding: 22px 24px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid #eeeaf3;
+            }
+
+            .payment-card-title-area {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .payment-card-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 21px;
+            }
+
+            .payment-card-title-area h5 {
+                margin: 0 0 5px;
+                color: #29243a;
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .payment-card-title-area span {
+                color: #9993a8;
+                font-size: 13px;
+            }
+
+
+            /* =====================================================
+                       CARD BODY
+                    ====================================================== */
+
+            .payment-details-card-body {
+                padding: 24px;
+            }
+
+
+            /* =====================================================
+                       INFORMATION GRID
+                    ====================================================== */
+
+            .payment-info-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 18px;
+            }
+
+            .payment-info-box {
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 12px;
+                padding: 18px;
+                min-height: 92px;
+                box-shadow: 0 3px 12px rgba(30, 20, 50, 0.025);
+            }
+
+                .payment-info-box.full-width {
+                    grid-column: 1 / -1;
+                }
+
+                .payment-info-box span {
+                    display: block;
+                    color: #9993a8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    margin-bottom: 7px;
+                }
+
+                .payment-info-box strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                    word-break: break-word;
+                }
+
+
+            /* =====================================================
+                       SPECIAL VALUES
+                    ====================================================== */
+
+            .payment-amount-value {
+                color: #159447 !important;
+                font-size: 18px !important;
+            }
+
+            .payment-invoice-value {
+                color: #7c3aed !important;
+            }
+
+
+            /* =====================================================
+                       BOTTOM BACK
+                    ====================================================== */
+
+            .payment-bottom-back {
+                margin-top: 22px;
+            }
+
+                .payment-bottom-back a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    color: #7c3aed;
+                    font-size: 14px;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+
+                    .payment-bottom-back a:hover {
+                        color: #6d28d9;
+                        text-decoration: underline;
+                    }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .payment-details-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+            }
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .payment-details-content {
+                    padding: 20px 15px;
+                }
+
+                .payment-details-title {
+                    font-size: 28px;
+                }
+
+                .payment-details-subtitle {
+                    font-size: 14px;
+                }
+
+                .payment-info-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .payment-info-box.full-width {
+                    grid-column: auto;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- OPERATIONS -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a asp-controller="Reports"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+               
+
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+                        </button>
+
+
+                        <!-- PROFILE DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                            
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="payment-details-content">
+
+
+                <!-- PAGE HEADER -->
+
+                <div class="payment-details-header">
+
+
+                    <div>
+
+                        <h1 class="payment-details-title">
+                            Payment Details
+                        </h1>
+
+                        <p class="payment-details-subtitle">
+                            View complete payment information.
+                        </p>
+
+                    </div>
+
+
+                    <a asp-action="Index"
+                       class="payment-back-button">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Payments
+
+                    </a>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     PAYMENT DETAILS CARD
+                ================================================== -->
+
+                <div class="payment-details-card">
+
+
+                    <!-- CARD HEADER -->
+
+                    <div class="payment-details-card-header">
+
+
+                        <div class="payment-card-title-area">
+
+
+                            <div class="payment-card-icon">
+
+                                <i class="bi bi-credit-card"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h5>
+                                    Payment Information
+                                </h5>
+
+                                <span>
+                                    Payment transaction details
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- CARD BODY -->
+
+                    <div class="payment-details-card-body">
+
+
+                        <div class="payment-info-grid">
+
+
+                            <!-- PAYMENT ID -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Payment ID
+                                </span>
+
+                                <strong>
+                                    @Model.Id
+                                </strong>
+
+                            </div>
+
+
+                            <!-- INVOICE NUMBER -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Invoice Number
+                                </span>
+
+                                <strong class="payment-invoice-value">
+
+                                    @(Model.Invoice?.InvoiceNumber
+                                        ?? "N/A")
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PATIENT -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Patient
+                                </span>
+
+                                <strong>
+
+                                    @if (Model.Invoice?.Patient != null)
+                                    {
+                                        @($"{Model.Invoice.Patient.FirstName} {Model.Invoice.Patient.LastName}")
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PAYMENT METHOD -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Payment Method
+                                </span>
+
+                                <strong>
+
+                                    @(Model.PaymentMethod?.MethodName
+                                        ?? "N/A")
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PAYMENT AMOUNT -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Payment Amount
+                                </span>
+
+                                <strong class="payment-amount-value">
+
+                                    ৳ @Model.Amount.ToString("N2")
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- PAYMENT DATE -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Payment Date
+                                </span>
+
+                                <strong>
+
+                                    @(Model.PaymentDate?
+                                        .ToString("dd MMM yyyy")
+                                        ?? "N/A")
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- TRANSACTION NUMBER -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Transaction Number
+                                </span>
+
+                                <strong>
+
+                                    @(Model.TransactionNumber
+                                        ?? "N/A")
+
+                                </strong>
+
+                            </div>
+
+
+                            <!-- REMARKS -->
+
+                            <div class="payment-info-box">
+
+                                <span>
+                                    Remarks
+                                </span>
+
+                                <strong>
+
+                                    @(Model.Remarks
+                                        ?? "N/A")
+
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     BACK TO DASHBOARD
+                ================================================== -->
+
+                <div class="payment-bottom-back">
+
+                    <a asp-controller="Admin"
+                       asp-action="Index">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

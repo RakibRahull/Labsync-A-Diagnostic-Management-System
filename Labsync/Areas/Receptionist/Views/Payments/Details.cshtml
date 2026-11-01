@@ -1,0 +1,1165 @@
+﻿@model LabSync.Models.Payment
+
+@{
+    ViewData["Title"] = "Payment Details";
+    Layout = "~/Areas/Receptionist/Views/Shared/_ReceptionistLayout.cshtml";
+
+    // =========================================================
+    // PAYMENT INFORMATION
+    // =========================================================
+
+    decimal paymentAmount =
+        Convert.ToDecimal(Model.Amount);
+
+    string paymentMethodName =
+        Model.PaymentMethodId.ToString();
+
+    if (Model.PaymentMethod != null)
+    {
+        paymentMethodName =
+            Model.PaymentMethod.MethodName;
+    }
+
+    string transactionNumber = "N/A";
+
+    if (!string.IsNullOrWhiteSpace(Model.TransactionNumber))
+    {
+        transactionNumber =
+            Model.TransactionNumber;
+    }
+
+    string bankName = "N/A";
+
+    if (!string.IsNullOrWhiteSpace(Model.BankName))
+    {
+        bankName =
+            Model.BankName;
+    }
+
+    string mobileBanking = "N/A";
+
+    if (!string.IsNullOrWhiteSpace(Model.MobileBanking))
+    {
+        mobileBanking =
+            Model.MobileBanking;
+    }
+
+    bool isCash =
+        paymentMethodName.Trim()
+            .Equals(
+                "Cash",
+                StringComparison.OrdinalIgnoreCase);
+
+    bool isBank =
+        !string.IsNullOrWhiteSpace(Model.BankName);
+
+    bool isMobileBanking =
+        !string.IsNullOrWhiteSpace(Model.MobileBanking);
+
+    string paymentDate = "N/A";
+
+    if (Model.PaymentDate.HasValue)
+    {
+        paymentDate =
+            Model.PaymentDate.Value.ToString(
+                "dd MMM yyyy hh:mm tt");
+    }
+
+
+    // =========================================================
+    // PATIENT INFORMATION
+    // =========================================================
+
+    string patientName = "N/A";
+    string patientCode = "N/A";
+    string patientPhone = "N/A";
+    string patientEmail = "N/A";
+
+    if (Model.Invoice != null &&
+        Model.Invoice.Patient != null)
+    {
+        patientName =
+            Model.Invoice.Patient.FirstName +
+            " " +
+            Model.Invoice.Patient.LastName;
+
+        patientCode =
+            Model.Invoice.Patient.PatientCode ?? "N/A";
+
+        patientPhone =
+            Model.Invoice.Patient.Phone ?? "N/A";
+
+        patientEmail =
+            Model.Invoice.Patient.Email ?? "N/A";
+    }
+
+
+    // =========================================================
+    // INVOICE INFORMATION
+    // =========================================================
+
+    decimal subtotal = 0m;
+    decimal discount = 0m;
+    decimal tax = 0m;
+    decimal netAmount = 0m;
+    decimal paidAmount = 0m;
+    decimal dueAmount = 0m;
+
+    string invoiceNumber = "N/A";
+    string invoiceDate = "N/A";
+    string appointmentId = "N/A";
+    string appointmentCode = "N/A";
+    string appointmentDate = "N/A";
+    string appointmentTime = "N/A";
+
+
+    if (Model.Invoice != null)
+    {
+        subtotal =
+            Convert.ToDecimal(
+                Model.Invoice.Subtotal);
+
+        discount =
+            Convert.ToDecimal(
+                Model.Invoice.Discount);
+
+        tax =
+            Convert.ToDecimal(
+                Model.Invoice.Tax);
+
+        netAmount =
+            Convert.ToDecimal(
+                Model.Invoice.NetAmount);
+
+        paidAmount =
+            Convert.ToDecimal(
+                Model.Invoice.PaidAmount);
+
+        dueAmount =
+            Convert.ToDecimal(
+                Model.Invoice.DueAmount);
+
+
+        if (!string.IsNullOrWhiteSpace(
+            Model.Invoice.InvoiceNumber))
+        {
+            invoiceNumber =
+                Model.Invoice.InvoiceNumber;
+        }
+
+
+        if (Model.Invoice.InvoiceDate.HasValue)
+        {
+            invoiceDate =
+                Model.Invoice.InvoiceDate.Value
+                    .ToString("dd MMM yyyy");
+        }
+
+
+        appointmentId =
+            Model.Invoice.AppointmentId
+                .ToString();
+
+        if (Model.Invoice.Appointment != null)
+        {
+            appointmentCode =
+                Model.Invoice.Appointment
+                    .AppointmentCode ?? "N/A";
+
+            appointmentDate =
+                Model.Invoice.Appointment
+                    .AppointmentDate
+                    .ToString("dd MMM yyyy");
+
+            appointmentTime =
+                DateTime.Today
+                    .Add(
+                        Model.Invoice.Appointment
+                            .AppointmentTime)
+                    .ToString("hh:mm tt");
+        }
+    }
+
+
+    // =========================================================
+    // PAYMENT STATUS
+    // =========================================================
+
+    string paymentStatus = "N/A";
+
+    if (ViewBag.PaymentStatusName != null)
+    {
+        paymentStatus =
+            ViewBag.PaymentStatusName.ToString();
+    }
+    else if (Model.Invoice != null)
+    {
+        paymentStatus =
+            "Status ID: " +
+            Model.Invoice.PaymentStatusId.ToString();
+    }
+}
+
+
+<style>
+
+    /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f7f7fc;
+        color: #000000;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+        ========================================================== */
+
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left small {
+        display: block;
+        color: #8b5cf6;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-header-left h1 {
+        margin: 0;
+        color: #18213a;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .page-header-left p {
+        margin: 8px 0 0;
+        color: #000000;
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+           HEADER ACTIONS
+        ========================================================== */
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+
+    /* =========================================================
+           MAIN CARD
+        ========================================================== */
+
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: 0 5px 18px rgba(30, 20, 50, .04);
+    }
+
+
+    /* =========================================================
+           SECTION
+        ========================================================== */
+
+    .section-header {
+        margin-bottom: 10px;
+    }
+
+        .section-header h2 {
+            margin: 0;
+            color: #18213a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #9296aa;
+            font-size: 13px;
+        }
+
+    .section-line {
+        width: 100%;
+        height: 1px;
+        background: #ece9f2;
+        margin-bottom: 20px;
+    }
+
+    .section-space {
+        margin-top: 30px;
+    }
+
+
+    /* =========================================================
+           INFO GRID
+        ========================================================== */
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .info-box {
+        min-height: 76px;
+        padding: 14px;
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+    }
+
+        .info-box span {
+            display: block;
+            margin-bottom: 7px;
+            color: #9296aa;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .info-box strong {
+            display: block;
+            color: #000000;
+            font-size: 14px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+
+    /* =========================================================
+           AMOUNT HIGHLIGHT
+        ========================================================== */
+
+    .amount-highlight {
+        background: #faf7ff;
+        border-color: #d9cdf6;
+    }
+
+        .amount-highlight strong {
+            color: #8b5cf6;
+            font-size: 17px;
+        }
+
+
+    /* =========================================================
+           STATUS
+        ========================================================== */
+
+    .status-value {
+        color: #8b5cf6 !important;
+    }
+
+
+    /* =========================================================
+           BILLING SUMMARY
+        ========================================================== */
+
+    .summary-box {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 12px;
+        padding: 8px 18px;
+    }
+
+    .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #eeeaf5;
+        font-size: 14px;
+    }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row span {
+            color: #000000;
+        }
+
+        .summary-row strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .summary-row.net-row {
+            font-weight: 700;
+        }
+
+            .summary-row.net-row strong {
+                color: #8b5cf6;
+                font-size: 15px;
+            }
+
+        .summary-row.paid-row strong {
+            color: #198754;
+        }
+
+        .summary-row.due-row strong {
+            color: #dc2626;
+            font-size: 15px;
+        }
+
+        .summary-row.payment-row {
+            margin-top: 3px;
+            padding-top: 16px;
+            border-top: 1px solid #ded8e9;
+            border-bottom: none;
+        }
+
+            .summary-row.payment-row span,
+            .summary-row.payment-row strong {
+                font-weight: 700;
+            }
+
+            .summary-row.payment-row strong {
+                color: #8b5cf6;
+                font-size: 17px;
+            }
+
+
+    /* =========================================================
+           PURPLE BUTTON
+        ========================================================== */
+
+    .btn-purple {
+        min-height: 43px;
+        padding: 0 17px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+    }
+
+        .btn-purple:hover {
+            background: linear-gradient( 135deg, #7c3aed, #9333ea );
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           BLUE BUTTON
+        ========================================================== */
+
+    .btn-blue {
+        min-height: 43px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: #eef4ff;
+        border: 1px solid #d9e5ff;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+    }
+
+        .btn-blue:hover {
+            background: #e0ebff;
+            color: #1d4ed8;
+        }
+
+
+    /* =========================================================
+           SECONDARY BUTTON
+        ========================================================== */
+
+    .btn-secondary {
+        min-height: 43px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: #ffffff;
+        border: 1px solid #ddd9e7;
+        color: #000000;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+    }
+
+        .btn-secondary:hover {
+            background: #f8f6fb;
+            color: #000000;
+        }
+
+
+    /* =========================================================
+           ACTIONS
+        ========================================================== */
+
+    .bottom-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #ece9f2;
+        flex-wrap: wrap;
+    }
+
+
+    /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+    @@media (max-width: 950px) {
+
+        .info-grid {
+            grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .details-card {
+            padding: 20px;
+        }
+
+        .page-header-left h1 {
+            font-size: 26px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-row {
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+            .header-actions a {
+                width: 100%;
+            }
+
+        .bottom-actions {
+            flex-direction: column;
+        }
+
+            .bottom-actions a {
+                width: 100%;
+            }
+    }
+
+</style>
+
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================== -->
+
+<div class="page-header">
+
+    <div class="page-header-left">
+
+        <small>
+            Receptionist Panel
+        </small>
+
+        <h1>
+            Payment Details
+        </h1>
+
+        <p>
+            View complete payment information.
+        </p>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <a asp-area="Receptionist"
+           asp-controller="Payments"
+           asp-action="Index"
+           class="btn-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Payments
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MAIN DETAILS CARD
+========================================================== -->
+
+<div class="details-card">
+
+
+    <!-- =====================================================
+         PAYMENT INFORMATION
+    ====================================================== -->
+
+    <div class="section-header">
+
+        <h2>
+            Payment Information
+        </h2>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <div class="info-grid">
+
+
+        <!-- Payment ID -->
+
+        <div class="info-box">
+
+            <span>
+                Payment ID
+            </span>
+
+            <strong>
+                PAT@(Model.Id)
+            </strong>
+
+        </div>
+
+
+        <!-- Payment Date -->
+
+        <div class="info-box">
+
+            <span>
+                Payment Date
+            </span>
+
+            <strong>
+                @paymentDate
+            </strong>
+
+        </div>
+
+
+        <!-- Payment Method -->
+
+        <div class="info-box">
+
+            <span>
+                Payment Method
+            </span>
+
+            <strong>
+                @paymentMethodName
+            </strong>
+
+        </div>
+
+
+        <!-- Payment Amount -->
+
+        <div class="info-box amount-highlight">
+
+            <span>
+                Payment Amount
+            </span>
+
+            <strong>
+                BDT @paymentAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Transaction Number -->
+
+        <div class="info-box">
+
+            <span>
+                Transaction Number
+            </span>
+
+            <strong>
+                @(isCash ? "N/A - Cash Payment" : transactionNumber)
+            </strong>
+
+        </div>
+
+
+        <!-- Bank Name -->
+        @if (isBank)
+        {
+            <div class="info-box">
+
+                <span>
+                    Bank Name
+                </span>
+
+                <strong>
+                    @bankName
+                </strong>
+
+            </div>
+        }
+
+
+        <!-- Mobile Banking -->
+        @if (isMobileBanking)
+        {
+            <div class="info-box">
+
+                <span>
+                    Mobile Banking
+                </span>
+
+                <strong>
+                    @mobileBanking
+                </strong>
+
+            </div>
+        }
+
+
+        <!-- Payment Status -->
+
+        <div class="info-box">
+
+            <span>
+                Payment Status
+            </span>
+
+            <strong class="status-value">
+                @paymentStatus
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INVOICE INFORMATION
+    ====================================================== -->
+
+    <div class="section-header section-space">
+
+        <h2>
+            Invoice Information
+        </h2>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <div class="info-grid">
+
+
+        <!-- Invoice Number -->
+
+        <div class="info-box">
+
+            <span>
+                Invoice Number
+            </span>
+
+            <strong>
+                @invoiceNumber
+            </strong>
+
+        </div>
+
+
+        <!-- Invoice Date -->
+
+        <div class="info-box">
+
+            <span>
+                Invoice Date
+            </span>
+
+            <strong>
+                @invoiceDate
+            </strong>
+
+        </div>
+
+
+        
+
+        <!-- Appointment Code -->
+
+        <div class="info-box">
+
+            <span>
+                Appointment ID
+            </span>
+
+            <strong>
+                @appointmentCode
+            </strong>
+
+        </div>
+
+
+        <!-- Appointment Date -->
+
+        <div class="info-box">
+
+            <span>
+                Appointment Date
+            </span>
+
+            <strong>
+                @appointmentDate
+            </strong>
+
+        </div>
+
+
+        <!-- Appointment Time -->
+
+        <div class="info-box">
+
+            <span>
+                Appointment Time
+            </span>
+
+            <strong>
+                @appointmentTime
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PATIENT INFORMATION
+    ====================================================== -->
+
+    <div class="section-header section-space">
+
+        <h2>
+            Patient Information
+        </h2>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <div class="info-grid">
+
+
+        <!-- Patient ID -->
+
+        <div class="info-box">
+
+            <span>
+                Patient ID
+            </span>
+
+            <strong>
+                @(Model.Invoice != null
+                    ? Model.Invoice.PatientId.ToString()
+                    : "N/A")
+            </strong>
+
+        </div>
+
+
+        <!-- Patient Code -->
+
+        <div class="info-box">
+
+            <span>
+                Patient Code
+            </span>
+
+            <strong>
+                @patientCode
+            </strong>
+
+        </div>
+
+
+        <!-- Patient Name -->
+
+        <div class="info-box">
+
+            <span>
+                Patient Name
+            </span>
+
+            <strong>
+                @patientName
+            </strong>
+
+        </div>
+
+
+        <!-- Phone -->
+
+        <div class="info-box">
+
+            <span>
+                Phone
+            </span>
+
+            <strong>
+                @patientPhone
+            </strong>
+
+        </div>
+
+
+        <!-- Email -->
+
+        <div class="info-box">
+
+            <span>
+                Email
+            </span>
+
+            <strong>
+                @patientEmail
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BILLING SUMMARY
+    ====================================================== -->
+
+    <div class="section-header section-space">
+
+        <h2>
+            Billing Summary
+        </h2>
+
+    </div>
+
+    <div class="section-line"></div>
+
+
+    <div class="summary-box">
+
+
+        <!-- Subtotal -->
+
+        <div class="summary-row">
+
+            <span>
+                Subtotal
+            </span>
+
+            <strong>
+                BDT @subtotal.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Discount -->
+
+        <div class="summary-row">
+
+            <span>
+                Discount
+            </span>
+
+            <strong>
+                BDT @discount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Tax -->
+
+        <div class="summary-row">
+
+            <span>
+                Tax
+            </span>
+
+            <strong>
+                BDT @tax.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Net Amount -->
+
+        <div class="summary-row net-row">
+
+            <span>
+                Net Amount
+            </span>
+
+            <strong>
+                BDT @netAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Paid Amount -->
+
+        <div class="summary-row paid-row">
+
+            <span>
+                Paid Amount
+            </span>
+
+            <strong>
+                BDT @paidAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- Due Amount -->
+
+        <div class="summary-row due-row">
+
+            <span>
+                Due Amount
+            </span>
+
+            <strong>
+                BDT @dueAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+
+        <!-- This Payment -->
+
+        <div class="summary-row payment-row">
+
+            <span>
+                This Payment
+            </span>
+
+            <strong>
+                BDT @paymentAmount.ToString("N2")
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOTTOM ACTIONS
+    ====================================================== -->
+
+    <div class="bottom-actions">
+
+
+        <!-- Back -->
+
+        <a asp-area="Receptionist"
+           asp-controller="Payments"
+           asp-action="Index"
+           class="btn-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back
+
+        </a>
+
+
+        <!-- Edit -->
+
+        <a asp-area="Receptionist"
+           asp-controller="Payments"
+           asp-action="Edit"
+           asp-route-id="@Model.Id"
+           class="btn-blue">
+
+            <i class="bi bi-pencil"></i>
+
+            Edit Payment
+
+        </a>
+
+
+        <!-- View PDF -->
+
+        <a asp-area="Receptionist"
+           asp-controller="Payments"
+           asp-action="GeneratePdf"
+           asp-route-id="@Model.Id"
+           target="_blank"
+           class="btn-purple">
+
+            <i class="bi bi-file-earmark-pdf"></i>
+
+            View PDF
+
+        </a>
+
+    </div>
+
+</div>

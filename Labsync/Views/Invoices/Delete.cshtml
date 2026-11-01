@@ -1,0 +1,108 @@
+﻿@model LabSync.Models.Invoice
+
+@{
+    ViewData["Title"] = "Delete Invoice";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Delete Invoice</h2>
+            <p class="text-muted mb-0">
+                Confirm invoice deletion
+            </p>
+        </div>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body text-center py-5">
+
+            <i class="bi bi-exclamation-triangle-fill
+            text-danger fs-1"></i>
+
+            <h4 class="fw-bold mt-3">
+                Are you sure you want to delete this invoice?
+            </h4>
+
+            <p class="text-muted">
+                This action cannot be undone.
+            </p>
+
+            <div class="row justify-content-center mt-4">
+
+                <div class="col-md-6">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+
+                            <tr>
+                                <th>Invoice Number</th>
+                                <td>
+                                    @(Model.InvoiceNumber ?? "N/A")
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Patient ID</th>
+                                <td>@Model.PatientId</td>
+                            </tr>
+
+                            <tr>
+                                <th>Appointment ID</th>
+                                <td>@Model.AppointmentId</td>
+                            </tr>
+
+                            <tr>
+                                <th>Net Amount</th>
+                                <td>
+                                    @Model.NetAmount.ToString("N2")
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Due Amount</th>
+                                <td class="text-danger">
+                                    @Model.DueAmount.ToString("N2")
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <form asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  class="mt-4">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-danger me-2">
+                    <i class="bi bi-trash me-2"></i>
+                    Yes, Delete
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

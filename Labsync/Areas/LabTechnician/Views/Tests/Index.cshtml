@@ -1,0 +1,1413 @@
+﻿@model LabSync.Areas.LabTechnician.Models.LabTechnicianTestsViewModel
+
+@{
+    ViewData["Title"] = "Tests";
+
+    Layout =
+        "~/Areas/LabTechnician/Views/Shared/_LabTechnicianLayout.cshtml";
+
+
+    // =====================================================
+    // SEARCH VALUE
+    // =====================================================
+
+    var searchValue =
+        Model.SearchAppointmentId ?? "";
+
+
+    // =====================================================
+    // DATE
+    // =====================================================
+
+    var appointmentDateText =
+        Model.AppointmentDate != default
+            ? Model.AppointmentDate.ToString("dd/MM/yyyy")
+            : "N/A";
+
+
+    // =====================================================
+    // TIME
+    // =====================================================
+
+    var appointmentTimeText =
+        Model.AppointmentTime != default
+            ? DateTime.Today
+                .Add(Model.AppointmentTime)
+                .ToString("hh:mm tt")
+            : "N/A";
+}
+
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .tests-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        gap: 20px;
+    }
+
+    .tests-title {
+        margin: 0;
+        color: #18213a;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.6px;
+    }
+
+    .tests-subtitle {
+        margin: 7px 0 0;
+        color: #9296aa;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           BACK BUTTON
+        ====================================================== */
+
+    .tests-back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 42px;
+        padding: 0 16px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #000000;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .tests-back-button:hover {
+            background: #f5efff;
+            border-color: #d8c7f8;
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           SEARCH CARD
+        ====================================================== */
+
+    .tests-search-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .tests-search-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .tests-search-area {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tests-search-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #000000;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .tests-search-box {
+        height: 48px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        background: #ffffff;
+        transition: .2s ease;
+    }
+
+        .tests-search-box:focus-within {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+        }
+
+        .tests-search-box i {
+            color: #777777;
+            font-size: 17px;
+        }
+
+        .tests-search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #000000;
+            font-size: 14px;
+        }
+
+            .tests-search-box input::placeholder {
+                color: #999999;
+            }
+
+
+    /* =====================================================
+           SEARCH BUTTON
+        ====================================================== */
+
+    .tests-search-button {
+        height: 48px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .tests-search-button:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =====================================================
+           CLEAR BUTTON
+        ====================================================== */
+
+    .tests-clear-button {
+        height: 48px;
+        padding: 0 17px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #000000;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .tests-clear-button:hover {
+            background: #f5efff;
+            border-color: #d8c7f8;
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           SEARCH INFO
+        ====================================================== */
+
+    .tests-search-info {
+        margin-top: 10px;
+        color: #000000;
+        font-size: 12px;
+    }
+
+        .tests-search-info strong {
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           ERROR
+        ====================================================== */
+
+    .tests-error {
+        margin-top: 13px;
+        padding: 12px 14px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 13px;
+    }
+
+    .tests-error-row {
+        margin-bottom: 4px;
+    }
+
+        .tests-error-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+    /* =====================================================
+           PATIENT INFORMATION
+        ====================================================== */
+
+    .patient-info-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .patient-info-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .patient-info-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+
+    .patient-info-header h5 {
+        margin: 0 0 5px;
+        color: #000000;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .patient-info-header span {
+        color: #000000;
+        font-size: 13px;
+    }
+
+    .patient-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .patient-info-box {
+        padding: 16px;
+        border: 1px solid #eeeaf3;
+        border-radius: 11px;
+        background: #fcfbff;
+    }
+
+        .patient-info-box span {
+            display: block;
+            color: #000000;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .patient-info-box strong {
+            color: #000000 !important;
+            font-size: 14px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+
+    /* =====================================================
+           TABLE CARD
+        ====================================================== */
+
+    .tests-table-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .tests-card-header {
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeaf3;
+    }
+
+        .tests-card-header h5 {
+            margin: 0 0 5px;
+            color: #000000;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .tests-card-header span {
+            color: #000000;
+            font-size: 13px;
+        }
+
+
+    /* =====================================================
+           TABLE
+        ====================================================== */
+
+    .tests-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .tests-table {
+        width: 100%;
+        min-width: 1250px;
+        border-collapse: collapse;
+    }
+
+        .tests-table thead {
+            background: #faf9fc;
+        }
+
+        .tests-table th {
+            padding: 15px 18px;
+            text-align: left;
+            border-bottom: 1px solid #ebe8f0;
+            color: #000000;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tests-table td {
+            padding: 17px 18px;
+            border-bottom: 1px solid #f0edf4;
+            color: #000000;
+            font-size: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .tests-table tbody tr:hover {
+            background: #fcfbff;
+        }
+
+        .tests-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+    /* =====================================================
+           TEST CONTENT
+        ====================================================== */
+
+    .test-serial {
+        color: #000000;
+        font-weight: 600;
+    }
+
+    .test-code {
+        color: #000000;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .test-name-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 240px;
+    }
+
+    .test-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .test-name {
+        color: #000000;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: normal;
+        line-height: 1.4;
+    }
+
+    .test-price {
+        color: #000000;
+        font-weight: 700;
+    }
+
+    .test-unit,
+    .test-turnaround {
+        color: #000000;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+           SAMPLE STATUS
+        ====================================================== */
+
+    .sample-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 7px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .sample-status.pending {
+            background: #fff7df;
+            color: #b98100;
+        }
+
+        .sample-status.collected {
+            background: #eaf8ef;
+            color: #159447;
+        }
+
+        .sample-status.processing {
+            background: #e9f2ff;
+            color: #4385dd;
+        }
+
+        .sample-status.completed {
+            background: #f1eaff;
+            color: #7c3aed;
+        }
+
+        .sample-status.default {
+            background: #f1f1f5;
+            color: #666273;
+        }
+
+
+    /* =====================================================
+           ACTION BUTTON
+        ====================================================== */
+
+    .test-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 14px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .test-action-button:hover {
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+
+        /* COLLECT SAMPLE */
+
+        .test-action-button.sample {
+            border: 1px solid #d8c7f8;
+            background: #ffffff;
+            color: #7c3aed;
+        }
+
+            .test-action-button.sample:hover {
+                background: #f5efff;
+                border-color: #bfa3f4;
+                color: #6d28d9;
+            }
+
+
+        /* ENTER RESULT */
+
+        .test-action-button.result {
+            border: 1px solid #b9e3c8;
+            background: #f4fcf6;
+            color: #159447;
+        }
+
+            .test-action-button.result:hover {
+                background: #eaf8ef;
+                border-color: #9bd4ad;
+                color: #12813d;
+            }
+
+
+        /* VIEW RESULT */
+
+        .test-action-button.view-result {
+            border: 1px solid #b8d5f7;
+            background: #f4f9ff;
+            color: #4385dd;
+        }
+
+            .test-action-button.view-result:hover {
+                background: #e9f2ff;
+                border-color: #9ec2ec;
+                color: #2868b9;
+            }
+
+
+    /* =====================================================
+           EMPTY
+        ====================================================== */
+
+    .tests-empty {
+        padding: 70px 25px;
+        text-align: center;
+    }
+
+    .tests-empty-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 29px;
+    }
+
+    .tests-empty h5 {
+        color: #000000;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .tests-empty p {
+        color: #000000;
+        font-size: 13px;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+           MOBILE
+        ====================================================== */
+
+    @@media (max-width: 1000px) {
+
+        .patient-info-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .tests-search-form {
+            flex-wrap: wrap;
+        }
+
+        .tests-search-area {
+            width: 100%;
+            flex-basis: 100%;
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .tests-header {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .tests-back-button {
+            align-self: flex-start;
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .patient-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tests-title {
+            font-size: 28px;
+        }
+
+        .tests-subtitle {
+            font-size: 14px;
+        }
+
+        .tests-search-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .tests-search-button,
+        .tests-clear-button {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<div class="tests-header">
+
+    <div>
+
+        <h1 class="tests-title">
+            Tests
+        </h1>
+
+        <p class="tests-subtitle">
+            Search an appointment and manage assigned laboratory tests.
+        </p>
+
+    </div>
+
+
+    <a href="@Url.Action(
+                        "Index",
+                        "Dashboard",
+                        new
+                        {
+                            area = "LabTechnician"
+                        })"
+       class="tests-back-button">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to Appointments
+
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     SEARCH
+====================================================== -->
+
+<div class="tests-search-card">
+
+    <form method="get"
+          action="@Url.Action(
+                              "Index",
+                              "Tests",
+                              new
+                              {
+                                  area = "LabTechnician"
+                              })">
+
+        <div class="tests-search-form">
+
+            <div class="tests-search-area">
+
+                <label for="appointmentId"
+                       class="tests-search-label">
+
+                    Appointment ID
+
+                </label>
+
+
+                <div class="tests-search-box">
+
+                    <i class="bi bi-search"></i>
+
+
+                    <input type="text"
+                           id="appointmentId"
+                           name="appointmentId"
+                           value="@searchValue"
+                           autocomplete="off"
+                            />
+
+                </div>
+
+            </div>
+
+
+            <button type="submit"
+                    class="tests-search-button">
+
+                <i class="bi bi-search"></i>
+
+                Search Tests
+
+            </button>
+
+
+            @if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                <a href="@Url.Action(
+                                                "Index",
+                                                "Tests",
+                                                new
+                                                {
+                                                    area = "LabTechnician"
+                                                })"
+                   class="tests-clear-button">
+
+                    <i class="bi bi-x-lg"></i>
+
+                    Clear
+
+                </a>
+            }
+
+        </div>
+
+
+        @if (Model.HasSearched)
+        {
+            <div class="tests-search-info">
+
+                Showing tests for Appointment ID:
+
+                <strong>
+                    @searchValue
+                </strong>
+
+            </div>
+        }
+
+
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="tests-error">
+
+                @foreach (
+                    var error in ViewData.ModelState.Values
+                        .SelectMany(v => v.Errors))
+                {
+                    if (!string.IsNullOrWhiteSpace(error.ErrorMessage))
+                    {
+                        <div class="tests-error-row">
+                            @error.ErrorMessage
+                        </div>
+                    }
+                }
+
+            </div>
+        }
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     INITIAL STATE
+====================================================== -->
+@if (!Model.HasSearched)
+{
+    <div class="tests-table-card">
+
+        <div class="tests-empty">
+
+            <div class="tests-empty-icon">
+
+                <i class="bi bi-search"></i>
+
+            </div>
+
+            <h5>
+                Search an Appointment
+            </h5>
+
+            <p>
+                Enter an Appointment ID such as
+                'APT1' to view its assigned laboratory tests.
+            </p>
+
+        </div>
+
+    </div>
+}
+
+
+<!-- =====================================================
+     SEARCH RESULT
+====================================================== -->
+@if (Model.HasSearched && Model.AppointmentId > 0)
+{
+
+    <!-- =================================================
+         PATIENT INFORMATION
+    ================================================== -->
+
+    <div class="patient-info-card">
+
+        <div class="patient-info-header">
+
+            <div class="patient-info-icon">
+
+                <i class="bi bi-person-vcard-fill"></i>
+
+            </div>
+
+            <div>
+
+                <h5>
+                    Patient & Appointment Information
+                </h5>
+
+            </div>
+
+        </div>
+
+
+        <div class="patient-info-grid">
+
+            <!-- PATIENT NAME -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Patient Name
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.PatientName)
+                        ? "N/A"
+                        : Model.PatientName
+                    )
+                </strong>
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Phone
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Phone)
+                        ? "N/A"
+                        : Model.Phone
+                    )
+                </strong>
+
+            </div>
+
+
+            <!-- APPOINTMENT ID -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Appointment ID
+                </span>
+
+                <strong>
+                    @(Model.AppointmentCode ?? "N/A")
+                </strong>
+
+            </div>
+
+
+            <!-- DATE -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Appointment Date
+                </span>
+
+                <strong>
+                    @appointmentDateText
+                </strong>
+
+            </div>
+
+
+            <!-- TIME -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Appointment Time
+                </span>
+
+                <strong>
+                    @appointmentTimeText
+                </strong>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="patient-info-box">
+
+                <span>
+                    Email
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Email)
+                        ? "N/A"
+                        : Model.Email
+                    )
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         TEST TABLE
+    ================================================== -->
+    @if (Model.Tests != null && Model.Tests.Count > 0)
+    {
+
+        <div class="tests-table-card">
+
+            <div class="tests-card-header">
+
+                <div>
+
+                    <h5>
+                        Assigned Tests
+                    </h5>
+
+                    <span>
+                        @Model.Tests.Count test(s) assigned to this appointment.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="tests-table-wrapper">
+
+                <table class="tests-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Test Code
+                            </th>
+
+                            <th>
+                                Test Name
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th>
+                                Turn Around
+                            </th>
+
+                            <th>
+                                Sample Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @{
+                            var serial = 1;
+                        }
+
+
+                        @foreach (var test in Model.Tests)
+                        {
+                            // =================================================
+                            // SAMPLE STATUS TEXT
+                            // =================================================
+
+                            var sampleStatusText =
+                                string.IsNullOrWhiteSpace(
+                                    test.SampleStatusName
+                                )
+                                ? "Pending"
+                                : test.SampleStatusName.Trim();
+
+
+                            var sampleStatusKey =
+                                sampleStatusText.ToLowerInvariant();
+
+
+                            // =================================================
+                            // STATUS CLASS
+                            // =================================================
+
+                            var statusClass =
+                                "default";
+
+
+                            var statusIcon =
+                                "bi-info-circle";
+
+
+                            if (
+                                sampleStatusKey ==
+                                "pending"
+                            )
+                            {
+                                statusClass =
+                                    "pending";
+
+                                statusIcon =
+                                    "bi-clock";
+                            }
+                            else if (
+                                sampleStatusKey ==
+                                "collected"
+                            )
+                            {
+                                statusClass =
+                                    "collected";
+
+                                statusIcon =
+                                    "bi-check-circle";
+                            }
+                            else if (
+                                sampleStatusKey ==
+                                "processing"
+                            )
+                            {
+                                statusClass =
+                                    "processing";
+
+                                statusIcon =
+                                    "bi-arrow-repeat";
+                            }
+                            else if (
+                                sampleStatusKey ==
+                                "completed"
+                            )
+                            {
+                                statusClass =
+                                    "completed";
+
+                                statusIcon =
+                                    "bi-check2-all";
+                            }
+
+
+                            <tr>
+
+                                <!-- SERIAL -->
+
+                                <td>
+
+                                    <span class="test-serial">
+
+                                        @serial
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- TEST CODE -->
+
+                                <td>
+
+                                    <span class="test-code">
+
+                                        @(test.TestCode
+                                            ?? $"TEST-{test.TestId}")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- TEST NAME -->
+
+                                <td>
+
+                                    <div class="test-name-wrapper">
+
+                                        <div class="test-icon">
+
+                                            <i class="bi bi-eyedropper"></i>
+
+                                        </div>
+
+
+                                        <div class="test-name">
+
+                                            @test.TestName
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- PRICE -->
+
+                                <td>
+
+                                    <span class="test-price">
+
+                                        BDT
+                                        @test.Price.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- UNIT -->
+
+                                <td>
+
+                                    <span class="test-unit">
+
+                                        @(test.Unit ?? "N/A")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- TURN AROUND -->
+
+                                <td>
+
+                                    <span class="test-turnaround">
+
+                                        @(
+                                            string.IsNullOrWhiteSpace(
+                                                test.TurnAroundTime)
+                                            ? "N/A"
+                                            : test.TurnAroundTime
+                                        )
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- SAMPLE STATUS -->
+
+                                <td>
+
+                                    <span class="sample-status @statusClass">
+
+                                        <i class="bi @statusIcon"></i>
+
+                                        @sampleStatusText
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTION -->
+
+                                <td>
+
+                                    @if (sampleStatusKey == "pending")
+                                    {
+                                        <!-- =========================================
+                                             COLLECT SAMPLE
+                                        ========================================== -->
+
+                                        <a href="@Url.Action(
+                                                                                                "Create",
+                                                                                                "Samples",
+                                                                                                new
+                                                                                                {
+                                                                                                    area = "LabTechnician",
+                                                                                                    appointmentTestId =
+                                                                                                        test.AppointmentTestId
+                                                                                                })"
+                                           class="test-action-button sample"
+                                           title="Collect Sample">
+
+                                            <i class="bi bi-droplet-half"></i>
+
+                                            Collect Sample
+
+                                        </a>
+                                    }
+                                    else if (
+                                        sampleStatusKey == "collected"
+                                        ||
+                                        sampleStatusKey == "processing"
+                                    )
+                                    {
+                                        <!-- =========================================
+                                             ENTER RESULT
+                                        ========================================== -->
+
+                                        <a href="@Url.Action(
+                                                                                                "Create",
+                                                                                                "TestResults",
+                                                                                                new
+                                                                                                {
+                                                                                                    area = "LabTechnician",
+                                                                                                    appointmentTestId =
+                                                                                                        test.AppointmentTestId
+                                                                                                })"
+                                           class="test-action-button result"
+                                           title="Enter Result">
+
+                                            <i class="bi bi-pencil-square"></i>
+
+                                            Enter Result
+
+                                        </a>
+                                    }
+                                    else if (sampleStatusKey == "completed")
+                                    {
+                                        <!-- =========================================
+                                             VIEW RESULT
+                                        ========================================== -->
+
+                                        <a href="@Url.Action(
+                                                                                                "Create",
+                                                                                                "TestResults",
+                                                                                                new
+                                                                                                {
+                                                                                                    area = "LabTechnician",
+                                                                                                    appointmentTestId =
+                                                                                                        test.AppointmentTestId
+                                                                                                })"
+                                           class="test-action-button view-result"
+                                           title="View Result">
+
+                                            <i class="bi bi-eye"></i>
+
+                                            View Result
+
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="test-action-button sample">
+
+                                            <i class="bi bi-hourglass"></i>
+
+                                            @sampleStatusText
+
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+
+
+                            serial++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- =================================================
+         NO TESTS
+    ================================================== -->
+    @if (Model.Tests == null || Model.Tests.Count == 0)
+    {
+
+        <div class="tests-table-card">
+
+            <div class="tests-empty">
+
+                <div class="tests-empty-icon">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                </div>
+
+
+                <h5>
+                    No Tests Assigned
+                </h5>
+
+
+                <p>
+                    This appointment does not have any assigned laboratory tests.
+                </p>
+
+            </div>
+
+        </div>
+
+    }
+
+}

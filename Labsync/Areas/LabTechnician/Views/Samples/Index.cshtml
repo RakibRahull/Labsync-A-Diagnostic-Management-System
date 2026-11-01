@@ -1,0 +1,1223 @@
+﻿@model List<LabSync.Areas.LabTechnician.Models.SampleListRowViewModel>
+
+@{
+    ViewData["Title"] = "Samples";
+
+    Layout =
+        "~/Areas/LabTechnician/Views/Shared/_LabTechnicianLayout.cshtml";
+
+    var appointmentSearch =
+        ViewBag.AppointmentId as string ?? "";
+
+    var patientSearch =
+        ViewBag.PatientId as string ?? "";
+
+    int? selectedStatusId =
+        ViewBag.SampleStatusId as int?;
+
+    var sampleStatuses =
+        ViewBag.SampleStatuses
+        as List<LabSync.Areas.LabTechnician.Models.SampleStatusOptionViewModel>
+        ?? new List<LabSync.Areas.LabTechnician.Models.SampleStatusOptionViewModel>();
+
+    var totalSamples =
+        Model?.Count ?? 0;
+
+    var pendingSamples =
+        Model?.Count(x =>
+            x.SampleStatusName
+                .Trim()
+                .Equals(
+                    "Pending",
+                    StringComparison.OrdinalIgnoreCase
+                )
+        ) ?? 0;
+
+    var collectedSamples =
+        Model?.Count(x =>
+            x.SampleStatusName
+                .Trim()
+                .Equals(
+                    "Collected",
+                    StringComparison.OrdinalIgnoreCase
+                )
+        ) ?? 0;
+
+    var processingSamples =
+        Model?.Count(x =>
+            x.SampleStatusName
+                .Trim()
+                .Equals(
+                    "Processing",
+                    StringComparison.OrdinalIgnoreCase
+                )
+        ) ?? 0;
+}
+
+<style>
+
+    /* =====================================================
+           PAGE HEADER
+        ====================================================== */
+
+    .samples-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .samples-title {
+        margin: 0;
+        color: #18213a;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.6px;
+    }
+
+    .samples-subtitle {
+        margin: 7px 0 0;
+        color: #9296aa;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+           ALERT
+        ====================================================== */
+
+    .sample-alert {
+        border-radius: 12px;
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid transparent;
+    }
+
+        .sample-alert.success {
+            background: #eaf8ef;
+            border-color: #c5ebd1;
+            color: #159447;
+        }
+
+        .sample-alert.error {
+            background: #fff1f1;
+            border-color: #f5c7c7;
+            color: #dc2626;
+        }
+
+
+    /* =====================================================
+           FILTER CARD
+        ====================================================== */
+
+    .samples-filter-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .samples-filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .samples-filter-group {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .samples-filter-group.status-group {
+            flex: 0 0 220px;
+        }
+
+    .samples-filter-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #514b61;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .samples-input-box,
+    .samples-select-box {
+        height: 48px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        transition: .2s ease;
+    }
+
+    .samples-input-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+    }
+
+        .samples-input-box i {
+            color: #9993a8;
+            font-size: 17px;
+        }
+
+        .samples-input-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #29243a;
+            font-size: 14px;
+        }
+
+            .samples-input-box input::placeholder {
+                color: #aaa5b5;
+            }
+
+    .samples-select-box {
+        width: 100%;
+        padding: 0 13px;
+        outline: none;
+        color: #29243a;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .samples-input-box:focus-within,
+        .samples-select-box:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.10);
+        }
+
+    .samples-search-button {
+        height: 48px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: .2s ease;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .samples-search-button:hover {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .samples-clear-button {
+        height: 48px;
+        padding: 0 16px;
+        border: 1px solid #e8e5ef;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #514b61;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+        .samples-clear-button:hover {
+            background: #f5efff;
+            border-color: #d8c7f8;
+            color: #7c3aed;
+        }
+
+
+    /* =====================================================
+           SUMMARY CARDS
+        ====================================================== */
+
+    .samples-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .samples-summary-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        padding: 18px 19px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .samples-summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+        .samples-summary-icon.pending {
+            background: #fff7df;
+            color: #b98100;
+        }
+
+        .samples-summary-icon.collected {
+            background: #eaf8ef;
+            color: #159447;
+        }
+
+        .samples-summary-icon.processing {
+            background: #e9f2ff;
+            color: #4385dd;
+        }
+
+    .samples-summary-text span {
+        display: block;
+        color: #8b8798;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .samples-summary-text h3 {
+        margin: 0;
+        color: #29243a;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+           TABLE CARD
+        ====================================================== */
+
+    .samples-table-card {
+        background: #ffffff;
+        border: 1px solid #e8e5ef;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+    }
+
+    .samples-card-header {
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeaf3;
+    }
+
+        .samples-card-header h5 {
+            margin: 0 0 5px;
+            color: #29243a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .samples-card-header span {
+            color: #9993a8;
+            font-size: 13px;
+        }
+
+    .samples-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .samples-table {
+        width: 100%;
+        min-width: 1450px;
+        border-collapse: collapse;
+    }
+
+        .samples-table thead {
+            background: #faf9fc;
+        }
+
+        .samples-table th {
+            padding: 15px 18px;
+            text-align: left;
+            border-bottom: 1px solid #ebe8f0;
+            color: #6f6a7d;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .samples-table td {
+            padding: 17px 18px;
+            border-bottom: 1px solid #f0edf4;
+            color: #514b61;
+            font-size: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .samples-table tbody tr:hover {
+            background: #fcfbff;
+        }
+
+        .samples-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+    /* =====================================================
+           CONTENT
+        ====================================================== */
+
+    .sample-serial {
+        color: #8b8798;
+        font-weight: 700;
+    }
+
+    .sample-appointment-code {
+        color: #29243a;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .sample-patient-code {
+        color: #29243a;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .sample-patient-name {
+        color: #29243a;
+        font-weight: 700;
+    }
+
+    .sample-test-code {
+        display: block;
+        color: #29243a;
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .sample-test-name {
+        color: #29243a;
+        font-weight: 600;
+        white-space: normal;
+        line-height: 1.4;
+        min-width: 180px;
+    }
+
+    .sample-type {
+        color: #514b61;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+           STATUS
+        ====================================================== */
+
+    .sample-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+        .sample-status.pending {
+            background: #fff7df;
+            color: #b98100;
+        }
+
+        .sample-status.collected {
+            background: #eaf8ef;
+            color: #159447;
+        }
+
+        .sample-status.processing {
+            background: #e9f2ff;
+            color: #4385dd;
+        }
+
+        .sample-status.completed {
+            background: #f1eaff;
+            color: #7c3aed;
+        }
+
+        .sample-status.default {
+            background: #f1f1f5;
+            color: #666273;
+        }
+
+
+    /* =====================================================
+           ACTION BUTTON
+        ====================================================== */
+
+    .sample-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 14px;
+        border: 1px solid #d8c7f8;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .sample-action-button:hover {
+            background: #f5efff;
+            border-color: #bfa3f4;
+            color: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+        .sample-action-button.view {
+            border-color: #b9e3c8;
+            background: #f4fcf6;
+            color: #159447;
+        }
+
+            .sample-action-button.view:hover {
+                background: #eaf8ef;
+                color: #12813d;
+            }
+
+
+    /* =====================================================
+           EMPTY
+        ====================================================== */
+
+    .samples-empty {
+        padding: 70px 25px;
+        text-align: center;
+    }
+
+    .samples-empty-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: #f1eaff;
+        color: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 29px;
+    }
+
+    .samples-empty h5 {
+        color: #302b40;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .samples-empty p {
+        color: #9993a8;
+        font-size: 13px;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+    @@media (max-width: 1150px) {
+
+        .samples-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .samples-filter-form {
+            flex-wrap: wrap;
+        }
+
+        .samples-filter-group {
+            flex: 1 1 calc(50% - 12px);
+        }
+
+            .samples-filter-group.status-group {
+                flex: 1 1 calc(50% - 12px);
+            }
+
+        .samples-search-button,
+        .samples-clear-button {
+            flex: 1;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .samples-title {
+            font-size: 28px;
+        }
+
+        .samples-subtitle {
+            font-size: 14px;
+        }
+
+        .samples-summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .samples-filter-group,
+        .samples-filter-group.status-group {
+            flex: 1 1 100%;
+        }
+
+        .samples-search-button,
+        .samples-clear-button {
+            width: 100%;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<div class="samples-header">
+
+    <div>
+
+        <h1 class="samples-title">
+            Samples
+        </h1>
+
+        <p class="samples-subtitle">
+            View sample collection status and process laboratory samples.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ALERTS
+====================================================== -->
+@if (TempData["Success"] != null)
+{
+    <div class="sample-alert success">
+
+        <i class="bi bi-check-circle-fill me-2"></i>
+
+        @TempData["Success"]
+
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="sample-alert error">
+
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+        @TempData["Error"]
+
+    </div>
+}
+
+
+<!-- =====================================================
+     FILTER
+====================================================== -->
+
+<div class="samples-filter-card">
+
+    <form asp-area="LabTechnician"
+          asp-controller="Samples"
+          asp-action="Index"
+          method="get">
+
+        <div class="samples-filter-form">
+
+            <!-- APPOINTMENT -->
+
+            <div class="samples-filter-group">
+
+                <label class="samples-filter-label">
+                    Appointment
+                </label>
+
+                <div class="samples-input-box">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                    <input type="text"
+                           name="appointmentId"
+                           value="@appointmentSearch"
+                            />
+
+                </div>
+
+            </div>
+
+
+            <!-- PATIENT -->
+
+            <div class="samples-filter-group">
+
+                <label class="samples-filter-label">
+                    Patient ID
+                </label>
+
+                <div class="samples-input-box">
+
+                    <i class="bi bi-person"></i>
+
+                    <input type="text"
+                           name="patientId"
+                           value="@patientSearch"
+                            />
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="samples-filter-group status-group">
+
+                <label class="samples-filter-label">
+                    Sample Status
+                </label>
+
+                <select name="sampleStatusId"
+                        class="samples-select-box">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    @foreach (var status in sampleStatuses)
+                    {
+                        if (selectedStatusId == status.Id)
+                        {
+                            <option value="@status.Id"
+                                    selected>
+                                @status.StatusName
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@status.Id">
+                                @status.StatusName
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <button type="submit"
+                    class="samples-search-button">
+
+                <i class="bi bi-search"></i>
+
+                Search
+
+            </button>
+
+
+            <!-- CLEAR -->
+            @if (!string.IsNullOrWhiteSpace(appointmentSearch)
+                            || !string.IsNullOrWhiteSpace(patientSearch)
+                            || selectedStatusId.HasValue)
+            {
+                <a href="@Url.Action(
+                                              "Index",
+                                              "Samples",
+                                              new
+                                              {
+                                                  area = "LabTechnician"
+                                              })"
+                   class="samples-clear-button">
+
+                    <i class="bi bi-x-lg"></i>
+
+                    Clear
+
+                </a>
+            }
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     SUMMARY
+====================================================== -->
+
+<div class="samples-summary-grid">
+
+    <!-- TOTAL -->
+
+    <div class="samples-summary-card">
+
+        <div class="samples-summary-icon">
+
+            <i class="bi bi-droplet-fill"></i>
+
+        </div>
+
+        <div class="samples-summary-text">
+
+            <span>
+                Total Samples
+            </span>
+
+            <h3>
+                @totalSamples
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- PENDING -->
+
+    <div class="samples-summary-card">
+
+        <div class="samples-summary-icon pending">
+
+            <i class="bi bi-clock"></i>
+
+        </div>
+
+        <div class="samples-summary-text">
+
+            <span>
+                Pending
+            </span>
+
+            <h3>
+                @pendingSamples
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- COLLECTED -->
+
+    <div class="samples-summary-card">
+
+        <div class="samples-summary-icon collected">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+        </div>
+
+        <div class="samples-summary-text">
+
+            <span>
+                Collected
+            </span>
+
+            <h3>
+                @collectedSamples
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROCESSING -->
+
+    <div class="samples-summary-card">
+
+        <div class="samples-summary-icon processing">
+
+            <i class="bi bi-arrow-repeat"></i>
+
+        </div>
+
+        <div class="samples-summary-text">
+
+            <span>
+                Processing
+            </span>
+
+            <h3>
+                @processingSamples
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TABLE
+====================================================== -->
+
+<div class="samples-table-card">
+
+    <div class="samples-card-header">
+
+        <div>
+
+            <h5>
+                Sample List
+            </h5>
+
+        </div>
+
+    </div>
+
+
+    <div class="samples-table-wrapper">
+
+        <table class="samples-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Appointment ID
+                    </th>
+
+                    <th>
+                        Patient ID
+                    </th>
+
+                    <th>
+                        Patient Name
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Time
+                    </th>
+
+                    <th>
+                        Test
+                    </th>
+
+                    <th>
+                        Sample Type
+                    </th>
+
+                    <th>
+                        Sample Status
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model != null && Model.Any())
+                {
+
+                    int serial = 1;
+
+                    foreach (var sample in Model)
+                    {
+
+                        var status =
+                            (sample.SampleStatusName ?? "Pending")
+                            .Trim()
+                            .ToLowerInvariant();
+
+                        var statusClass = "default";
+
+                        var statusIcon = "bi-info-circle";
+
+                        if (status.Contains("pending"))
+                        {
+                            statusClass = "pending";
+                            statusIcon = "bi-clock";
+                        }
+                        else if (status.Contains("collect"))
+                        {
+                            statusClass = "collected";
+                            statusIcon = "bi-check-circle";
+                        }
+                        else if (status.Contains("process"))
+                        {
+                            statusClass = "processing";
+                            statusIcon = "bi-arrow-repeat";
+                        }
+                        else if (status.Contains("complete"))
+                        {
+                            statusClass = "completed";
+                            statusIcon = "bi-check2-all";
+                        }
+
+                        var isCollected =
+                            status.Contains("collect")
+                            || status.Contains("complete");
+
+
+                        var dateText =
+                            sample.AppointmentDate
+                                .ToString("dd/MM/yyyy");
+
+                        var timeText =
+                            DateTime.Today
+                                .Add(sample.AppointmentTime)
+                                .ToString("hh:mm tt");
+
+                        <tr>
+
+                            <!-- SERIAL -->
+
+                            <td>
+
+                                <span class="sample-serial">
+                                    @serial
+                                </span>
+
+                            </td>
+
+
+                            <!-- APPOINTMENT -->
+
+                            <td>
+
+                                <span class="sample-appointment-code">
+                                    @(sample.AppointmentCode
+                                      ?? $"#{sample.AppointmentId}")
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT ID -->
+
+                            <td>
+
+                                <span class="sample-patient-code">
+                                    @(sample.PatientCode
+                                      ?? $"#{sample.AppointmentId}")
+                                </span>
+
+                            </td>
+
+
+                            <!-- PATIENT NAME -->
+
+                            <td>
+
+                                <span class="sample-patient-name">
+                                    @sample.PatientName
+                                </span>
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+                                @dateText
+                            </td>
+
+
+                            <!-- TIME -->
+
+                            <td>
+                                @timeText
+                            </td>
+
+
+                            <!-- TEST -->
+
+                            <td>
+
+                                
+
+                                <div class="sample-test-name">
+
+                                    @sample.TestName
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- SAMPLE TYPE -->
+
+                            <td>
+
+                                <span class="sample-type">
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        sample.SampleTypeName)
+                                        ? "N/A"
+                                        : sample.SampleTypeName)
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span class="sample-status @statusClass">
+
+                                    <i class="bi @statusIcon"></i>
+
+                                    @(sample.SampleStatusName ?? "Pending")
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                @if (isCollected)
+                                {
+
+                                    <a href="@Url.Action(
+                                                                                      "Create",
+                                                                                      "Samples",
+                                                                                      new
+                                                                                      {
+                                                                                          area = "LabTechnician",
+                                                                                          appointmentTestId =
+                                                                                              sample.AppointmentTestId
+                                                                                      })"
+                                       class="sample-action-button view">
+
+                                        <i class="bi bi-eye"></i>
+
+                                        View Sample
+
+                                    </a>
+
+                                }
+                                else
+                                {
+
+                                    <a href="@Url.Action(
+                                                                                      "Create",
+                                                                                      "Samples",
+                                                                                      new
+                                                                                      {
+                                                                                          area = "LabTechnician",
+                                                                                          appointmentTestId =
+                                                                                              sample.AppointmentTestId
+                                                                                      })"
+                                       class="sample-action-button">
+
+                                        <i class="bi bi-droplet-half"></i>
+
+                                        Collect Sample
+
+                                    </a>
+
+                                }
+
+                            </td>
+
+                        </tr>
+
+                        serial++;
+                    }
+
+                }
+                else
+                {
+
+                    <tr>
+
+                        <td colspan="10">
+
+                            <div class="samples-empty">
+
+                                <div class="samples-empty-icon">
+
+                                    <i class="bi bi-droplet"></i>
+
+                                </div>
+
+                                <h5>
+                                    No Samples Found
+                                </h5>
+
+                                <p>
+                                    No sample records match the current search criteria.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

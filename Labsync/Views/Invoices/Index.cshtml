@@ -1,0 +1,1424 @@
+﻿@model List<LabSync.Models.Invoice>
+
+@{
+    ViewData["Title"] = "Invoices";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>LabSync - Invoices</title>
+
+
+    <!-- Bootstrap -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- Site CSS -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css" />
+
+
+    <style>
+
+            /* =====================================================
+                       TOPBAR
+                    ====================================================== */
+
+            .topbar {
+                height: 85px;
+                background: #ffffff;
+                border-bottom: 1px solid #e8e5ef;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 28px;
+            }
+
+            .topbar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+
+            /* =====================================================
+                       PROFILE
+                    ====================================================== */
+
+            .profile {
+                border: none;
+                background: transparent;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 5px 0 5px 8px;
+                cursor: pointer;
+            }
+
+                .profile:focus {
+                    box-shadow: none;
+                }
+
+                .profile::after {
+                    margin-left: 5px;
+                    color: #8f899d;
+                }
+
+            .profile-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, #8b5cf6, #a855f7 );
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                font-weight: 700;
+                box-shadow: 0 7px 18px rgba(139, 92, 246, 0.28);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                line-height: 1.2;
+            }
+
+                .profile-info strong {
+                    color: #29243a;
+                    font-size: 15px;
+                    font-weight: 700;
+                }
+
+                .profile-info small {
+                    color: #9993a8;
+                    font-size: 12px;
+                    margin-top: 3px;
+                }
+
+
+            /* =====================================================
+                       PROFILE DROPDOWN
+                    ====================================================== */
+
+            .profile-dropdown {
+                margin-top: 10px !important;
+                min-width: 220px;
+                border: 1px solid #eeeaf5;
+                border-radius: 12px;
+                padding: 8px;
+                box-shadow: 0 12px 30px rgba(30, 20, 50, 0.12);
+            }
+
+                .profile-dropdown .dropdown-item {
+                    border-radius: 8px;
+                    padding: 10px 12px;
+                    color: #514b61;
+                    font-size: 14px;
+                }
+
+                    .profile-dropdown .dropdown-item:hover {
+                        background: #f5efff;
+                        color: #7c3aed;
+                    }
+
+                    .profile-dropdown .dropdown-item i {
+                        width: 22px;
+                        margin-right: 6px;
+                    }
+
+                .profile-dropdown .logout-item {
+                    color: #dc2626;
+                }
+
+                    .profile-dropdown .logout-item:hover {
+                        background: #fef2f2;
+                        color: #dc2626;
+                    }
+
+
+            /* =====================================================
+                       INVOICE CONTENT
+                    ====================================================== */
+
+            .invoices-content {
+                padding: 30px;
+            }
+
+
+            /* =====================================================
+                       PAGE HEADER
+                    ====================================================== */
+
+            .invoices-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 28px;
+            }
+
+            .invoices-title {
+                margin: 0;
+                color: #18213a;
+                font-size: 36px;
+                font-weight: 700;
+                line-height: 1.15;
+                letter-spacing: -0.6px;
+            }
+
+            .invoices-subtitle {
+                margin: 7px 0 0;
+                color: #9296aa;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+            /* Brand */
+            .brand-icon {
+                width: 54px;
+                height: 54px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: transparent;
+                border-radius: 0;
+                flex-shrink: 0;
+            }
+
+                .brand-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+
+            /* =====================================================
+                       SUMMARY CARDS
+                    ====================================================== */
+
+            .invoice-stat-card {
+                height: 100%;
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                padding: 22px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .invoice-stat-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 21px;
+                flex-shrink: 0;
+            }
+
+                .invoice-stat-icon.purple {
+                    background: #f1eaff;
+                    color: #8b5cf6;
+                }
+
+                .invoice-stat-icon.blue {
+                    background: #e9f2ff;
+                    color: #4385dd;
+                }
+
+                .invoice-stat-icon.green {
+                    background: #eaf8ef;
+                    color: #22a45a;
+                }
+
+                .invoice-stat-icon.red {
+                    background: #fff0f0;
+                    color: #dc4a55;
+                }
+
+            .invoice-stat-info span {
+                display: block;
+                color: #8b8798;
+                font-size: 13px;
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+
+            .invoice-stat-info h2 {
+                margin: 0;
+                color: #29243a;
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 1.1;
+            }
+
+
+            /* =====================================================
+                       INVOICE TABLE CARD
+                    ====================================================== */
+
+            .invoice-table-card {
+                background: #ffffff;
+                border: 1px solid #e8e5ef;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba(30, 20, 50, 0.04);
+            }
+
+            .invoice-card-header {
+                padding: 22px 24px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid #eeeaf3;
+            }
+
+                .invoice-card-header h5 {
+                    margin: 0 0 5px;
+                    color: #29243a;
+                    font-size: 18px;
+                    font-weight: 700;
+                }
+
+                .invoice-card-header span {
+                    color: #9993a8;
+                    font-size: 13px;
+                }
+
+
+            /* =====================================================
+                       TABLE
+                    ====================================================== */
+
+            .invoice-table-wrapper {
+                overflow-x: auto;
+            }
+
+            .invoice-table {
+                width: 100%;
+                min-width: 1150px;
+                border-collapse: collapse;
+            }
+
+                .invoice-table thead {
+                    background: #faf9fc;
+                }
+
+                .invoice-table th {
+                    padding: 15px 18px;
+                    text-align: left;
+                    border-bottom: 1px solid #ebe8f0;
+                    color: #6f6a7d;
+                    font-size: 12px;
+                    font-weight: 700;
+                    white-space: nowrap;
+                }
+
+                .invoice-table td {
+                    padding: 17px 18px;
+                    border-bottom: 1px solid #f0edf4;
+                    color: #514b61;
+                    font-size: 14px;
+                    vertical-align: middle;
+                    white-space: nowrap;
+                }
+
+                .invoice-table tbody tr:hover {
+                    background: #fcfbff;
+                }
+
+                .invoice-table tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+
+            /* =====================================================
+                       INVOICE NUMBER
+                    ====================================================== */
+
+            .invoice-number {
+                color: #7c3aed;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+
+            /* =====================================================
+                       AMOUNTS
+                    ====================================================== */
+
+            .invoice-net {
+                color: #302b40;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .invoice-paid {
+                color: #159447;
+                font-weight: 600;
+            }
+
+            .invoice-due {
+                color: #dc2626;
+                font-weight: 600;
+            }
+
+
+            /* =====================================================
+                       STATUS
+                    ====================================================== */
+
+            .invoice-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 7px 11px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+                .invoice-status.paid {
+                    background: #dcfce7;
+                    color: #159447;
+                }
+
+                .invoice-status.partial {
+                    background: #fff7df;
+                    color: #b98100;
+                }
+
+                .invoice-status.unpaid {
+                    background: #fee2e2;
+                    color: #dc2626;
+                }
+
+
+            /* =====================================================
+                       VIEW ACTION
+                    ====================================================== */
+
+            .invoice-view-button {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border-radius: 9px;
+                background: #ffffff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                transition: .2s ease;
+            }
+
+                .invoice-view-button:hover {
+                    transform: translateY(-1px);
+                }
+
+
+            /* =====================================================
+                       EMPTY STATE
+                    ====================================================== */
+
+            .invoices-empty {
+                padding: 70px 25px;
+                text-align: center;
+            }
+
+            .invoices-empty-icon {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                background: #f1eaff;
+                color: #8b5cf6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                font-size: 29px;
+            }
+
+            .invoices-empty h5 {
+                color: #302b40;
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 7px;
+            }
+
+            .invoices-empty p {
+                color: #9993a8;
+                font-size: 13px;
+                margin: 0;
+            }
+
+
+            /* =====================================================
+                       BACK
+                    ====================================================== */
+
+            .invoices-back {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                color: #7c3aed;
+                font-size: 14px;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .invoices-back:hover {
+                    color: #6d28d9;
+                    text-decoration: underline;
+                }
+
+
+            /* =====================================================
+                       MOBILE
+                    ====================================================== */
+
+            @@media (max-width: 900px) {
+
+                .invoices-header {
+                    flex-direction: column;
+                    gap: 18px;
+                }
+            }
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    padding: 0 15px;
+                }
+
+                .profile-info {
+                    display: none;
+                }
+
+                .invoices-content {
+                    padding: 20px 15px;
+                }
+
+                .invoices-title {
+                    font-size: 28px;
+                }
+
+                .invoices-subtitle {
+                    font-size: 14px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <img src="~/images/Logo.png"
+                         alt="LabSync Logo" />
+                </div>
+
+                <div>
+
+                    <h4>
+                        LabSync
+                    </h4>
+
+                    <small>
+                        Diagnostic Management
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="sidebar-menu">
+
+
+                <p class="menu-title">
+                    MAIN MENU
+                </p>
+
+
+                <!-- DASHBOARD -->
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a asp-controller="Users"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+                        Users
+                    </span>
+
+                </a>
+
+
+                <!-- PATIENTS -->
+
+                <a asp-controller="Patients"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-vcard-fill"></i>
+
+                    <span>
+                        Patients
+                    </span>
+
+                </a>
+
+
+                <!-- APPOINTMENTS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AppointmentDetails"
+                   class="menu-item">
+
+                    <i class="bi bi-calendar-check-fill"></i>
+
+                    <span>
+                        Appointments
+                    </span>
+
+                </a>
+
+
+                <!-- TESTS -->
+
+                <a asp-controller="Tests"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-eyedropper"></i>
+
+                    <span>
+                        Tests
+                    </span>
+
+                </a>
+
+
+                <!-- REFERRAL DOCTORS -->
+
+                <a asp-controller="ReferralDoctors"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-person-badge-fill"></i>
+
+                    <span>
+                        Referral Doctors
+                    </span>
+
+                </a>
+
+
+                <!-- OPERATIONS -->
+
+                <p class="menu-title mt-4">
+                    OPERATIONS
+                </p>
+
+
+                <!-- REPORTS -->
+
+                <a href="@Url.Action(
+                                                             "Index",
+                                                             "AdminReports",
+                                                             new
+                                                             {
+                                                                 area = ""
+                                                             })"
+                   class="menu-item">
+
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICES -->
+
+                <a asp-controller="Invoices"
+                   asp-action="Index"
+                   class="menu-item active">
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+                <!-- PAYMENTS -->
+
+                <a asp-controller="Payments"
+                   asp-action="Index"
+                   class="menu-item">
+
+                    <i class="bi bi-credit-card-fill"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+                <!-- ANALYTICS -->
+
+                <a asp-controller="Admin"
+                   asp-action="Analytics"
+                   class="menu-item">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                    <span>
+                        Analytics
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a asp-controller="Admin"
+                   asp-action="AuditLogs"
+                   class="menu-item">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                
+
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <main class="dashboard-main">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-right">
+
+
+                    <div class="dropdown">
+
+
+                        <!-- PROFILE -->
+
+                        <button class="profile dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+
+                            <div class="profile-avatar">
+                                A
+                            </div>
+
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    Admin
+                                </strong>
+
+                                <small>
+                                    Administrator
+                                </small>
+
+                            </div>
+
+
+                        </button>
+
+
+                        <!-- PROFILE DROPDOWN -->
+
+                        <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+
+
+                           
+
+                            <li>
+
+                                <form asp-controller="Admin"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="dropdown-item logout-item">
+
+                                        <i class="bi bi-box-arrow-right"></i>
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+
+                        </ul>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="invoices-content">
+
+
+                <!-- =================================================
+                     PAGE HEADER
+                ================================================== -->
+
+                <div class="invoices-header">
+
+
+                    <div>
+
+                        <h1 class="invoices-title">
+                            Invoices
+                        </h1>
+
+                        <p class="invoices-subtitle">
+                            Manage all patient invoices.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     SUMMARY CARDS
+                ================================================== -->
+
+                <div class="row g-4 mb-4">
+
+
+                    <!-- TOTAL INVOICES -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="invoice-stat-card">
+
+
+                            <div class="invoice-stat-icon purple">
+
+                                <i class="bi bi-receipt"></i>
+
+                            </div>
+
+
+                            <div class="invoice-stat-info">
+
+                                <span>
+                                    Total Invoices
+                                </span>
+
+                                <h2>
+                                    @(Model?.Count ?? 0)
+                                </h2>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL AMOUNT -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="invoice-stat-card">
+
+
+                            <div class="invoice-stat-icon blue">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                            </div>
+
+
+                            <div class="invoice-stat-info">
+
+                                <span>
+                                    Total Amount
+                                </span>
+
+                                <h2>
+
+                                    ৳ @(
+                                    Model == null
+                                        ? "0.00"
+                                        : Model.Sum(
+                                            i => i.NetAmount
+                                          ).ToString("N2")
+                                                                    )
+
+                                </h2>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PAID -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="invoice-stat-card">
+
+
+                            <div class="invoice-stat-icon green">
+
+                                <i class="bi bi-check-circle"></i>
+
+                            </div>
+
+
+                            <div class="invoice-stat-info">
+
+                                <span>
+                                    Paid Amount
+                                </span>
+
+                                <h2>
+
+                                    ৳ @(
+                                    Model == null
+                                        ? "0.00"
+                                        : Model.Sum(
+                                            i => i.PaidAmount ?? 0
+                                          ).ToString("N2")
+                                                                    )
+
+                                </h2>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DUE -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="invoice-stat-card">
+
+
+                            <div class="invoice-stat-icon red">
+
+                                <i class="bi bi-exclamation-circle"></i>
+
+                            </div>
+
+
+                            <div class="invoice-stat-info">
+
+                                <span>
+                                    Due Amount
+                                </span>
+
+                                <h2>
+
+                                    ৳ @(
+                                    Model == null
+                                        ? "0.00"
+                                        : Model.Sum(
+                                            i => Math.Max(
+                                                0,
+                                                i.DueAmount
+                                            )
+                                          ).ToString("N2")
+                                                                    )
+
+                                </h2>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     INVOICE TABLE
+                ================================================== -->
+
+                <div class="invoice-table-card">
+
+
+                    <!-- CARD HEADER -->
+
+                    <div class="invoice-card-header">
+
+                        <div>
+
+                            <h5>
+                                Invoice List
+                            </h5>
+
+                            <span>
+                                All patient invoices
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TABLE -->
+
+                    <div class="invoice-table-wrapper">
+
+
+                        <table class="invoice-table">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Invoice Number
+                                    </th>
+
+                                    <th>
+                                        Patient ID
+                                    </th>
+
+                                    <th>
+                                        Appointment ID
+                                    </th>
+
+                                    <th>
+                                        Invoice Date
+                                    </th>
+
+                                    <th>
+                                        Net Amount
+                                    </th>
+
+                                    <th>
+                                        Paid
+                                    </th>
+
+                                    <th>
+                                        Due
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+
+                                @if (Model != null &&
+                                     Model.Any())
+                                {
+
+                                    int serial = 1;
+
+
+                                    foreach (var invoice in Model)
+                                    {
+
+                                        var displayDue =
+                                            Math.Max(
+                                                0,
+                                                invoice.DueAmount
+                                            );
+
+
+                                        <tr>
+
+
+                                            <!-- NUMBER -->
+
+                                            <td>
+
+                                                @serial
+
+                                            </td>
+
+
+                                            <!-- INVOICE NUMBER -->
+
+                                            <td>
+
+                                                <span class="invoice-number">
+
+                                                    @(invoice.InvoiceNumber
+                                                        ?? "N/A")
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- PATIENT ID -->
+
+                                            <td>
+
+                                                @invoice.PatientId
+
+                                            </td>
+
+
+                                            <!-- APPOINTMENT ID -->
+
+                                            <td>
+
+                                                @invoice.AppointmentId
+
+                                            </td>
+
+
+                                            <!-- INVOICE DATE -->
+
+                                            <td>
+
+                                                @(
+                                                    invoice.InvoiceDate.HasValue
+                                                        ? invoice.InvoiceDate.Value.ToString(
+                                                            "dd MMM yyyy"
+                                                          )
+                                                        : "N/A"
+                                                )
+
+                                            </td>
+
+
+                                            <!-- NET AMOUNT -->
+
+                                            <td>
+
+                                                <span class="invoice-net">
+
+                                                    ৳ @invoice.NetAmount.ToString(
+                                                                                                            "N2"
+                                                                                                        )
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- PAID -->
+
+                                            <td>
+
+                                                <span class="invoice-paid">
+
+                                                    ৳ @(
+                                                    (
+                                                        invoice.PaidAmount
+                                                        ?? 0
+                                                    ).ToString("N2")
+                                                                                                    )
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- DUE -->
+
+                                            <td>
+
+                                                <span class="invoice-due">
+
+                                                    ৳ @displayDue.ToString("N2")
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- STATUS -->
+
+                                            <td>
+
+
+                                                @if (displayDue <= 0)
+                                                {
+
+                                                    <span class="invoice-status paid">
+
+                                                        <i class="bi bi-check-circle"></i>
+
+                                                        Paid
+
+                                                    </span>
+
+                                                }
+                                                else if (
+                                                    (invoice.PaidAmount ?? 0) > 0
+                                                )
+                                                {
+
+                                                    <span class="invoice-status partial">
+
+                                                        <i class="bi bi-clock"></i>
+
+                                                        Partial
+
+                                                    </span>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="invoice-status unpaid">
+
+                                                        <i class="bi bi-x-circle"></i>
+
+                                                        Unpaid
+
+                                                    </span>
+
+                                                }
+
+
+                                            </td>
+
+
+                                            <!-- VIEW ONLY -->
+
+                                            <td>
+
+                                                <a asp-controller="Invoices"
+                                                   asp-action="Details"
+                                                   asp-route-id="@invoice.Id"
+                                                   class="btn btn-outline-primary invoice-view-button"
+                                                   title="View Invoice">
+
+                                                    <i class="bi bi-eye"></i>
+
+                                                </a>
+
+                                            </td>
+
+
+                                        </tr>
+
+
+                                        serial++;
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    <!-- EMPTY STATE -->
+
+                                    <tr>
+
+                                        <td colspan="10">
+
+
+                                            <div class="invoices-empty">
+
+
+                                                <div class="invoices-empty-icon">
+
+                                                    <i class="bi bi-receipt"></i>
+
+                                                </div>
+
+
+                                                <h5>
+                                                    No invoices found
+                                                </h5>
+
+
+                                                <p>
+                                                    There are no patient invoices available.
+                                                </p>
+
+
+                                            </div>
+
+
+                                        </td>
+
+                                    </tr>
+
+                                }
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     BACK TO DASHBOARD
+                ================================================== -->
+
+                <div class="mt-4">
+
+
+                    <a asp-controller="Admin"
+                       asp-action="Index"
+                       class="invoices-back">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOTSTRAP JS
+    ====================================================== -->
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
